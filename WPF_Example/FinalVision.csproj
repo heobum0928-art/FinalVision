@@ -345,6 +345,9 @@
     <Compile Include="UI\ContentItem\MainView.xaml.cs">
       <DependentUpon>MainView.xaml</DependentUpon>
     </Compile>
+    <Compile Include="UI\ContentItem\ShotTabView.xaml.cs">
+      <DependentUpon>ShotTabView.xaml</DependentUpon>
+    </Compile>
     <Compile Include="UI\ControlItem\InspectionListView.xaml.cs">
       <DependentUpon>InspectionListView.xaml</DependentUpon>
     </Compile>
@@ -371,6 +374,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="UI\ContentItem\MainView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="UI\ContentItem\ShotTabView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

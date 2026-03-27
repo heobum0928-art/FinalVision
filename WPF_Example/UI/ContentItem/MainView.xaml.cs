@@ -119,7 +119,6 @@ namespace FinalVisionProject.UI {
             "Shot 5 (Assy Rail Two)",  //260326 hbk
         };
 
-        private bool _suppressShotComboEvent = false;   //260326 hbk // 코드에서 SelectedIndex 변경 시 이벤트 억제
 
         private List<IMainView> CustomViewList = new List<IMainView>();
 
@@ -187,12 +186,12 @@ namespace FinalVisionProject.UI {
             }
             if (comboBox_sequence.Items.Count > 0) comboBox_sequence.SelectedIndex = 0;
 
-            // Shot ComboBox 초기화   //260326 hbk
-            comboBox_shot.Items.Clear();   //260326 hbk
-            foreach (string name in SHOT_DISPLAY_NAMES)   //260326 hbk
-                comboBox_shot.Items.Add(name);   //260326 hbk
-            if (comboBox_shot.Items.Count > 0)    //260326 hbk
-                comboBox_shot.SelectedIndex = 0;  //260326 hbk
+            // Shot 탭 초기화   //260327 hbk Shot탭
+            shotView_1.Initialize(0);
+            shotView_2.Initialize(1);
+            shotView_3.Initialize(2);
+            shotView_4.Initialize(3);
+            shotView_5.Initialize(4);
 
             this.DrawScale = pDev.Config.DrawScale;
         }
@@ -310,15 +309,7 @@ namespace FinalVisionProject.UI {
                         string resultStr = string.Format("{0}\n{1} ({2:0.00}s)", param.DeviceName, stateMsg, elapsedSec);
                         label_message.Content = resultStr;
 
-                        // Shot ComboBox 자동 선택   //260326 hbk
-                        int shotIdx = Array.IndexOf(SHOT_ACTION_NAMES, param.ActionName);   //260326 hbk
-                        if (shotIdx >= 0)   //260326 hbk
-                        {
-                            _suppressShotComboEvent = true;        //260326 hbk
-                            comboBox_shot.SelectedIndex = shotIdx; //260326 hbk
-                            _suppressShotComboEvent = false;       //260326 hbk
-                        }
-                        UpdateShotStrip();   //260326 hbk // 결과 스트립 갱신
+                        UpdateShotStrip();   // Shot 탭 헤더 색상 갱신
 
                         foreach (IMainView customView in CustomViewList) {
                             customView.Display(param.SequenceName, grabbedImage, resultStr, br, param.ActionName);
@@ -434,37 +425,7 @@ namespace FinalVisionProject.UI {
 
         }
 
-        // Shot ComboBox 선택 변경 → 해당 Shot 이미지 표시   //260326 hbk
-        private void ComboBox_shot_SelectionChanged(object sender, SelectionChangedEventArgs e)   //260326 hbk
-        {
-            if (_suppressShotComboEvent) return;   //260326 hbk
-            int idx = comboBox_shot.SelectedIndex;   //260326 hbk
-            if (idx < 0 || idx >= SHOT_ACTION_NAMES.Length) return;   //260326 hbk
-            RefreshShotViewer(idx);   //260326 hbk
-        }
-
-        // 원본/측정 RadioButton 전환   //260326 hbk
-        private void RadioButton_imageMode_Checked(object sender, RoutedEventArgs e)   //260326 hbk
-        {
-            int idx = comboBox_shot.SelectedIndex;   //260326 hbk
-            if (idx < 0) return;   //260326 hbk
-            RefreshShotViewer(idx);   //260326 hbk
-        }
-
-        // 결과 스트립 Border 클릭 → ComboBox 연동   //260326 hbk
-        private void StripBorder_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)   //260326 hbk
-        {
-            if (sender is Border border && border.Tag is string tagStr)   //260326 hbk
-            {
-                if (int.TryParse(tagStr, out int shotIdx))   //260326 hbk
-                {
-                    _suppressShotComboEvent = true;   //260326 hbk
-                    comboBox_shot.SelectedIndex = shotIdx;   //260326 hbk
-                    _suppressShotComboEvent = false;   //260326 hbk
-                    RefreshShotViewer(shotIdx);        //260326 hbk
-                }
-            }
-        }
+        // Shot 탭 SelectionChanged — ShotTabView가 자체 관리하므로 불필요   //260327 hbk Shot탭
 
         // Shot 인덱스에 해당하는 InspectionParam 조회   //260326 hbk
         private InspectionParam GetInspectionParam(int shotIndex)   //260326 hbk
@@ -475,52 +436,33 @@ namespace FinalVisionProject.UI {
             return seq[shotIndex].Param as InspectionParam;   //260326 hbk
         }
 
-        // Shot 뷰어 갱신 — 선택된 Shot의 원본 or 측정 이미지 표시   //260326 hbk
-        private void RefreshShotViewer(int shotIndex)   //260326 hbk
+        // Shot 탭 헤더 색상 + 이미지 업데이트 (외부 호출 가능)   //260327 hbk Shot탭
+        public void UpdateShotStrip()
         {
-            InspectionParam param = GetInspectionParam(shotIndex);   //260326 hbk
-            if (param == null) return;   //260326 hbk
+            if (pSeq == null) return;
+            SequenceBase seq = pSeq[ESequence.Inspection];
+            if (seq == null) return;
 
-            bool showOriginal = radioButton_original.IsChecked == true;   //260326 hbk
-            Mat imgToShow = showOriginal
-                ? param.LastOriginalImage
-                : (param.LastAnnotatedImage ?? param.GetAnnotatedImageTemp());   //260327 hbk — SIMUL에서 Temp fallback
-
-            // 이미지가 없으면 캔버스 검정   //260326 hbk
-            this.Dispatcher.BeginInvoke(System.Windows.Threading.DispatcherPriority.Normal, new Action(() => {   //260326 hbk
-                DisplayToBackground(imgToShow);   //260326 hbk // 기존 메서드 재사용
-            }));   //260326 hbk
-        }
-
-        // 결과 스트립 색상 업데이트 (외부에서 호출 가능)   //260326 hbk
-        public void UpdateShotStrip()   //260326 hbk
-        {
-            if (pSeq == null) return;   //260326 hbk
-            SequenceBase seq = pSeq[ESequence.Inspection];   //260326 hbk
-            if (seq == null) return;   //260326 hbk
-
-            Border[] stripBorders = {   //260326 hbk
-                stripBorder_Shot1, stripBorder_Shot2, stripBorder_Shot3,   //260326 hbk
-                stripBorder_Shot4, stripBorder_Shot5   //260326 hbk
+            Border[] tabHeaders = {
+                shotTabHeader_1, shotTabHeader_2, shotTabHeader_3,
+                shotTabHeader_4, shotTabHeader_5
             };
 
-            for (int i = 0; i < stripBorders.Length && i < seq.ActionCount; i++)   //260326 hbk
+            for (int i = 0; i < tabHeaders.Length && i < seq.ActionCount; i++)
             {
-                EContextResult result = seq[i].Context.Result;   //260326 hbk
-                SolidColorBrush bg;   //260326 hbk
-                switch (result)   //260326 hbk
+                EContextResult result = seq[i].Context.Result;
+                SolidColorBrush bg;
+                switch (result)
                 {
-                    case EContextResult.Pass:
-                        bg = new SolidColorBrush(Colors.Lime);   //260326 hbk // OK = 초록
-                        break;
-                    case EContextResult.Fail:
-                        bg = new SolidColorBrush(Colors.Red);    //260326 hbk // NG = 빨강
-                        break;
-                    default:
-                        bg = new SolidColorBrush(Colors.Gray);   //260326 hbk // 미실행 = 회색
-                        break;
+                    case EContextResult.Pass: bg = new SolidColorBrush(Colors.Lime); break;
+                    case EContextResult.Fail: bg = new SolidColorBrush(Colors.Red);  break;
+                    default:                  bg = new SolidColorBrush(Colors.Gray); break;
                 }
-                stripBorders[i].Background = bg;   //260326 hbk
+                tabHeaders[i].Background = bg;
+
+                // ShotTabView 결과 레이블 갱신   //260327 hbk Shot탭
+                ShotTabView[] views = { shotView_1, shotView_2, shotView_3, shotView_4, shotView_5 };
+                if (i < views.Length) views[i].UpdateResultLabel();
             }
         }
         
