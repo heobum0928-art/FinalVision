@@ -100,7 +100,7 @@ Plans:
 **Plans: 3 plans**
 
 Plans:
-- [ ] 06-01-PLAN.md — CameraSlaveParam/CameraParam 레거시 필드 제거 (D-01)
+- [x] 06-01-PLAN.md — CameraSlaveParam/CameraParam 레거시 필드 제거 (D-01)
 - [ ] 06-02-PLAN.md — RecipeEditorWindow 신규 생성 (TabControl + PropertyGrid + RuntimeResizer Canvas)
 - [ ] 06-03-PLAN.md — OpenRecipeWindow 편집 진입점 + Save/Load/Copy/Reset 완성
 
