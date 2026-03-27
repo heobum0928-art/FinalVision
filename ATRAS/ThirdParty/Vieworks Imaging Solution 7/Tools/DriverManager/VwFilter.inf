@@ -1,0 +1,88 @@
+;-------------------------------------------------------------------------
+; VwFilter.INF -- NDIS LightWeight Filter Driver
+;-------------------------------------------------------------------------
+
+[version]
+Signature       = "$Windows NT$"
+Class           = NetService
+ClassGUID       = {4D36E974-E325-11CE-BFC1-08002BE10318}
+Provider        = %Vieworks%
+DriverVer=03/17/2021,11.15.21.419
+CatalogFile     = VwFilter.cat
+
+
+[Manufacturer]
+%Vieworks%=VIEWORKS,NTx86,NTia64,NTamd64
+
+; gl_VwFilter can be used with netcfg.exe to install/uninstall the driver.
+[VIEWORKS.NTx86]
+%VwFilter_Desc%=Install, gl_VwFilter
+
+[VIEWORKS.NTia64]
+%VwFilter_Desc%=Install, gl_VwFilter
+
+[VIEWORKS.NTamd64]
+%VwFilter_Desc%=Install, gl_VwFilter
+
+
+;-------------------------------------------------------------------------
+; Installation Section
+;-------------------------------------------------------------------------
+[Install]
+AddReg=Inst_Ndi
+Characteristics=0x40000
+
+NetCfgInstanceId="{6b93da78-e813-40cd-8f49-d037bb812057}"
+
+Copyfiles = VwFilter.copyfiles.sys
+
+[SourceDisksNames]
+1=%VwFilter_Desc%,"",,
+
+[SourceDisksFiles]
+VwFilter.sys=1
+
+[DestinationDirs]
+DefaultDestDir=12
+VwFilter.copyfiles.sys=12
+
+[VwFilter.copyfiles.sys]
+VwFilter.sys,,,2
+
+
+;-------------------------------------------------------------------------
+; Ndi installation support
+;-------------------------------------------------------------------------
+[Inst_Ndi]
+HKR, Ndi,Service,,"VwFilter"
+HKR, Ndi,CoServices,0x00010000,"VwFilter"
+HKR, Ndi,HelpText,,%VwFilter_HelpText%
+HKR, Ndi,FilterClass,, Compression
+HKR, Ndi,FilterType,0x00010001,2
+HKR, Ndi\Interfaces,UpperRange,,"noupper"
+HKR, Ndi\Interfaces,LowerRange,,"nolower"
+HKR, Ndi\Interfaces, FilterMediaTypes,,"ethernet"
+HKR, Ndi,FilterRunType,0x00010001, 1 ; Mandatory filter
+
+;-------------------------------------------------------------------------
+; Service installation support
+;-------------------------------------------------------------------------
+[Install.Services]
+AddService=VwFilter,,VwFilter_Service_Inst
+
+[VwFilter_Service_Inst]
+DisplayName     = %VwFilter_Desc%
+ServiceType     = 1 ;SERVICE_KERNEL_DRIVER
+StartType       = 1 ;SERVICE_SYSTEM_START
+ErrorControl    = 1 ;SERVICE_ERROR_NORMAL
+ServiceBinary   = %12%\VwFilter.sys
+LoadOrderGroup  = NDIS
+Description     = %VwFilter_Desc%
+
+[Install.Remove.Services]
+DelService=VwFilter,0x200 ; SPSVCINST_STOPSERVICE
+
+[Strings]
+Vieworks = "Vieworks"
+VwFilter_Desc = "Vieworks GigE Filter7plus"
+VwFilter_HelpText = "Vieworks GigE Filter7plus"

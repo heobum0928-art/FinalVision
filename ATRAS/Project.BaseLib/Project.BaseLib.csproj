@@ -1,0 +1,187 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{F2ADF58E-07CA-41A1-90E6-BB1B4A332910}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>Project.BaseLib</RootNamespace>
+    <AssemblyName>Project.BaseLib</AssemblyName>
+    <TargetFrameworkVersion>v4.8</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <Deterministic>true</Deterministic>
+    <TargetFrameworkProfile />
+    <SccProjectName>
+    </SccProjectName>
+    <SccLocalPath>
+    </SccLocalPath>
+    <SccAuxPath>
+    </SccAuxPath>
+    <SccProvider>
+    </SccProvider>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>..\..\bin\lib\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <LangVersion>7.2</LangVersion>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>..\..\bin\lib\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x64'">
+    <DebugSymbols>true</DebugSymbols>
+    <OutputPath>..\..\bin\lib\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <DebugType>full</DebugType>
+    <PlatformTarget>x64</PlatformTarget>
+    <LangVersion>7.3</LangVersion>
+    <ErrorReport>prompt</ErrorReport>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x64'">
+    <OutputPath>..\lib\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <Optimize>true</Optimize>
+    <DebugType>pdbonly</DebugType>
+    <PlatformTarget>x64</PlatformTarget>
+    <LangVersion>7.3</LangVersion>
+    <ErrorReport>prompt</ErrorReport>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="log4net">
+      <HintPath>..\ThirdParty\log4net\bin\net\4.5\debug\log4net.dll</HintPath>
+    </Reference>
+    <Reference Include="PresentationCore" />
+    <Reference Include="PresentationFramework" />
+    <Reference Include="System" />
+    <Reference Include="System.Configuration" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Runtime.Serialization" />
+    <Reference Include="System.ServiceModel" />
+    <Reference Include="System.Windows" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Net.Http" />
+    <Reference Include="System.Xml" />
+    <Reference Include="WindowsBase" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Communication\BaseDataStructure.cs" />
+    <Compile Include="Communication\ClientsFactory.cs" />
+    <Compile Include="Communication\CommunicationEventArgs.cs" />
+    <Compile Include="Communication\CommunicationSettings.cs" />
+    <Compile Include="Communication\ICommunication.cs" />
+    <Compile Include="Communication\SerialChannel.cs" />
+    <Compile Include="Communication\SerializtionObjects.cs" />
+    <Compile Include="Communication\ServiceInterfaces.cs" />
+    <Compile Include="Communication\ServiceClient.cs" />
+    <Compile Include="Communication\PublicshSubscriber.cs" />
+    <Compile Include="Communication\Resolver\GenericResolver.cs" />
+    <Compile Include="Communication\Resolver\GenericResolverBehaviorAttribute.cs" />
+    <Compile Include="Communication\Resolver\GenericResolverInstaller.cs" />
+    <Compile Include="Communication\ServiceErrorHandler.cs" />
+    <Compile Include="Communication\ServiceFactory.cs" />
+    <Compile Include="Communication\TcpChannel.cs" />
+    <Compile Include="Communication\UdpChannel.cs" />
+    <Compile Include="DataStructures\BlobData.cs" />
+    <Compile Include="DataStructures\ByteImage.cs" />
+    <Compile Include="DataStructures\CalibrationData.cs" />
+    <Compile Include="DataStructures\CarrierInfo.cs" />
+    <Compile Include="DataStructures\CircleData.cs" />
+    <Compile Include="DataStructures\Coordinates.cs" />
+    <Compile Include="DataStructures\DigitalInputStatus.cs" />
+    <Compile Include="DataStructures\DigitalOutputStatus.cs" />
+    <Compile Include="DataStructures\ImageBase.cs" />
+    <Compile Include="DataStructures\ImageConverter.cs" />
+    <Compile Include="DataStructures\ImageDataStructures.cs" />
+    <Compile Include="DataStructures\IOState.cs" />
+    <Compile Include="DataStructures\LoadPortCarrierInfo.cs" />
+    <Compile Include="DataStructures\LoadPortInfo.cs" />
+    <Compile Include="DataStructures\LoadPortLightState.cs" />
+    <Compile Include="DataStructures\ModelFindData.cs" />
+    <Compile Include="DataStructures\OrientData.cs" />
+    <Compile Include="DataStructures\PLCProtocalBase.cs" />
+    <Compile Include="DataStructures\PrealignerResult.cs" />
+    <Compile Include="DataStructures\PtrImage.cs" />
+    <Compile Include="DataStructures\RANSAC.cs" />
+    <Compile Include="DataStructures\RoiData.cs" />
+    <Compile Include="DataStructures\SlotMapResult.cs" />
+    <Compile Include="DataStructures\SubstrateInfo.cs" />
+    <Compile Include="DataStructures\TiffImage.cs" />
+    <Compile Include="DataStructures\UnitBaseStatus.cs" />
+    <Compile Include="Enums\CommonEnums.cs" />
+    <Compile Include="Enums\DeviceEnums.cs" />
+    <Compile Include="Enums\SystemStatus.cs" />
+    <Compile Include="Enums\UnitEnums.cs" />
+    <Compile Include="Events\Events.cs" />
+    <Compile Include="Extension\BitmapImageExtensions.cs" />
+    <Compile Include="Extension\CollectionExtensions.cs" />
+    <Compile Include="Extension\DictionaryExtensions.cs" />
+    <Compile Include="Extension\ImageExtensions.cs" />
+    <Compile Include="Extension\LoggerExtensions.cs" />
+    <Compile Include="Extension\MathExtensions.cs" />
+    <Compile Include="Extension\NetworkExtensions.cs" />
+    <Compile Include="Extension\PathExtensions.cs" />
+    <Compile Include="Extension\StringExtensions.cs" />
+    <Compile Include="Extension\TaskExtensions.cs" />
+    <Compile Include="HW\DeviceBase.cs" />
+    <Compile Include="HW\DeviceCom.cs" />
+    <Compile Include="HW\Events.cs" />
+    <Compile Include="HW\HWConfigBase.cs" />
+    <Compile Include="HW\IDevice.cs" />
+    <Compile Include="HW\IDeviceCom.cs" />
+    <Compile Include="HW\IUnit.cs" />
+    <Compile Include="HW\UnitBase.cs" />
+    <Compile Include="HW\UnitTyped.cs" />
+    <Compile Include="Logger\DelegateAppender.cs" />
+    <Compile Include="Logger\ILogger.cs" />
+    <Compile Include="Logger\ImageAppender.cs" />
+    <Compile Include="Logger\Log4NetWrapper.cs" />
+    <Compile Include="Logger\LoggerSettings.cs" />
+    <Compile Include="Logger\LogManager.cs" />
+    <Compile Include="Logger\MessageLogAppender.cs" />
+    <Compile Include="Logger\ProjectLoggingEvent.cs" />
+    <Compile Include="Logger\RollingFileAppender.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Utils\AppLogger.cs" />
+    <Compile Include="Utils\BaseError.cs" />
+    <Compile Include="Utils\CFileForCSV.cs" />
+    <Compile Include="Utils\CoordinateCalculator.cs" />
+    <Compile Include="Utils\ConfigManager.cs" />
+    <Compile Include="Utils\ConfigurationBase.cs" />
+    <Compile Include="Utils\DelegateCommand.cs" />
+    <Compile Include="Utils\JsonSerizalizer.cs" />
+    <Compile Include="Utils\MeasureLine.cs" />
+    <Compile Include="Utils\PointUtils.cs" />
+    <Compile Include="Utils\ThreadSafeList.cs" />
+    <Compile Include="Utils\ViewModelRepository.cs" />
+    <Compile Include="Utils\NotificationsSubscriber.cs" />
+    <Compile Include="Utils\NotifyPropertyChanged.cs" />
+    <Compile Include="Utils\NotifySingleton.cs" />
+    <Compile Include="Utils\Singleton.cs" />
+    <Compile Include="Utils\Status.cs" />
+    <Compile Include="Utils\TypesLoader.cs" />
+    <Compile Include="Utils\ViewModelBase.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="copy_text.txt" />
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+</Project>

@@ -1,0 +1,54 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<RegisterDescription    ModelName="VieworksUSBViewerInterface"
+                        VendorName="Vieworks"
+                        StandardNameSpace="GEV"
+                        SchemaMajorVersion="1"
+                        SchemaMinorVersion="0"
+                        SchemaSubMinorVersion="1"
+                        MajorVersion="1"
+                        MinorVersion="0"
+                        SubMinorVersion="1"
+                        ToolTip="GenApi standard"
+                        ProductGuid="6685bcb4-7a33-47b2-878e-e54a1a8147d9"
+                        VersionGuid="a68f1daf-fff3-49cd-b16c-9c7633e215ab"
+                        xmlns="http://www.genicam.org/GenApi/Version_1_0"
+                        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                        xsi:schemaLocation="http://www.genicam.org/GenApi/Version_1_0 http://www.genicam.org/GenApi/GenApiSchema_Version_1_0.xsd">
+  <Group Comment="Root">
+    <Category Name="Root" NameSpace="Standard">
+      <pFeature>StreamOptions</pFeature>
+    </Category>
+  </Group>
+  <Group Comment="StreamOptions">
+    <Category Name="StreamOptions" NameSpace="Standard">
+      <pFeature>MaximumTransferSize</pFeature>
+    </Category>
+    <Integer Name="MaximumTransferSize">
+      <ToolTip>Maximum Transfer Size</ToolTip>
+      <Description>Maximum Transfer Size</Description>
+      <Visibility>Beginner</Visibility>
+      <pValue>MaximumTransferSizeReg</pValue>
+      <Min>1024</Min>
+      <Max>4194304</Max>
+      <Inc>1024</Inc>
+    </Integer>
+    <IntReg Name="MaximumTransferSizeReg">
+      <Address>0x00000001</Address>
+      <Length>4</Length>
+      <AccessMode>RW</AccessMode>
+      <pPort>Device</pPort>
+      <Sign>Unsigned</Sign>
+      <Endianess>LittleEndian</Endianess>
+    </IntReg>
+  </Group>
+  <Integer Name="TLParamsLocked">
+    <ToolTip> Flag to indicate if features are locked during acquisition</ToolTip>
+    <Visibility>Invisible</Visibility>
+    <Value>0</Value>
+    <Min>0</Min>
+    <Max>1</Max>
+  </Integer>
+  <Port Name="Device">
+    <ToolTip>Port giving access to the application.</ToolTip>
+  </Port>
+</RegisterDescription>

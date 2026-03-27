@@ -1,0 +1,33 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <ClCompile Include="stdafx.cpp" />
+    <ClCompile Include="VwGigE.Demo.MultiCam.Window.Advance.cpp" />
+    <ClCompile Include="VwGigE.Demo.MultiCam.Window.AdvanceDlg.cpp" />
+    <ClCompile Include="..\Dependency\Draw\VwResourceType.cpp">
+      <Filter>Dependency</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="Resource.h" />
+    <ClInclude Include="stdafx.h" />
+    <ClInclude Include="VwGigE.Demo.MultiCam.Window.Advance.h" />
+    <ClInclude Include="VwGigE.Demo.MultiCam.Window.AdvanceDlg.h" />
+    <ClInclude Include="..\Dependency\Draw\VwResourceType.h">
+      <Filter>Dependency</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="VwGigE.Demo.MultiCam.Window.Advance.rc" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="res\VwGigE.Demo.MultiCam.Window.Advance.ico" />
+    <None Include="res\VwGigEDemoMultiCamWindowAdvance.rc2" />
+    <None Include="ReadMe.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="Dependency">
+      <UniqueIdentifier>{f1cd29f2-07cb-448c-a90e-8f160e283ef8}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+</Project>

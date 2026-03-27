@@ -1,0 +1,85 @@
+﻿#region fields
+
+#endregion
+
+#region propertise
+
+#endregion
+
+#region methods
+        
+#endregion
+
+#region constructors
+
+#endregion
+
+
+
+
+
+{
+    get
+    {
+        return xxxxx;
+    }
+    set
+    {
+		xxxxx = value;
+        OnPropertyChanged();
+    }
+}
+
+
+
+        private void LineHit_MouseMove(object sender, System.Windows.Forms.MouseEventArgs e)
+        {
+            ImageBoxEx IGbox = (sender as ImageBoxEx);
+            System.Drawing.Point wPT = new System.Drawing.Point(e.X, e.Y);
+            System.Drawing.Point iPT = IGbox.PointToImage(wPT, true);
+
+            System.Windows.Forms.Cursor newCursor = System.Windows.Forms.Cursors.Arrow; // 기본값 설정
+            bool hitFound = false;
+
+            var is_selected = _ShapeList.All(a => a.IsSelected == false);
+            if (is_selected == true)
+            {
+                this.Cursor = Cursors.Arrow;
+                return;
+            }
+
+            foreach (var s in _ShapeList)
+            {
+                if (s.IsSelected)
+                {
+                    // 최적화: 모든 Enum을 도는 대신 해당 도형의 HitTest 메서드를 호출하는 것이 좋습니다.
+                    foreach (HitLocation location in Enum.GetValues(typeof(HitLocation)))
+                    {
+                        if (location == HitLocation.None) continue;
+
+                        var hit_rect = s.GetHitRectPosition(location);
+                        if (hit_rect.Contains(iPT.X, iPT.Y)) // .Contains 메서드 활용
+                        {
+                            s.LastHit = location;
+                            newCursor = GetCursorForLocation(location);
+                            hitFound = true;
+                            break;
+                        }
+
+                        if (s.ToRect().Contains(iPT.X, iPT.Y))
+                        {
+                            s.LastHit = HitLocation.Body;
+                            newCursor = System.Windows.Forms.Cursors.Hand;
+                            hitFound = true;
+                        }
+                    }
+                    if (hitFound) break;
+                }
+            }
+
+            if (IGbox.Cursor != newCursor)
+            {
+                IGbox.Cursor = newCursor;
+            }
+        }
+

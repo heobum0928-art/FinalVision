@@ -1,0 +1,318 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<RegisterDescription    ModelName="VieworksGigEViewer"
+                        VendorName="Vieworks"
+                        StandardNameSpace="GEV"
+                        SchemaMajorVersion="1"
+                        SchemaMinorVersion="0"
+                        SchemaSubMinorVersion="1"
+                        MajorVersion="1"
+                        MinorVersion="0"
+                        SubMinorVersion="1"
+                        ToolTip="GenApi standard"
+                        ProductGuid="6685bcb4-7a33-47b2-878e-e54a1a8147d9"
+                        VersionGuid="a68f1daf-fff3-49cd-b16c-9c7633e215ab"
+                        xmlns="http://www.genicam.org/GenApi/Version_1_0"
+                        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                        xsi:schemaLocation="http://www.genicam.org/GenApi/Version_1_0 http://www.genicam.org/GenApi/GenApiSchema_Version_1_0.xsd">
+  <Group Comment="Root">
+    <Category Name="Root" NameSpace="Standard">
+      <pFeature>DiscoveryOptions</pFeature>
+      <pFeature>AcquisitionOptions</pFeature>
+      <pFeature>CXP</pFeature>
+      <pFeature>CameraLink</pFeature>
+      <pFeature>USB</pFeature>
+      
+    </Category>
+  </Group>
+  <Group Comment="DiscoveryOptions">
+    <Category Name="DiscoveryOptions" NameSpace="Standard">
+      <pFeature>DiscoveryTimeout</pFeature>
+      <pFeature>IgnoreSubnet</pFeature>
+    </Category>
+    <Integer Name="DiscoveryTimeout">
+      <ToolTip>Discovery Timeout in ms</ToolTip>
+      <Description>Discovery Timeout in ms</Description>
+      <Visibility>Beginner</Visibility>
+      <pValue>DiscoveryTimeoutReg</pValue>
+      <Min>5</Min>
+      <Max>10000</Max>
+      <Inc>5</Inc>
+    </Integer>
+    <IntReg Name="DiscoveryTimeoutReg">
+      <Address>0x00000001</Address>
+      <Length>4</Length>
+      <AccessMode>RW</AccessMode>
+      <pPort>Application</pPort>
+      <Sign>Unsigned</Sign>
+      <Endianess>LittleEndian</Endianess>
+    </IntReg>
+    <Boolean Name="IgnoreSubnet">
+      <ToolTip>Ignore subnet mask</ToolTip>
+      <Description>Ignore subnet mask</Description>
+      <Visibility>Beginner</Visibility>
+      <pValue>IgnoreSubnetReg</pValue>
+    </Boolean>
+    <IntReg Name="IgnoreSubnetReg">
+      <Address>0x00000003</Address>
+      <Length>4</Length>
+      <AccessMode>RW</AccessMode>
+      <pPort>Application</pPort>
+      <Sign>Unsigned</Sign>
+      <Endianess>LittleEndian</Endianess>
+    </IntReg>
+  </Group>
+  <Group Comment="AcquisitionOptions">
+    <Category Name="AcquisitionOptions" NameSpace="Standard">
+      <pFeature>AcquisitionTimeout</pFeature>
+    </Category>
+    <Integer Name="AcquisitionTimeout">
+      <ToolTip>AcquisitionTimeout Timeout in ms</ToolTip>
+      <Description>AcquisitionTimeout Timeout in ms</Description>
+      <Visibility>Beginner</Visibility>
+      <pValue>AcquisitionTimeoutReg</pValue>
+      <Min>1000</Min>
+      <Max>86400000</Max>
+      <Inc>500</Inc>
+    </Integer>
+    <IntReg Name="AcquisitionTimeoutReg">
+      <Address>0x00000002</Address>
+      <Length>4</Length>
+      <AccessMode>RW</AccessMode>
+      <pPort>Application</pPort>
+      <Sign>Unsigned</Sign>
+      <Endianess>LittleEndian</Endianess>
+    </IntReg>
+  </Group>
+  
+  <Group Comment="CXP">
+    <Category Name="CXP" NameSpace="Standard">
+      <pFeature>CXPUsable</pFeature>
+      <pFeature>FrameGrabberBoard</pFeature>
+      <pFeature>ErrorMessageBox</pFeature>
+      <pFeature>CTIFilePath</pFeature>
+      <pFeature>CTIFileName</pFeature>
+    </Category>
+    
+    <Boolean Name="CXPUsable">
+      <ToolTip>CXP usable.</ToolTip>
+      <Description>CXP usable.</Description>
+      <Visibility>Beginner</Visibility>
+      <pValue>CXPUsableReg</pValue>
+    </Boolean>
+
+    <IntReg Name="CXPUsableReg">
+      <Address>0x00000030</Address>
+      <Length>4</Length>
+      <AccessMode>RW</AccessMode>
+      <pPort>Application</pPort>
+      <Sign>Unsigned</Sign>
+      <Endianess>LittleEndian</Endianess>
+    </IntReg>
+    
+    <Enumeration Name="FrameGrabberBoard" NameSpace="Standard">
+      <ToolTip>CXP Frame Grabber Board Manufacturer.</ToolTip>
+      <Description>CXP Frame Grabber Board Manufacturer.</Description>
+      <DisplayName>Frame Grabber Board</DisplayName>
+      <EnumEntry Name="ActiveSilicon" NameSpace="Standard">
+        <ToolTip>Active Silicon</ToolTip>
+        <Description>Active Silicon</Description>
+        <DisplayName>Active Silicon</DisplayName>
+        <Value>0</Value>
+      </EnumEntry>
+      <!--<EnumEntry Name="Matrox" NameSpace="Standard">
+        <ToolTip>Matrox</ToolTip>
+        <Description>Matrox</Description>
+        <DisplayName>Matrox</DisplayName>
+        <Value>1</Value>
+      </EnumEntry>-->
+      <EnumEntry Name="Euresys" NameSpace="Standard">
+        <ToolTip>Euresys</ToolTip>
+        <Description>Euresys</Description>
+        <DisplayName>Euresys</DisplayName>
+        <Value>2</Value>
+      </EnumEntry>
+      <EnumEntry Name="Etc" NameSpace="Standard">
+        <ToolTip>Etc</ToolTip>
+        <Description>Etc</Description>
+        <DisplayName>Etc</DisplayName>
+        <Value>3</Value>
+      </EnumEntry>
+      <pValue>FRAME_GRABBER_BOARD_REG</pValue>
+    </Enumeration>
+    <IntReg Name="FRAME_GRABBER_BOARD_REG">
+      <Address>0x00000004</Address>
+      <Length>4</Length>
+      <AccessMode>RW</AccessMode>
+      <pPort>Application</pPort>
+      <Sign>Unsigned</Sign>
+      <Endianess>LittleEndian</Endianess>
+    </IntReg>
+    <Boolean Name="ErrorMessageBox">
+      <ToolTip>Error Message Box status.</ToolTip>
+      <Description>Error Message Box status.</Description>
+      <Visibility>Invisible</Visibility>
+      <pValue>ErrorMessageBoxReg</pValue>
+    </Boolean>
+    <IntReg Name="ErrorMessageBoxReg">
+      <Address>0x00000005</Address>
+      <Length>4</Length>
+      <AccessMode>RW</AccessMode>
+      <pPort>Application</pPort>
+      <Sign>Unsigned</Sign>
+      <Endianess>LittleEndian</Endianess>
+    </IntReg>
+    <StringReg Name="CTIFilePath" NameSpace="Standard">
+      <ToolTip>CTI File path.</ToolTip>
+      <Description>CTI File path.</Description>
+      <DisplayName>CTI File path</DisplayName>
+      <Visibility>Beginner</Visibility>
+      <ImposedAccessMode>RO</ImposedAccessMode>
+      <Address>0x00000006</Address>
+      <Length>260</Length>
+      <AccessMode>RO</AccessMode>
+      <pPort>Application</pPort>
+      <pInvalidator>FRAME_GRABBER_BOARD_REG</pInvalidator>
+    </StringReg>
+    <StringReg Name="CTIFileName" NameSpace="Standard">
+      <ToolTip>CTI File name.</ToolTip>
+      <Description>CTI File name.</Description>
+      <DisplayName>CTI File name</DisplayName>
+      <Visibility>Beginner</Visibility>
+      <ImposedAccessMode>RO</ImposedAccessMode>
+      <Address>0x00000007</Address>
+      <Length>260</Length>
+      <AccessMode>RO</AccessMode>
+      <pPort>Application</pPort>
+      <pInvalidator>FRAME_GRABBER_BOARD_REG</pInvalidator>
+    </StringReg>
+  </Group>
+
+
+  <Group Comment="CameraLink">
+    <Category Name="CameraLink" NameSpace="Standard">
+      <pFeature>CameraLinkUsable</pFeature>
+      <pFeature>InterfaceType</pFeature>
+      <pFeature>GenCPCTIFilePath</pFeature>
+      <pFeature>CTIFileSelector</pFeature>
+      <pFeature>COMPort1Usable</pFeature>
+    </Category>
+    <Boolean Name="CameraLinkUsable">
+      <ToolTip>CameraLink usable.</ToolTip>
+      <Description>CameraLink usable.</Description>
+      <Visibility>Beginner</Visibility>
+      <pValue>CameraLinkUsableReg</pValue>
+    </Boolean>
+    <IntReg Name="CameraLinkUsableReg">
+      <Address>0x00000020</Address>
+      <Length>4</Length>
+      <AccessMode>RW</AccessMode>
+      <pPort>Application</pPort>
+      <Sign>Unsigned</Sign>
+      <Endianess>LittleEndian</Endianess>
+    </IntReg>
+
+    
+    
+    <Enumeration Name="InterfaceType" NameSpace="Standard">
+      <ToolTip>Interface type you want to use.</ToolTip>
+      <Description>Interface type you want to use.</Description>
+      <DisplayName>InterfaceType</DisplayName>
+      <EnumEntry Name="FrameGrabber" NameSpace="Standard">
+        <ToolTip>Frame grabber</ToolTip>
+        <Description>Frame grabber installed will be displayed in interface list.</Description>
+        <DisplayName>Frame grabber</DisplayName>
+        <Value>0</Value>
+      </EnumEntry>
+      <EnumEntry Name="COMPort" NameSpace="Standard">
+        <ToolTip>COMPort</ToolTip>
+        <Description>Com port will be displayed in interface list.</Description>
+        <DisplayName>COMPort</DisplayName>
+        <Value>1</Value>
+      </EnumEntry>
+      <pValue>INTERFACE_TYPE_REG</pValue>
+    </Enumeration>
+    
+    <IntReg Name="INTERFACE_TYPE_REG">
+      <Address>0x00000021</Address>
+      <Length>4</Length>
+      <AccessMode>RW</AccessMode>
+      <pPort>Application</pPort>
+      <Sign>Unsigned</Sign>
+      <Endianess>LittleEndian</Endianess>
+    </IntReg>
+<StringReg Name="GenCPCTIFilePath" NameSpace="Standard">
+      <Address>0x0022</Address>
+      <Length>260</Length>
+      <AccessMode>RO</AccessMode>
+      <pPort>Application</pPort>
+      <pInvalidator>CTIFileSelectorReg</pInvalidator>
+    </StringReg>
+    <Command Name="CTIFileSelector" NameSpace="Standard">
+      <ToolTip>CTIFile selector.</ToolTip>
+      <Description>CTIFile selector.</Description>
+      <DisplayName>CTIFile selector.</DisplayName>
+      <Visibility>Guru</Visibility>
+      <ImposedAccessMode>WO</ImposedAccessMode>
+      <pValue>CTIFileSelectorReg</pValue>
+      <CommandValue>1</CommandValue>
+    </Command>
+    <IntReg Name="CTIFileSelectorReg">
+      <Address>0x0023</Address>
+      <Length>4</Length>
+      <AccessMode>WO</AccessMode>
+      <pPort>Application</pPort>
+      <Sign>Unsigned</Sign>
+      <Endianess>BigEndian</Endianess>
+    </IntReg>
+    <Boolean Name="COMPort1Usable">
+      <ToolTip>COMPort1 usable.</ToolTip>
+      <Description>COMPort1 usable.</Description>
+      <Visibility>Beginner</Visibility>
+      <pValue>COMPort1UsableReg</pValue>
+    </Boolean>
+    <IntReg Name="COMPort1UsableReg">
+      <Address>0x00000024</Address>
+      <Length>4</Length>
+      <AccessMode>RW</AccessMode>
+      <pPort>Application</pPort>
+      <Sign>Unsigned</Sign>
+      <Endianess>LittleEndian</Endianess>
+    </IntReg>
+  </Group>
+
+    
+
+  <Group Comment="USB">
+    <Category Name="USB" NameSpace="Standard">
+      <pFeature>USBUsable</pFeature>
+    </Category>
+    <Boolean Name="USBUsable">
+      <ToolTip>USB usable.</ToolTip>
+      <Description>USB usable.</Description>
+      <Visibility>Beginner</Visibility>
+      <pValue>USBUsableReg</pValue>
+    </Boolean>
+    <IntReg Name="USBUsableReg">
+      <Address>0x00000040</Address>
+      <Length>4</Length>
+      <AccessMode>RW</AccessMode>
+      <pPort>Application</pPort>
+      <Sign>Unsigned</Sign>
+      <Endianess>LittleEndian</Endianess>
+    </IntReg>
+  </Group>
+
+  <!--
+  <Integer Name="TLParamsLocked">
+    <ToolTip> Flag to indicate if features are locked during acquisition</ToolTip>
+    <Visibility>Invisible</Visibility>
+    <Value>0</Value>
+    <Min>0</Min>
+    <Max>1</Max>
+  </Integer>
+  -->
+  
+  <Port Name="Application">
+    <ToolTip>Port giving access to the application.</ToolTip>
+  </Port>
+</RegisterDescription>

@@ -1,0 +1,51 @@
+﻿<UserControl x:Class="Project.DeepLearning.UI.ConfidenceBar"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:Project.DeepLearning.UI"
+             mc:Ignorable="d" 
+             Height="50" Width="300" Padding="0, 5">
+    <UserControl.Resources>
+        <local:ClassTextColor x:Key="ClassTextColorConv"/>
+        <local:ClassTextBackgroundColor x:Key="ClassTextBackgroundColorConv"/>
+        <local:ConfidenceBarWidth x:Key="ConfidenceBarWidthConv"/>
+        <local:ConfidenceText x:Key="ConfidenceTextConv"/>
+        
+    </UserControl.Resources>
+    <Grid VerticalAlignment="Center">
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="1*"/>
+            <ColumnDefinition Width="4*"/>
+            <ColumnDefinition Width="1*"/>
+        </Grid.ColumnDefinitions>
+
+        <Label Grid.Column="0" Content="{Binding ClassName,
+                                            RelativeSource={RelativeSource Mode=FindAncestor, 
+                                            AncestorType={x:Type local:ConfidenceBar}}}" 
+               
+               Foreground="{Binding ColorIndex, 
+                            RelativeSource={RelativeSource Mode=FindAncestor, 
+                            AncestorType={x:Type local:ConfidenceBar}}, 
+                            Converter={StaticResource ClassTextColorConv}}"
+               Background="White"
+               />
+        
+        <Label Grid.Column="1" Height="20" HorizontalAlignment="Left"
+               Width="{Binding Confidence, 
+                            RelativeSource={RelativeSource Mode=FindAncestor, 
+                            AncestorType={x:Type local:ConfidenceBar}},
+                            Converter={StaticResource ConfidenceBarWidthConv}}"
+               Background="{Binding ColorIndex, 
+                                RelativeSource={RelativeSource Mode=FindAncestor, 
+                                AncestorType={x:Type local:ConfidenceBar}},
+                                Converter={StaticResource ClassTextBackgroundColorConv}}"
+               />
+        
+        <Label Grid.Column="2" Content="{Binding Confidence, 
+                                            RelativeSource={RelativeSource Mode=FindAncestor, 
+                                            AncestorType={x:Type local:ConfidenceBar}},
+                                            Converter={StaticResource ConfidenceTextConv}}" FontWeight="Bold"/>
+    
+    </Grid>
+</UserControl>

@@ -1,0 +1,37 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <ClCompile Include="DlgForceIP.cpp" />
+    <ClCompile Include="stdafx.cpp" />
+    <ClCompile Include="VwGigE.Demo.GigE.Discovery.cpp" />
+    <ClCompile Include="VwGigE.Demo.GigE.DiscoveryCameraDlg.cpp" />
+    <ClCompile Include="VwGigE.Demo.GigE.DiscoveryDlg.cpp" />
+    <ClCompile Include="..\Dependency\Draw\VwResourceType.cpp">
+      <Filter>Dependency</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="DlgForceIP.h" />
+    <ClInclude Include="Resource.h" />
+    <ClInclude Include="stdafx.h" />
+    <ClInclude Include="VwGigE.Demo.GigE.Discovery.h" />
+    <ClInclude Include="VwGigE.Demo.GigE.DiscoveryCameraDlg.h" />
+    <ClInclude Include="VwGigE.Demo.GigE.DiscoveryDlg.h" />
+    <ClInclude Include="..\Dependency\Draw\VwResourceType.h">
+      <Filter>Dependency</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="VwGigE.Demo.GigE.Discovery.rc" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="res\VwGigE.Demo.GigE.Discovery.ico" />
+    <None Include="res\VwGigEDemoGigEDiscovery.rc2" />
+    <None Include="ReadMe.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="Dependency">
+      <UniqueIdentifier>{7847e4af-d4c1-4f70-b41e-c74ce99d4d1a}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+</Project>

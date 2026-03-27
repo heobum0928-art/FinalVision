@@ -1,0 +1,27 @@
+# Build output
+bin/
+obj/
+WPF_Example/bin/
+WPF_Example/obj/
+
+# Visual Studio
+.vs/
+WPF_Example/.vs/
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+
+# Backup files
+*.bak
+
+# NuGet packages (restore via nuget restore)
+packages/
+
+# Log/Image output
+D:/Log/
+Image/
+
+# OS
+Thumbs.db
+Desktop.ini

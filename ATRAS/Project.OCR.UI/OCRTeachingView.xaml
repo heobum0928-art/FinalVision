@@ -1,0 +1,466 @@
+﻿<UserControl x:Class="Project.OCR.UI.OCRTeachingView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             
+             xmlns:local="clr-namespace:Project.OCR.UI"
+             xmlns:commonui="clr-namespace:Project.UI.Common;assembly=Project.UI.Common"
+             xmlns:sys="clr-namespace:System;assembly=mscorlib"
+             mc:Ignorable="d" 
+             Background="White"
+             
+             IsVisibleChanged="UserControl_IsVisibleChanged"
+             
+             
+             d:DesignHeight="800" d:DesignWidth="1900" Unloaded="UserControl_Unloaded" Loaded="UserControl_Loaded"
+             >
+    <UserControl.Resources>
+
+        <local:ReverseCheckValue x:Key="ReverseCheckValueConv"/>
+
+        <ObjectDataProvider x:Key="CharacterPolarityEnum" MethodName="GetValues" ObjectType="{x:Type sys:Enum}">
+            <ObjectDataProvider.MethodParameters>
+                <x:Type TypeName="local:CharacterPolarity"/>
+            </ObjectDataProvider.MethodParameters>
+        </ObjectDataProvider>
+    </UserControl.Resources>
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="600"/>
+            <ColumnDefinition Width="1*"/>
+            <ColumnDefinition Width="600"/>
+        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="1*"/>
+            <RowDefinition Height="10*"/>
+        </Grid.RowDefinitions>
+
+        <StackPanel Grid.Column="0" Grid.Row="0" Orientation="Horizontal">
+            <TextBox Width="300" Margin="10, 5" FontWeight="Bold" FontSize="20" VerticalContentAlignment="Center"
+                     Text="{Binding ModelName}" IsReadOnly="True"/>
+
+            <Button Content="Font Load" FontWeight="Bold" FontSize="15" Command="{Binding FontLoadCommand}" Margin="1, 5"/>
+
+            <Separator Width="10" Foreground="White" Background="White"/>
+
+            <Button Content="Font Save" FontWeight="Bold" FontSize="15" Command="{Binding FontSaveCommand}" Margin="1, 5"/>
+
+            <Separator Width="10" Foreground="White" Background="White"/>
+
+            <Button Content="Font SaveAs" FontWeight="Bold" FontSize="15" Command="{Binding FontSaveAsCommand}" Margin="1, 5"/>
+
+        </StackPanel>
+
+        <Grid Grid.Column="0" Grid.Row="1">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="300"/>
+                <RowDefinition Height="1*"/>
+            </Grid.RowDefinitions>
+
+            <Grid Grid.Row="0">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="1*"/>
+                    <RowDefinition Height="3*"/>
+                </Grid.RowDefinitions>
+
+                <Grid Grid.Row="0">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="1*"/>
+                        <RowDefinition Height="1*"/>
+                    </Grid.RowDefinitions>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="3*"/>
+                        <ColumnDefinition Width="3*"/>
+                        <ColumnDefinition Width="1*"/>
+                    </Grid.ColumnDefinitions>
+                    <TextBox Grid.Column="0" Grid.Row="0" Grid.ColumnSpan="3" Margin="3, 4" Text="{Binding TestString}" VerticalAlignment="Center" FontSize="20" FontWeight="Bold" BorderBrush="Black" BorderThickness="2" Height="30"/>
+
+                    <TextBox Grid.Column="0" Grid.Row="1" Grid.ColumnSpan="2" Margin="3, 4" Text="{Binding StringTest1}" VerticalAlignment="Center" FontSize="20" FontWeight="Bold" BorderBrush="Black" BorderThickness="2" Height="30" IsReadOnly="True"/>
+                    <Button Grid.Column="2"  Grid.Row="1" Content="TEST" Margin="3, 4" FontWeight="Bold" FontSize="20" Command="{Binding Test1Command}" Height="30"/>
+                </Grid>
+                <GroupBox Grid.Row="1">
+
+                    <ScrollViewer VerticalScrollBarVisibility="Auto"
+                                    HorizontalScrollBarVisibility="Disabled">
+                        <ListBox 
+                            ItemsSource="{Binding TestInfos.Items}"
+                            SelectionMode="Single"
+                            BorderThickness="0"
+                            Background="Transparent"
+                            HorizontalContentAlignment="Stretch">
+
+                            <!--<ListBox.ContextMenu>
+                                <ContextMenu>
+                                    <MenuItem Header="FontRemove" Command="{Binding CharacterRemoveCommand}"/>
+                                </ContextMenu>
+                            </ListBox.ContextMenu>-->
+
+                            <ListBox.ItemsPanel>
+                                <ItemsPanelTemplate>
+                                    <WrapPanel Orientation="Horizontal"
+                               IsItemsHost="True" 
+                                           Width="{Binding ActualWidth, RelativeSource={RelativeSource AncestorType=ScrollViewer}}"
+                                           />
+                                </ItemsPanelTemplate>
+                            </ListBox.ItemsPanel>
+
+                            <ListBox.ItemTemplate>
+                                <DataTemplate>
+                                    <Border BorderThickness="2" BorderBrush="Transparent">
+                                        <StackPanel Margin="5">
+                                            <Image Source="{Binding ImageSource}" Width="50" Height="50" />
+                                            <TextBlock Text="{Binding ImageName}" HorizontalAlignment="Center" />
+                                        </StackPanel>
+                                    </Border>
+                                </DataTemplate>
+                            </ListBox.ItemTemplate>
+
+                            <ListBox.ItemContainerStyle>
+                                <Style TargetType="ListBoxItem">
+                                    <Setter Property="Margin" Value="5"/>
+                                    <Setter Property="Padding" Value="0"/>
+                                    <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
+                                    <Style.Triggers>
+                                        <Trigger Property="IsSelected" Value="True">
+                                            <Setter Property="BorderBrush" Value="Blue"/>
+                                            <Setter Property="Background" Value="#AAE0F7FF"/>
+                                        </Trigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </ListBox.ItemContainerStyle>
+                        </ListBox>
+                    </ScrollViewer>
+
+                </GroupBox>
+            </Grid>
+
+            <GroupBox Grid.Row="1">
+                
+                <ScrollViewer VerticalScrollBarVisibility="Auto"
+                  HorizontalScrollBarVisibility="Disabled">
+                    <ListBox 
+                        ItemsSource="{Binding FontInfos.Items}"
+                        SelectedItem="{Binding SelectedImageItem}" 
+                        SelectionMode="Single"
+                        BorderThickness="0"
+                        Background="Transparent"
+                        HorizontalContentAlignment="Stretch">
+
+                        <ListBox.ContextMenu>
+                            <ContextMenu>
+                                <MenuItem Header="FontRemove" Command="{Binding CharacterRemoveCommand}"/>
+                                <MenuItem Header="FontAllRemove" Command="{Binding CharacterAllRemoveCommand}"/>
+                                
+                                
+                            </ContextMenu>
+                        </ListBox.ContextMenu>
+
+                        <ListBox.ItemsPanel>
+                            <ItemsPanelTemplate>
+                                <WrapPanel Orientation="Horizontal"
+                               IsItemsHost="True" 
+                                           Width="{Binding ActualWidth, RelativeSource={RelativeSource AncestorType=ScrollViewer}}"
+                                           />
+                            </ItemsPanelTemplate>
+                        </ListBox.ItemsPanel>
+
+                        <ListBox.ItemTemplate>
+                            <DataTemplate>
+                                <Border BorderThickness="2" BorderBrush="Transparent">
+                                    <StackPanel Margin="5">
+                                        <Image Source="{Binding ImageSource}" Width="50" Height="50" />
+                                        <TextBlock Text="{Binding ImageName}" HorizontalAlignment="Center" />
+                                    </StackPanel>
+                                </Border>
+                            </DataTemplate>
+                        </ListBox.ItemTemplate>
+
+                        <ListBox.ItemContainerStyle>
+                            <Style TargetType="ListBoxItem">
+                                <Setter Property="Margin" Value="5"/>
+                                <Setter Property="Padding" Value="0"/>
+                                <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
+                                <Style.Triggers>
+                                    <Trigger Property="IsSelected" Value="True">
+                                        <Setter Property="BorderBrush" Value="Blue"/>
+                                        <Setter Property="Background" Value="#AAE0F7FF"/>
+                                    </Trigger>
+                                </Style.Triggers>
+                            </Style>
+                        </ListBox.ItemContainerStyle>
+                    </ListBox>
+                </ScrollViewer>
+            </GroupBox>   
+        </Grid>              
+        
+        <StackPanel Grid.Column="1" Grid.Row="0" Orientation="Horizontal">
+            <Button Content="Image Load" FontWeight="Bold" FontSize="30" Command="{Binding ImageLoadCommand}" Width="300" Margin="1, 5"/>
+
+            <Separator Width="20" Foreground="White" Background="White"/>
+
+            <Button Content="Add ROI" FontWeight="Bold" FontSize="30" Command="{Binding AddROICommand}"/>
+
+            <Separator Width="30" Foreground="White" Background="White"/>
+            
+            <Button Content="Add Image List" Click="Button_Click_1"/>
+
+            <Button Content="Test" Click="Button_Click_2"/>
+
+            <Button Content="Test2" Click="Button_Click_3"/>
+
+            <Separator Width="30" Foreground="White" Background="White"/>                      
+            
+            <Button Content="Set ROI" FontWeight="Bold" FontSize="30" Command="{Binding SetROICommand}" Margin="1, 5"/>
+            
+        </StackPanel>
+
+        <!--<commonui:ImageView Name="img_view" Grid.Column="1" Grid.Row="1" 
+                            EnableCenterCrossLine="True"
+                            Stretch="None"
+                            ScrollBarHidden="True"
+                            EnableZoomInOut="True"
+                            EnableSelectShape ="True"
+                            />-->
+
+        <commonui:ImageViewEx Name="img_view" Grid.Column="1" Grid.Row="1"
+                              VerticalScrollBarStyle="Hide"
+                              HorizontalScrollBarStyle="Hide"
+                              IsEnableCenterLine="True"
+                              IsEnableWheelZoom="True"
+                              IsEnableSelected="True"
+                              ShowPixelGrid="True"
+                              IsEnablePixelInfo="True"
+                              />
+
+        <Grid Grid.Column="2" Grid.Row="1">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="3*"/>
+                <RowDefinition Height="8*"/>
+            </Grid.RowDefinitions>
+            <commonui:ImageViewEx Name="roi_img_view" Grid.Row="0" 
+                              VerticalScrollBarStyle="Hide"
+                              HorizontalScrollBarStyle="Hide"
+                              IsEnableCenterLine="False"
+                              IsEnableWheelZoom="False"
+                              IsEnableZoomToFit="True"
+                              IsEnablePixelInfo="True"
+                              Margin="2, 2"
+                              />
+            <Grid Grid.Row="1">
+
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="1*"/>
+                    <RowDefinition Height="8*"/>
+                    <RowDefinition Height="4*"/>
+                </Grid.RowDefinitions>
+
+                <TextBlock Grid.Row="0" Text="{Binding ImageInformation}"/>
+
+                <Grid Grid.Row="1">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="3*"/>
+                        <ColumnDefinition Width="2*"/>
+                        <ColumnDefinition Width="2*"/>
+                    </Grid.ColumnDefinitions>
+
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="1*"/>
+                        <RowDefinition Height="1*"/>
+                        <RowDefinition Height="1*"/>
+                        <RowDefinition Height="1*"/>
+                        <RowDefinition Height="1*"/>
+                        <RowDefinition Height="1*"/>
+                        <RowDefinition Height="1*"/>
+                        <RowDefinition Height="1*"/>
+                        <RowDefinition Height="1*"/>
+                    </Grid.RowDefinitions>
+                    <Label Grid.Column="0" Grid.Row="0" Content="Character Polarity" FontSize="20" FontWeight="Bold" VerticalAlignment="Center"/>
+                    <Label Grid.Column="0" Grid.Row="1" Content="Character Width Range" FontSize="20" FontWeight="Bold" VerticalAlignment="Center"/>
+                    <Label Grid.Column="0" Grid.Row="2" Content="Character Height Range" FontSize="20" FontWeight="Bold" VerticalAlignment="Center"/>
+                    
+                    <Label Grid.Column="0" Grid.Row="3" Content="Char Area Min / Max" FontSize="20" FontWeight="Bold" VerticalAlignment="Center"/>
+                    
+                    
+                    <Label Grid.Column="0" Grid.Row="4" Content="Character Threshold" FontSize="20" FontWeight="Bold" VerticalAlignment="Center"/>
+                    <Label Grid.Column="0" Grid.Row="5" Content="Dilation / Erosion" FontSize="20" FontWeight="Bold" VerticalAlignment="Center"/>
+
+
+
+
+
+                    <ComboBox Grid.Column="1" Grid.ColumnSpan="2" Grid.Row="0" VerticalContentAlignment="Center"
+                            ItemsSource="{Binding Source={StaticResource CharacterPolarityEnum}}"
+                                          SelectedItem="{Binding CharacterPolarity, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                          FontSize="20" FontWeight="Bold"/>
+
+                    <CheckBox Name="MyOption" Grid.Column="1" Grid.Row="1" VerticalAlignment="Center" Content="GrayImage" FontSize="20" FontWeight="Bold" IsChecked="{Binding GrayImage}"/>
+                    
+                    <CheckBox Name="MyCheckBox" Grid.Column="1" Grid.Row="2" VerticalAlignment="Center" Content="Auto" FontSize="20" FontWeight="Bold" IsChecked="{Binding AutoProcessing}"/>
+
+
+                    <CheckBox Name="MyDebug" Grid.Column="1" Grid.Row="4" VerticalAlignment="Center" Content="Debug" FontSize="20" FontWeight="Bold" IsChecked="{Binding DebugImage}"/>
+
+
+                    <Grid Grid.Column="2" Grid.Row="1" Margin="1, 5">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="10*"/>
+                            <ColumnDefinition Width="2*"/>
+                            <ColumnDefinition Width="10*"/>
+                        </Grid.ColumnDefinitions>
+
+                        <TextBox Grid.Column="0" Text="{Binding CharacterMinWidth}" FontSize="20" FontWeight="Bold" VerticalContentAlignment="Center"
+                                 IsEnabled="{Binding IsChecked, ElementName=MyCheckBox, Converter={StaticResource ReverseCheckValueConv}}"
+                                 />
+                        
+                        <Separator Grid.Column="1" Width="10" Foreground="Black"/>
+                        <TextBox Grid.Column="2" Text="{Binding CharacterMaxWidth}" FontSize="20" FontWeight="Bold" VerticalContentAlignment="Center"
+                                IsEnabled="{Binding IsChecked, ElementName=MyCheckBox, Converter={StaticResource ReverseCheckValueConv}}"
+                                 />
+                    </Grid>
+
+                    <Grid Grid.Column="2" Grid.Row="2" Margin="1, 5">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="10*"/>
+                            <ColumnDefinition Width="2*"/>
+                            <ColumnDefinition Width="10*"/>
+                        </Grid.ColumnDefinitions>
+
+                        <TextBox Grid.Column="0" Text="{Binding CharacterMinHeight}" FontSize="20" FontWeight="Bold" VerticalContentAlignment="Center"
+                                IsEnabled="{Binding IsChecked, ElementName=MyCheckBox, Converter={StaticResource ReverseCheckValueConv}}"
+                                 />
+                        <Separator Grid.Column="1" Width="10"/>
+                        <TextBox Grid.Column="2" Text="{Binding CharacterMaxHeight}" FontSize="20" FontWeight="Bold" VerticalContentAlignment="Center"
+                                IsEnabled="{Binding IsChecked, ElementName=MyCheckBox, Converter={StaticResource ReverseCheckValueConv}}"
+                                 />
+                    </Grid>
+
+
+                    <Grid Grid.Column="2" Grid.Row="3" Margin="1, 5">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="10*"/>
+                            <ColumnDefinition Width="2*"/>
+                            <ColumnDefinition Width="10*"/>
+                        </Grid.ColumnDefinitions>
+
+                        <TextBox Grid.Column="0" Text="{Binding CharMinArea}" FontSize="20" FontWeight="Bold" VerticalContentAlignment="Center"/>
+                        
+                        <Separator Grid.Column="1" Width="10"/>
+                        
+                        <TextBox Grid.Column="2" Text="{Binding CharMaxArea}" FontSize="20" FontWeight="Bold" VerticalContentAlignment="Center"/>
+                    </Grid>
+
+
+
+                    <TextBox Grid.Column="2" Grid.Row="4" Text="{Binding CharacterThreshold}" Margin="1, 5" FontSize="20" FontWeight="Bold" VerticalContentAlignment="Center"
+                                IsEnabled="{Binding IsChecked, ElementName=MyCheckBox, Converter={StaticResource ReverseCheckValueConv}}"
+                                 />
+
+                    <TextBox Grid.Column="2" Grid.Row="5" Margin="1, 5" FontSize="20" FontWeight="Bold" VerticalContentAlignment="Center" Text="{Binding DilationErosion}"
+                                IsEnabled="{Binding IsChecked, ElementName=MyCheckBox, Converter={StaticResource ReverseCheckValueConv}}"
+                                 />
+
+                    <Grid Grid.Column="0" Grid.ColumnSpan="3" Grid.Row="6">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="2*"/>
+                            <ColumnDefinition Width="1*"/>
+                            <ColumnDefinition Width="2*"/>
+                            <ColumnDefinition Width="1*"/>
+                        </Grid.ColumnDefinitions>
+                        <Label Grid.Column="0" Content="Character Gap" FontSize="20" FontWeight="Bold" VerticalAlignment="Center"/>
+
+                        <TextBox Grid.Column="1" Margin="1, 5" FontSize="20" FontWeight="Bold" VerticalContentAlignment="Center" Text="{Binding CharGap}"
+                                IsEnabled="{Binding IsChecked, ElementName=MyCheckBox, Converter={StaticResource ReverseCheckValueConv}}"
+                                 />
+
+                        <Label Grid.Column="2" Content="Fill Hole Area :" FontSize="20" FontWeight="Bold" VerticalContentAlignment="Center"/>
+                        <TextBox Grid.Column="3" Text="{Binding FillHoleArea}" FontSize="20" FontWeight="Bold" VerticalContentAlignment="Center"
+                            IsEnabled="{Binding IsChecked, ElementName=MyCheckBox, Converter={StaticResource ReverseCheckValueConv}}"/>
+
+                    </Grid>     
+                    
+                    <UniformGrid Grid.Column="0" Grid.ColumnSpan="3" Grid.Row="7"  Columns="2">
+                        <Button Grid.Row="5" FontSize="20" FontWeight="Bold" Content="Training" Margin="5, 2" Command="{Binding OCRTrainingCommand}"/>
+
+                        <Button Grid.Row="5" FontSize="20" FontWeight="Bold" Content="Training Image Save" Margin="5, 2" Command="{Binding TrainImageSaveCommand}"/>
+                        
+                    </UniformGrid>
+
+                    <Label Grid.Column="0" Grid.Row="8" Content="Otsu Level" FontSize="20" FontWeight="Bold" VerticalAlignment="Center"/>
+                    <TextBox Grid.Column="2" Grid.Row="8" Text="{Binding OtsuLevel}" Margin="1, 5" FontSize="20" FontWeight="Bold" VerticalContentAlignment="Center"
+                                IsEnabled="{Binding IsChecked, ElementName=MyCheckBox, Converter={StaticResource ReverseCheckValueConv}}"
+                                 />
+                </Grid>
+                
+                <GroupBox Grid.Row="2">
+                    <ScrollViewer VerticalScrollBarVisibility="Auto"
+                        HorizontalScrollBarVisibility="Disabled">
+                        <ListBox 
+                        ItemsSource="{Binding CharacterInfos.Items}"
+                        SelectedItem="{Binding SelectedImageItem}" 
+                        SelectionMode="Single"
+                        BorderThickness="0"
+                        Background="Transparent"
+                        HorizontalContentAlignment="Stretch">
+
+                            <ListBox.ContextMenu>
+                                <ContextMenu>
+                                    <MenuItem Header="FontRemove" Command="{Binding FontRemoveCommand}"/>
+                                </ContextMenu>
+                            </ListBox.ContextMenu>
+
+                            <ListBox.ItemsPanel>
+                                <ItemsPanelTemplate>
+                                    <WrapPanel Orientation="Horizontal"
+                               IsItemsHost="True" 
+                                           Width="{Binding ActualWidth, RelativeSource={RelativeSource AncestorType=ScrollViewer}}"
+                                           />
+                                </ItemsPanelTemplate>
+                            </ListBox.ItemsPanel>
+
+                            <ListBox.ItemTemplate>
+                                <DataTemplate>
+                                    <Border BorderThickness="2" BorderBrush="Transparent">
+                                        <StackPanel Margin="5">
+                                            <Image Source="{Binding ImageSource, UpdateSourceTrigger=PropertyChanged}" Width="50" Height="50" />
+
+                                            <Separator Height="10"/>
+
+                                            <TextBox Text="{Binding ImageName, UpdateSourceTrigger=PropertyChanged}" Width="30" FontSize="20" 
+                                                     VerticalAlignment="Center" HorizontalAlignment="Center"
+                                                     VerticalContentAlignment="Center"
+                                                     HorizontalContentAlignment="Center"
+                                                     />
+                                        </StackPanel>
+                                    </Border>
+                                </DataTemplate>
+                            </ListBox.ItemTemplate>
+
+                            <ListBox.ItemContainerStyle>
+                                <Style TargetType="ListBoxItem">
+                                    <Setter Property="Margin" Value="5"/>
+                                    <Setter Property="Padding" Value="0"/>
+                                    <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
+                                    <Style.Triggers>
+                                        <Trigger Property="IsSelected" Value="True">
+                                            <Setter Property="BorderBrush" Value="Blue"/>
+                                            <Setter Property="Background" Value="#AAE0F7FF"/>
+                                        </Trigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </ListBox.ItemContainerStyle>
+                        </ListBox>
+                    </ScrollViewer>
+                </GroupBox>
+            </Grid>
+        </Grid>
+
+        <StackPanel Grid.Column="2" Grid.Row="0" Orientation="Horizontal">
+            <Button Content="Image Load" FontWeight="Bold" FontSize="30" Command="{Binding FontTestImageLoadCommand}" Width="200" Margin="1, 5"/>
+
+            <Separator Width="10"/>
+
+            <Button Content="Font Add" FontWeight="Bold" FontSize="30" Command="{Binding FontAddCommand}" Width="200" Margin="1, 5"/>
+        </StackPanel>
+    </Grid>
+</UserControl>

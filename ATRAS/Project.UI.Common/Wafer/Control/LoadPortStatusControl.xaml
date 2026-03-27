@@ -1,0 +1,84 @@
+﻿<UserControl x:Class="Project.UI.Common.LoadPortStatusControl"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:Project.UI.Common"
+             mc:Ignorable="d" 
+             Background="White"
+             d:DesignHeight="100" d:DesignWidth="250">
+    <UserControl.Resources>
+
+        <local:BoolGreenRedColor x:Key="BoolGreenRedColorConv"/>
+
+        <local:BoolRedGreenColor x:Key="BoolRedGreenColorConv"/>
+
+    </UserControl.Resources>
+    <Grid>
+        <UniformGrid Grid.Column="1" Grid.Row="1" Columns="3" Rows="2">
+            <Label Content="clamp" Margin="1, 2" BorderThickness="1" BorderBrush="Black"
+                   VerticalContentAlignment="Center" HorizontalContentAlignment="Center"
+                   FontWeight="Bold"
+                   
+                Background="{Binding LoadPortInfo.ClampCompleted, 
+                                        RelativeSource={RelativeSource Mode=FindAncestor, 
+                                        AncestorType={x:Type local:LoadPortStatusControl}}, 
+                                        Converter={StaticResource BoolGreenRedColorConv}}" 
+                   
+                   />
+            <Label Content="dock" Margin="1, 2" BorderThickness="1" BorderBrush="Black"
+                   VerticalContentAlignment="Center" HorizontalContentAlignment="Center"
+                   FontWeight="Bold"
+                   
+                    Background="{Binding LoadPortInfo.DockCompleted, 
+                        RelativeSource={RelativeSource Mode=FindAncestor, 
+                        AncestorType={x:Type local:LoadPortStatusControl}}, 
+                        Converter={StaticResource BoolGreenRedColorConv}}" 
+                   
+                   />
+            <Label Content="door open" Margin="1, 2" BorderThickness="1" BorderBrush="Black" 
+                   VerticalContentAlignment="Center" HorizontalContentAlignment="Center"
+                   FontWeight="Bold"
+                   
+                    Background="{Binding LoadPortInfo.OpenCompleted, 
+                    RelativeSource={RelativeSource Mode=FindAncestor, 
+                    AncestorType={x:Type local:LoadPortStatusControl}}, 
+                    Converter={StaticResource BoolGreenRedColorConv}}" 
+                   
+                   
+                   />
+
+            <Label Content="unclamp" Margin="1, 2" BorderThickness="1" BorderBrush="Black" 
+                   VerticalContentAlignment="Center" HorizontalContentAlignment="Center"
+                   FontWeight="Bold"
+                   
+                   Background="{Binding LoadPortInfo.UnloadCompleted, 
+                    RelativeSource={RelativeSource Mode=FindAncestor, 
+                    AncestorType={x:Type local:LoadPortStatusControl}}, 
+                    Converter={StaticResource BoolGreenRedColorConv}}" 
+                   
+                   />
+            <Label Content="undock" Margin="1, 2" BorderThickness="1" BorderBrush="Black" 
+                   VerticalContentAlignment="Center" HorizontalContentAlignment="Center"
+                   FontWeight="Bold"
+                   
+                   Background="{Binding LoadPortInfo.UndockCompleted, 
+                    RelativeSource={RelativeSource Mode=FindAncestor, 
+                    AncestorType={x:Type local:LoadPortStatusControl}}, 
+                    Converter={StaticResource BoolGreenRedColorConv}}" 
+                    
+                
+                   />
+            <Label Content="door close" Margin="1, 2" BorderThickness="1" BorderBrush="Black" 
+                   VerticalContentAlignment="Center" HorizontalContentAlignment="Center"
+                   FontWeight="Bold"
+                   
+                   Background="{Binding LoadPortInfo.CloseCmpleted, 
+                    RelativeSource={RelativeSource Mode=FindAncestor, 
+                    AncestorType={x:Type local:LoadPortStatusControl}}, 
+                    Converter={StaticResource BoolGreenRedColorConv}}" 
+                   
+                   />
+        </UniformGrid>
+    </Grid>
+</UserControl>

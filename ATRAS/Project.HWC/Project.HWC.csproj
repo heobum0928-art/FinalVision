@@ -1,0 +1,160 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{43DBFD44-6A7D-4504-A4C5-2307D308DA2A}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>Project.HWC</RootNamespace>
+    <AssemblyName>Project.HWC</AssemblyName>
+    <TargetFrameworkVersion>v4.8</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <Deterministic>true</Deterministic>
+    <SccProjectName>
+    </SccProjectName>
+    <SccLocalPath>
+    </SccLocalPath>
+    <SccAuxPath>
+    </SccAuxPath>
+    <SccProvider>
+    </SccProvider>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>..\..\bin\lib\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <LangVersion>7.2</LangVersion>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>..\..\bin\lib\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x64'">
+    <DebugSymbols>true</DebugSymbols>
+    <OutputPath>..\..\bin\lib\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <DebugType>full</DebugType>
+    <PlatformTarget>x64</PlatformTarget>
+    <LangVersion>7.3</LangVersion>
+    <ErrorReport>prompt</ErrorReport>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x64'">
+    <OutputPath>..\..\bin\lib\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <Optimize>true</Optimize>
+    <DebugType>pdbonly</DebugType>
+    <PlatformTarget>x64</PlatformTarget>
+    <LangVersion>7.3</LangVersion>
+    <ErrorReport>prompt</ErrorReport>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="FluentModbus, Version=5.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\..\TISSystem\packages\FluentModbus.5.3.1\lib\netstandard2.0\FluentModbus.dll</HintPath>
+    </Reference>
+    <Reference Include="Interop.ActUtlType64Lib">
+      <HintPath>..\..\ProjectBase\ThirdParty\MxComponent\x64\Interop.ActUtlType64Lib.dll</HintPath>
+      <EmbedInteropTypes>False</EmbedInteropTypes>
+    </Reference>
+    <Reference Include="Microsoft.Extensions.Logging.Abstractions, Version=5.0.0.0, Culture=neutral, PublicKeyToken=adb9793829ddae60, processorArchitecture=MSIL">
+      <HintPath>..\..\TISSystem\packages\Microsoft.Extensions.Logging.Abstractions.5.0.0\lib\net461\Microsoft.Extensions.Logging.Abstractions.dll</HintPath>
+    </Reference>
+    <Reference Include="PresentationCore" />
+    <Reference Include="Project.BaseLib, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\bin\lib\Project.BaseLib.dll</HintPath>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.Buffers, Version=4.0.3.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
+      <HintPath>..\..\TISSystem\packages\System.Buffers.4.5.1\lib\net461\System.Buffers.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Configuration" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.IO.Ports, Version=5.0.0.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
+      <HintPath>..\..\TISSystem\packages\System.IO.Ports.5.0.0\lib\net461\System.IO.Ports.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Memory, Version=4.0.1.1, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
+      <HintPath>..\..\TISSystem\packages\System.Memory.4.5.4\lib\net461\System.Memory.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Numerics" />
+    <Reference Include="System.Numerics.Vectors, Version=4.1.4.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\..\TISSystem\packages\System.Numerics.Vectors.4.5.0\lib\net46\System.Numerics.Vectors.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Runtime.CompilerServices.Unsafe, Version=4.0.4.1, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\..\TISSystem\packages\System.Runtime.CompilerServices.Unsafe.4.5.3\lib\net461\System.Runtime.CompilerServices.Unsafe.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Runtime.Serialization" />
+    <Reference Include="System.Windows" />
+    <Reference Include="System.Windows.Forms" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Net.Http" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="CHCNetSDK.cs" />
+    <Compile Include="Configuration\BufferConfig.cs" />
+    <Compile Include="Configuration\ChamberConfig.cs" />
+    <Compile Include="Configuration\EFEMIOConfig.cs" />
+    <Compile Include="Configuration\LoadPortConfig.cs" />
+    <Compile Include="Configuration\NVRServerConfig.cs" />
+    <Compile Include="Configuration\MXComponentConfig.cs" />
+    <Compile Include="Configuration\PreAlignerConfig.cs" />
+    <Compile Include="Configuration\WTRConfig.cs" />
+    <Compile Include="CrevisFnIO.cs" />
+    <Compile Include="DataStructures\CrevisSensor.cs" />
+    <Compile Include="DevicesRepository.cs" />
+    <Compile Include="Devices\Common\DeviceIO_Crevis.cs" />
+    <Compile Include="Devices\EFFEM\DeviceEFEMIOSim.cs" />
+    <Compile Include="Devices\EFFEM\DeviceLoadPortSim.cs" />
+    <Compile Include="Devices\EFFEM\DevicePrealignerSim.cs" />
+    <Compile Include="Devices\EFFEM\DeviceRobotSim.cs" />
+    <Compile Include="Devices\EFFEM\DeviceTIS.cs" />
+    <Compile Include="Interfaces\EFFEM\IDeviceEFEMIO.cs" />
+    <Compile Include="Devices\ETC\DeviceNVR_HIK.cs" />
+    <Compile Include="Devices\PLC\DeviceMXComponentX64.cs" />
+    <Compile Include="Devices\PLC\DeviceMXComponentXSim.cs" />
+    <Compile Include="Devices\EFFEM\DeviceLoadPortTIS.cs" />
+    <Compile Include="Devices\EFFEM\DevicePrealignerTIS.cs" />
+    <Compile Include="Devices\EFFEM\DeviceRobotTIS.cs" />
+    <Compile Include="Events.cs" />
+    <Compile Include="Interfaces\EFFEM\IDeviceIO.cs" />
+    <Compile Include="Interfaces\EFFEM\IDeviceLoadPort.cs" />
+    <Compile Include="Interfaces\EFFEM\IDeviceMapper.cs" />
+    <Compile Include="Interfaces\EFFEM\IDevicePrealigner.cs" />
+    <Compile Include="Interfaces\EFFEM\IDeviceRobot.cs" />
+    <Compile Include="Units\EFFEM\UnitEFEMIO.cs" />
+    <Compile Include="Units\EFFEM\UnitLoadPort.cs" />
+    <Compile Include="Interfaces\IDeviceCCTV_HIK.cs" />
+    <Compile Include="Interfaces\IDeviceMxComponentX64.cs" />
+    <Compile Include="Interfaces\IUnitMXComponent.cs" />
+    <Compile Include="PlayCtrl.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Units\EFFEM\UnitPrealigner.cs" />
+    <Compile Include="Units\EFFEM\UnitRobot.cs" />
+    <Compile Include="Units\UnitMXComponont.cs" />
+    <Compile Include="Units\UnitNVRServer.cs" />
+  </ItemGroup>
+  <ItemGroup />
+  <ItemGroup>
+    <None Include="app.config" />
+    <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="CrevisFnIO20.dll">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+</Project>

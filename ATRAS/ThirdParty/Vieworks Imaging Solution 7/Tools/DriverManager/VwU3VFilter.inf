@@ -1,0 +1,185 @@
+;/*++
+;
+;Copyright (c) Microsoft Corporation.  All rights reserved.
+;
+;   THIS CODE AND INFORMATION IS PROVIDED "AS IS" WITHOUT WARRANTY OF ANY
+;   KIND, EITHER EXPRESSED OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE
+;   IMPLIED WARRANTIES OF MERCHANTABILITY AND/OR FITNESS FOR A PARTICULAR
+;   PURPOSE.
+;
+;Module Name:
+;
+;    VwU3VFilter.INF
+;
+;--*/
+
+[Version]
+Signature="$WINDOWS NT$"
+Class=VWDevices
+;ClassGUID={feefd076-591e-41cc-8382-c3f148989a80}
+ClassGUID={1354185D-3C13-4b72-BFF9-9EA802513D34}
+Provider=%VW%
+DriverVer=01/05/2021,13.59.8.962
+CatalogFile=VwU3VFilter.cat
+
+
+; ================= Class section =====================
+
+[ClassInstall32]
+Addreg=VWUSBCamClassReg     
+
+[VWUSBCamClassReg]
+HKR,,,0,%VWCAMClassName%
+HKR,,Icon,,-20
+
+; ================= Device section =====================
+
+[Manufacturer]
+%MfgName%=VW,NTx86,NTamd64
+
+; For XP and later
+[VW.NTx86]
+;VS-2MC
+%USB\VID_2F0D&PID_FFFF.DeviceDesc%=VWUSBCam.Dev, USB\VID_2F0D&PID_FFFF&MI_00
+;future products
+%USB\VID_2F0D&PID_FFF0.DeviceDesc%=VWUSBCam.Dev, USB\VID_2F0D&PID_FFF0&MI_00
+%USB\VID_2F0D&PID_FFF1.DeviceDesc%=VWUSBCam.Dev, USB\VID_2F0D&PID_FFF1&MI_00
+%USB\VID_2F0D&PID_FFF2.DeviceDesc%=VWUSBCam.Dev, USB\VID_2F0D&PID_FFF2&MI_00
+%USB\VID_2F0D&PID_FFF3.DeviceDesc%=VWUSBCam.Dev, USB\VID_2F0D&PID_FFF3&MI_00
+%USB\VID_2F0D&PID_FFF4.DeviceDesc%=VWUSBCam.Dev, USB\VID_2F0D&PID_FFF4&MI_00
+;VQ-04MU
+%USB\VID_2F0D&PID_FFF5.DeviceDesc%=VWUSBCam.Dev, USB\VID_2F0D&PID_FFF5&MI_00
+%USB\VID_2F0D&PID_FFF6.DeviceDesc%=VWUSBCam.Dev, USB\VID_2F0D&PID_FFF6&MI_00
+%USB\VID_2F0D&PID_FFF7.DeviceDesc%=VWUSBCam.Dev, USB\VID_2F0D&PID_FFF7&MI_00
+%USB\VID_2F0D&PID_FFF8.DeviceDesc%=VWUSBCam.Dev, USB\VID_2F0D&PID_FFF8&MI_00
+%USB\VID_2F0D&PID_FFF9.DeviceDesc%=VWUSBCam.Dev, USB\VID_2F0D&PID_FFF9&MI_00
+%USB\VID_2F0D&PID_FFFA.DeviceDesc%=VWUSBCam.Dev, USB\VID_2F0D&PID_FFFA&MI_00
+%USB\VID_2F0D&PID_FFFB.DeviceDesc%=VWUSBCam.Dev, USB\VID_2F0D&PID_FFFB&MI_00
+%USB\VID_2F0D&PID_FFFC.DeviceDesc%=VWUSBCam.Dev, USB\VID_2F0D&PID_FFFC&MI_00
+%USB\VID_2F0D&PID_FFFD.DeviceDesc%=VWUSBCam.Dev, USB\VID_2F0D&PID_FFFD&MI_00
+%USB\VID_2F0D&PID_FFFE.DeviceDesc%=VWUSBCam.Dev, USB\VID_2F0D&PID_FFFE&MI_00
+
+[VW.NTamd64]
+;VS-2MC
+%USB\VID_2F0D&PID_FFFF.DeviceDesc%=VWUSBCam.Dev, USB\VID_2F0D&PID_FFFF&MI_00
+;future products
+%USB\VID_2F0D&PID_FFF0.DeviceDesc%=VWUSBCam.Dev, USB\VID_2F0D&PID_FFF0&MI_00
+%USB\VID_2F0D&PID_FFF1.DeviceDesc%=VWUSBCam.Dev, USB\VID_2F0D&PID_FFF1&MI_00
+%USB\VID_2F0D&PID_FFF2.DeviceDesc%=VWUSBCam.Dev, USB\VID_2F0D&PID_FFF2&MI_00
+%USB\VID_2F0D&PID_FFF3.DeviceDesc%=VWUSBCam.Dev, USB\VID_2F0D&PID_FFF3&MI_00
+%USB\VID_2F0D&PID_FFF4.DeviceDesc%=VWUSBCam.Dev, USB\VID_2F0D&PID_FFF4&MI_00
+;VQ-04MU
+%USB\VID_2F0D&PID_FFF5.DeviceDesc%=VWUSBCam.Dev, USB\VID_2F0D&PID_FFF5&MI_00
+%USB\VID_2F0D&PID_FFF6.DeviceDesc%=VWUSBCam.Dev, USB\VID_2F0D&PID_FFF6&MI_00
+%USB\VID_2F0D&PID_FFF7.DeviceDesc%=VWUSBCam.Dev, USB\VID_2F0D&PID_FFF7&MI_00
+%USB\VID_2F0D&PID_FFF8.DeviceDesc%=VWUSBCam.Dev, USB\VID_2F0D&PID_FFF8&MI_00
+%USB\VID_2F0D&PID_FFF9.DeviceDesc%=VWUSBCam.Dev, USB\VID_2F0D&PID_FFF9&MI_00
+%USB\VID_2F0D&PID_FFFA.DeviceDesc%=VWUSBCam.Dev, USB\VID_2F0D&PID_FFFA&MI_00
+%USB\VID_2F0D&PID_FFFB.DeviceDesc%=VWUSBCam.Dev, USB\VID_2F0D&PID_FFFB&MI_00
+%USB\VID_2F0D&PID_FFFC.DeviceDesc%=VWUSBCam.Dev, USB\VID_2F0D&PID_FFFC&MI_00
+%USB\VID_2F0D&PID_FFFD.DeviceDesc%=VWUSBCam.Dev, USB\VID_2F0D&PID_FFFD&MI_00
+%USB\VID_2F0D&PID_FFFE.DeviceDesc%=VWUSBCam.Dev, USB\VID_2F0D&PID_FFFE&MI_00
+
+[VWUSBCam.Dev.NT]
+CopyFiles=VWUSBCam.Files.Ext
+AddReg=VWUSBCam.AddReg
+
+[VWUSBCam.Dev.NT.HW]
+AddReg=VWUSBCam.AddReg.Guid
+
+[VWUSBCam.Dev.NT.Services]
+Addservice = VWUSBCam, %SPSVCINST_ASSOCSERVICE%, VWUSBCam.AddService
+
+[VWUSBCam.Dev.NTamd64]
+CopyFiles=VWUSBCam.Files.Ext
+AddReg=VWUSBCam.AddReg
+
+[VWUSBCam.Dev.NTamd64.HW]
+AddReg=VWUSBCam.AddReg.Guid
+
+[VWUSBCam.Dev.NTamd64.Services]
+Addservice = VWUSBCam, %SPSVCINST_ASSOCSERVICE%, VWUSBCam.AddService
+
+[VWUSBCam.AddService]
+DisplayName=%VWUSBCam.SvcDesc%
+ServiceType=1                  ; SERVICE_KERNEL_DRIVER
+StartType=3                  ; SERVICE_DEMAND_START
+ErrorControl=1                  ; SERVICE_ERROR_NORMAL
+ServiceBinary=%10%\System32\Drivers\VwU3VFilter.sys
+AddReg=VWUSBCam.AddReg
+LoadOrderGroup=Base
+
+[VWUSBCam.AddReg]
+HKR,"Parameters","MaximumTransferSize",0x10001,65536
+;HKR,"Parameters","MaximumTransferSize",0x10001,4096
+;HKR,"Parameters","DebugLevel",0x10001,5
+;HKR,"Parameters","DebugFlag",0x10001,0x000000FF
+HKR,,NTMPDriver,,VwU3VFilter.sys
+
+[VWUSBCam.Files.Ext]
+VwU3VFilter.sys
+
+[SourceDisksNames]
+1=%Disk_Description%,,,
+
+[SourceDisksFiles]
+VwU3VFilter.sys=1
+WdfCoInstaller01011.dll=1 ; make sure the number matches with SourceDisksNames
+
+[DestinationDirs]
+DefaultDestDir=12
+CoInstaller_CopyFiles=11
+
+[VWUSBCam.AddReg.Guid]
+HKR,,DriverGUID,,%VWU3V.GUID%
+
+;-------------- WDF Coinstaller installation
+[VWUSBCam.Dev.NT.CoInstallers]
+AddReg=CoInstaller_AddReg
+CopyFiles=CoInstaller_CopyFiles
+
+[CoInstaller_CopyFiles]
+WdfCoInstaller01011.dll
+
+[CoInstaller_AddReg]
+HKR,,CoInstallers32,0x00010000, "WdfCoInstaller01011.dll,WdfCoInstaller"
+
+[VWUSBCam.Dev.NT.Wdf]
+KmdfService=VWUSBCam, VWUSBCam_wdfsect
+
+[VWUSBCam.Dev.NTamd64.Wdf]
+KmdfService=VWUSBCam, VWUSBCam_wdfsect
+
+[VWUSBCam_wdfsect]
+KmdfLibraryVersion=1.11
+
+;---------------------------------------------------------------;
+
+[Strings]
+VW="Vieworks"
+MfgName="Vieworks"
+Disk_Description="VWUSBCam Installation Disk"
+
+USB\VID_2F0D&PID_FFFF.DeviceDesc="Vieworks USB3 Vision Camera"
+;future products
+USB\VID_2F0D&PID_FFF0.DeviceDesc="Vieworks USB3 Vision Camera_Reserved"
+USB\VID_2F0D&PID_FFF1.DeviceDesc="Vieworks USB3 Vision Camera_Reserved"
+USB\VID_2F0D&PID_FFF2.DeviceDesc="Vieworks USB3 Vision Camera_Reserved"
+USB\VID_2F0D&PID_FFF3.DeviceDesc="Vieworks USB3 Vision Camera_Reserved"
+USB\VID_2F0D&PID_FFF4.DeviceDesc="Vieworks USB3 Vision Camera_Reserved"
+USB\VID_2F0D&PID_FFF5.DeviceDesc="Vieworks USB3 Vision Camera_Reserved"
+USB\VID_2F0D&PID_FFF6.DeviceDesc="Vieworks USB3 Vision Camera_Reserved"
+USB\VID_2F0D&PID_FFF7.DeviceDesc="Vieworks USB3 Vision Camera_Reserved"
+USB\VID_2F0D&PID_FFF8.DeviceDesc="Vieworks USB3 Vision Camera_Reserved"
+USB\VID_2F0D&PID_FFF9.DeviceDesc="Vieworks USB3 Vision Camera_Reserved"
+USB\VID_2F0D&PID_FFFA.DeviceDesc="Vieworks USB3 Vision Camera_Reserved"
+USB\VID_2F0D&PID_FFFB.DeviceDesc="Vieworks USB3 Vision Camera_Reserved"
+USB\VID_2F0D&PID_FFFC.DeviceDesc="Vieworks USB3 Vision Camera_Reserved"
+USB\VID_2F0D&PID_FFFD.DeviceDesc="Vieworks USB3 Vision Camera_Reserved"
+USB\VID_2F0D&PID_FFFE.DeviceDesc="Vieworks USB3 Vision Camera_Reserved"
+
+VWU3V.GUID="{1354185D-3C13-4B72-BFF9-9EA802513D34}"
+
+VWUSBCam.SvcDesc="Vieworks USB Camera"
+VWCAMClassName="Vieworks U3V Devices"
+SPSVCINST_ASSOCSERVICE= 0x00000002

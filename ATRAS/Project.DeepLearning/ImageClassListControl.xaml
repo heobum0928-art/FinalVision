@@ -1,0 +1,80 @@
+﻿<UserControl x:Class="Project.DeepLearning.UI.ImageClassListControl"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:Project.DeepLearning.UI"
+             mc:Ignorable="d" 
+             Background="White"
+             Width="350"
+             MaxWidth="350"
+             d:DesignHeight="800" d:DesignWidth="350"
+             >
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="50"/>
+            <RowDefinition Height="50"/>
+            <RowDefinition Height="15*"/>
+            
+        </Grid.RowDefinitions>
+        <GroupBox Grid.Row="0">
+            <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                <Label Content="Class Name : " FontSize="20" FontWeight="Bold"/>
+
+                <TextBox 
+                    Text="{Binding  ClassInfo.ClassName, 
+                        RelativeSource={RelativeSource Mode=FindAncestor, 
+                        AncestorType={x:Type local:ImageClassListControl}}}"
+                         FontSize="20" FontWeight="Bold" VerticalContentAlignment="Center" Width="100"/>
+
+                <Separator Width="15" Background="White" Foreground="White"/>
+
+                <Button Name="btn_class_delete" Content="Class Remove" FontWeight="Bold"/>
+            </StackPanel>
+        </GroupBox>
+        <Grid Grid.Row="1" Margin="5, 8">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="20*"/>
+                <ColumnDefinition Width="1*"/>
+                <ColumnDefinition Width="20*"/>
+                <ColumnDefinition Width="1*"/>
+                <ColumnDefinition Width="20*"/>
+            </Grid.ColumnDefinitions>
+
+            <Button Grid.Column="0"
+                    Command="{Binding UploadCommand}"
+                    Content="Upload" FontWeight="Bold" FontSize="15"/>
+
+            <Button Grid.Column="2"
+                    Content="All Delete" FontWeight="Bold" FontSize="15"/>
+
+            <Button Grid.Column="6" Visibility="Hidden"
+                    Content="Upload" FontWeight="Bold" FontSize="15"/>
+
+
+
+        </Grid>
+
+        <GroupBox Grid.Row="2">
+            <ScrollViewer VerticalScrollBarVisibility="Auto">
+                <ItemsControl ItemsSource="{Binding ClassInfo.ImageItems}">
+                    <ItemsControl.ItemsPanel>
+                        <ItemsPanelTemplate>
+                            <WrapPanel Orientation="Horizontal" />
+                        </ItemsPanelTemplate>
+                    </ItemsControl.ItemsPanel>
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate>
+                            <StackPanel Margin="5">
+                                <Image Source="{Binding ImageSource}" Width="100" Height="100" />
+                                <TextBlock Text="{Binding ImageName}" HorizontalAlignment="Center" />
+                            </StackPanel>
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
+            </ScrollViewer>
+        </GroupBox>
+        
+            
+    </Grid>
+</UserControl>
