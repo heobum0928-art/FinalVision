@@ -219,6 +219,17 @@ namespace FinalVisionProject.UI {
         public void SetParam(ESequence seqID, ParamBase param) {
             if (pSeq[seqID] == null) return;
 
+            // InspectionParam 선택 시 해당 Shot 탭으로 자동 전환   //260330 hbk
+            if (param is InspectionParam ip)
+            {
+                int tabIdx = ip.ShotIndex + 1;   // Tab 0 = Main View, Tab 1~5 = Shot 1~5   //260330 hbk
+                ChangeTabPage(tabIdx);
+                ShotTabView[] views = { shotView_1, shotView_2, shotView_3, shotView_4, shotView_5 };
+                if (ip.ShotIndex < views.Length)
+                    views[ip.ShotIndex].RefreshImage();
+                return;
+            }
+
             string selectedSeq = pSeq[seqID].Name;
             Model.SelectedSeqIndex = comboBox_sequence.Items.IndexOf(COMBOBOX_SEQUENCE_ALL);
             if (Model.SelectedSeqName == COMBOBOX_SEQUENCE_ALL) {
