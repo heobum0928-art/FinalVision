@@ -293,9 +293,14 @@ namespace FinalVisionProject.Sequence
                     roiMat = new Mat(gray, new OpenCvSharp.Rect(x, y, w, h));
                 }
 
+                // 스무딩 — 노이즈 제거 후 이진화   //260327 hbk
+                Mat smoothed = new Mat();
+                Cv2.GaussianBlur(roiMat, smoothed, new OpenCvSharp.Size(5, 5), 0);   //260327 hbk — 5x5 Gaussian, 노이즈 제거
+
                 // ROI 내 이진화 (BlobThreshold 적용)   //260327 hbk
                 Mat threshed = new Mat();
-                Cv2.Threshold(roiMat, threshed, param.BlobThreshold, 255, ThresholdTypes.Binary);   //260327 hbk — 어두운 배경에서 밝은 자재 검출
+                Cv2.Threshold(smoothed, threshed, param.BlobThreshold, 255, ThresholdTypes.Binary);   //260327 hbk — 밝은 자재→흰색(255), 배경→검정(0)
+                smoothed.Dispose();
 
                 // Circle 모드: 원 외부 마스킹 (바운딩 박스에서 원 영역만 남김)   //260327 hbk 그리기
                 if (isCircleMode)
@@ -312,50 +317,58 @@ namespace FinalVisionProject.Sequence
                     roiMat.Dispose();            //260327 hbk 그리기 — Clone 해제
                 }
 
-                // SimpleBlobDetector 설정   //260326 hbk
-                var blobParams = new SimpleBlobDetector.Params();
-                blobParams.FilterByArea        = true;
-                blobParams.MinArea             = (float)param.BlobMinArea;
-                blobParams.MaxArea             = (float)param.BlobMaxArea;
-                blobParams.FilterByConvexity   = false;
-                blobParams.FilterByInertia     = false;
-                blobParams.FilterByColor       = false;
+                // connection — FindContours (Halcon connection 대응)   //260327 hbk
+                OpenCvSharp.Point[][] contours;
+                HierarchyIndex[] hierarchy;
+                Cv2.FindContours(threshed, out contours, out hierarchy, RetrievalModes.External, ContourApproximationModes.ApproxSimple);
 
-                using (var detector = SimpleBlobDetector.Create(blobParams))   //260326 hbk
+                // select_shape(area, MinArea, MaxArea) — 면적 필터   //260327 hbk
+                var selected = new System.Collections.Generic.List<(OpenCvSharp.Point center, double area)>();
+                foreach (var contour in contours)
                 {
-                    KeyPoint[] keypoints = detector.Detect(threshed);   //260327 hbk — 이진화 이미지로 검출, BlobCount==1 → OK
+                    double area = Cv2.ContourArea(contour);
+                    if (area < param.BlobMinArea || area > param.BlobMaxArea) continue;
 
-                    // 오버레이용 컬러 Mat 생성 (전체 이미지 크기)   //260326 hbk
-                    Mat annotated = new Mat();                                         
-                    if (image.Channels() == 1)                                          
-                        Cv2.CvtColor(image, annotated, ColorConversionCodes.GRAY2BGR);  //260326 hbk // Grayscale → BGR 변환
-                    else                                                               
-                        annotated = image.Clone();                                 
-
-                    bool isOk = (keypoints.Length == 1);   //260326 hbk
-                    Scalar circleColor = isOk ? new Scalar(0, 255, 0) : new Scalar(0, 0, 255);   //260326 hbk // OK=초록, NG=빨강
-                    
-                    foreach (var kp in keypoints)          //260326 hbk // Blob 위치에 원 그리기
-                    {
-                        // ROI 내 좌표- 전체 이미지 좌표로 변환   //260326 hbk
-                        int cx = (int)kp.Pt.X + x;        //260326 hbk // x = ROI X 오프셋
-                        int cy = (int)kp.Pt.Y + y;        //260326 hbk // y = ROI Y 오프셋
-                        int radius = Math.Max(5, (int)(kp.Size / 2));   //260326 hbk
-                        Cv2.Circle(annotated, new OpenCvSharp.Point(cx, cy), radius, circleColor, 2);   //260326 hbk
-                    }
-
-                    // ROI 경계 표시   //260326 hbk
-                    if (isCircleMode)   //260327 hbk 그리기 — Circle 모드: 원 경계
-                        Cv2.Circle(annotated, circleCenter, circleRadius, new Scalar(255, 255, 0), 1);
-                    else
-                        Cv2.Rectangle(annotated,
-                            new OpenCvSharp.Point(x, y),
-                            new OpenCvSharp.Point(x + w, y + h),
-                            new Scalar(255, 255, 0), 1);   //260326 hbk // ROI 경계 = 노랑
-
-                    threshed.Dispose();   //260327 hbk — 이진화 Mat 해제
-                    return (isOk, annotated);   //260326 hbk
+                    // 중심 계산 (Moments)   //260327 hbk
+                    var M = Cv2.Moments(contour);
+                    if (M.M00 == 0) continue;
+                    int cx = (int)(M.M10 / M.M00) + x;   // ROI 오프셋 → 전체 이미지 좌표
+                    int cy = (int)(M.M01 / M.M00) + y;
+                    selected.Add((new OpenCvSharp.Point(cx, cy), area));
                 }
+
+                // 오버레이용 컬러 Mat 생성   //260326 hbk
+                Mat annotated = new Mat();
+                if (image.Channels() == 1)
+                    Cv2.CvtColor(image, annotated, ColorConversionCodes.GRAY2BGR);
+                else
+                    annotated = image.Clone();
+
+                bool isOk = (selected.Count >= 1);   //260327 hbk — 자재 있으면 OK
+                Scalar blobColor = isOk ? new Scalar(0, 255, 0) : new Scalar(0, 0, 255);
+
+                foreach (var (center, area) in selected)
+                {
+                    int blobRadius = (int)Math.Sqrt(area / Math.PI);   //260327 hbk — 면적 기반 반지름
+                    blobRadius = Math.Max(10, blobRadius);
+                    Cv2.Circle(annotated, center, blobRadius, blobColor, 2);   //260327 hbk — blob 외곽 원
+                    Cv2.Circle(annotated, center, 3, blobColor, -1);           //260327 hbk — 중심점
+                    Cv2.PutText(annotated, $"Area:{area:F0}",
+                        new OpenCvSharp.Point(center.X + blobRadius + 3, center.Y),
+                        HersheyFonts.HersheySimplex, 0.5, blobColor, 1);   //260327 hbk — 면적 표시
+                }
+
+                // ROI 경계 표시   //260326 hbk
+                if (isCircleMode)
+                    Cv2.Circle(annotated, circleCenter, circleRadius, new Scalar(255, 255, 0), 1);
+                else
+                    Cv2.Rectangle(annotated,
+                        new OpenCvSharp.Point(x, y),
+                        new OpenCvSharp.Point(x + w, y + h),
+                        new Scalar(255, 255, 0), 1);
+
+                threshed.Dispose();
+                return (isOk, annotated);
             }
             catch (Exception ex)
             {
