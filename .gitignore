@@ -25,3 +25,13 @@ Image/
 # OS
 Thumbs.db
 Desktop.ini
+
+# Separate test/reference projects (not part of main build)
+ImageBoxEx_Test/
+tcpip server&client sw/
+
+# Machine-specific recipe data
+Recipe/
+
+# Temp/empty files
+결국
