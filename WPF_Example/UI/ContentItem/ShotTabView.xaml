@@ -13,11 +13,15 @@
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="Auto"/>
                 <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="*"/>
             </Grid.ColumnDefinitions>
 
             <StackPanel Grid.Column="0" Orientation="Horizontal" Margin="6,4" VerticalAlignment="Center">
                 <Button x:Name="btn_grab" Content="Grab" Width="80" FontSize="14"
-                        Click="Btn_Grab_Click" Margin="0,0,12,0"/>
+                        Click="Btn_Grab_Click" Margin="0,0,8,0"/>
+                <ToggleButton x:Name="btn_editRoi" Content="Edit ROI" Width="80" FontSize="12"
+                              IsEnabled="False" Click="BtnEditRoi_Click" Margin="0,0,12,0"
+                              ToolTip="ROI 편집 모드 (로그인 후 활성)"/>
                 <RadioButton x:Name="rb_original" Content="원본" FontSize="14"
                              IsChecked="True" Checked="Rb_ImageMode_Checked"
                              VerticalAlignment="Center" Margin="0,0,8,0"/>

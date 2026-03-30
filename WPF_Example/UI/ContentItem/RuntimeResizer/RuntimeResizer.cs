@@ -570,7 +570,7 @@ namespace FinalVisionProject.UI {
                     }
                 }
 
-                if (IsEditable == false) return;
+                // ROI 테두리는 항상 표시, 편집 핸들(Picker)은 Edit 모드에서만 표시   //260330 hbk
                 foreach (IDrawableItem item in DrawableList) {
                     item.Render(dc);
 

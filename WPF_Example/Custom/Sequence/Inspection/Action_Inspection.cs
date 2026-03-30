@@ -117,6 +117,20 @@ namespace FinalVisionProject.Sequence
             return base.Save(saveFile, groupName);
         }
 
+        public override bool CopyTo(ParamBase param)   //260330 hbk — Copy/Paste: InspectionParam 전용 필드도 복사
+        {
+            if (!(param is InspectionParam target)) return false;
+            bool result = base.CopyTo(param);   //260330 hbk — 카메라/조명 설정 복사
+            target.ROIShape      = this.ROIShape;       //260330 hbk
+            target.ROI           = this.ROI;            //260330 hbk
+            target.ROICircle     = this.ROICircle;      //260330 hbk
+            target.BlobMinArea   = this.BlobMinArea;    //260330 hbk
+            target.BlobMaxArea   = this.BlobMaxArea;    //260330 hbk
+            target.BlobThreshold = this.BlobThreshold;  //260330 hbk
+            target.DelayMs       = this.DelayMs;        //260330 hbk
+            return result;
+        }
+
         #endregion
 
         #region constructors

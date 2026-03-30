@@ -31,11 +31,22 @@ namespace FinalVisionProject.UI
         private bool _dragStarted = false;
         private System.Windows.Point? _lastMousePos;
         private System.Windows.Point? _lastCenterPos;
+        private bool _editPermitted = false;   //260330 hbk — 로그인 등 전역 Edit 권한
 
-        public bool IsEditable   //260330 hbk — Edit 모드 외에는 ROI 드래그 비활성
+        public bool IsEditable   //260330 hbk — 전역 Edit 권한 (로그인 상태 연동)
         {
-            get { return canvas_shot.IsEditable; }
-            set { canvas_shot.IsEditable = value; }
+            get { return _editPermitted; }
+            set
+            {
+                _editPermitted = value;
+                btn_editRoi.IsEnabled = value;           //260330 hbk — 권한 없으면 버튼 비활성
+                if (!value)
+                {
+                    btn_editRoi.IsChecked  = false;      //260330 hbk — 권한 해제 시 Edit 모드도 해제
+                    canvas_shot.IsEditable = false;
+                    canvas_shot.InvalidateVisual();
+                }
+            }
         }
 
         public double DrawScale
@@ -57,7 +68,7 @@ namespace FinalVisionProject.UI
         public ShotTabView()
         {
             InitializeComponent();
-            canvas_shot.RenderTransform    = _scale;
+            // RenderTransform 제거 — Width 조정 + dc.PushTransform(_ScaleTransform)으로 충분   //260330 hbk
             canvas_shot._ScaleTransform    = _scale;
             canvas_shot.ParentScrollViewer = sv_shot;
             canvas_shot.IsEditable         = false;
@@ -79,6 +90,13 @@ namespace FinalVisionProject.UI
             var seq = _pSeq[ESequence.Inspection];
             if (seq == null || _shotIndex >= seq.ActionCount) return null;
             return seq[_shotIndex].Param as InspectionParam;
+        }
+
+        // Edit ROI 토글 버튼 — 활성 시 캔버스 ROI 드래그 허용   //260330 hbk
+        private void BtnEditRoi_Click(object sender, RoutedEventArgs e)
+        {
+            canvas_shot.IsEditable = btn_editRoi.IsChecked == true;
+            canvas_shot.InvalidateVisual();
         }
 
         // Grab 버튼   //260327 hbk Shot탭
