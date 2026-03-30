@@ -27,7 +27,9 @@ namespace FinalVisionProject.UI
         private readonly ScaleTransform _scale = new ScaleTransform(1, 1);
         private int _bgW, _bgH;
         private MemoryStream _bgStream;
-        private InspectionParam _subscribedParam = null;   //260330 hbk — ROIShapeChanged 구독 중인 param 추적
+        private InspectionParam _subscribedParam = null;          //260330 hbk — ROIShapeChanged 구독 중인 param 추적
+        private ERoiShape _lastAppliedROIShape = ERoiShape.Rectangle;  //260330 hbk — Edit 모드 아닐 때 되돌릴 기준 shape
+        private bool _revertingROIShape = false;                        //260330 hbk — 되돌리기 중 재진입 방지
 
         private bool _dragStarted = false;
         private System.Windows.Point? _lastMousePos;
@@ -154,6 +156,7 @@ namespace FinalVisionProject.UI
                 param.ROIShapeChanged += OnParamROIShapeChanged;                  //260330 hbk
                 _subscribedParam = param;                                          //260330 hbk
             }
+            _lastAppliedROIShape = param.ROIShape;   //260330 hbk — 현재 param의 shape를 기준으로 초기화
 
             bool showOriginal = rb_original.IsChecked == true;
             Mat img = showOriginal
@@ -164,14 +167,26 @@ namespace FinalVisionProject.UI
             canvas_shot.SetParam((ParamBase)param);
         }
 
-        // ROIShape 변경 시 DrawableList 즉시 갱신   //260330 hbk
+        // ROIShape 변경 시 DrawableList 즉시 갱신 — Edit 모드일 때만 허용, 아니면 되돌리기   //260330 hbk
         private void OnParamROIShapeChanged(object sender, EventArgs e)   //260330 hbk
         {
+            if (_revertingROIShape) return;   //260330 hbk — 되돌리기 중 재진입 차단
+
             this.Dispatcher.BeginInvoke(System.Windows.Threading.DispatcherPriority.Normal, new Action(() =>
             {
                 var param = GetParam();
-                if (param != null)
-                    canvas_shot.SetParam((ParamBase)param);
+                if (param == null) return;
+
+                if (!canvas_shot.IsEditable)   //260330 hbk — Edit ROI 버튼 비활성 → 변경 되돌리기
+                {
+                    _revertingROIShape = true;
+                    param.ROIShape = _lastAppliedROIShape;   //260330 hbk — 이전 shape로 복원
+                    _revertingROIShape = false;
+                    return;
+                }
+
+                _lastAppliedROIShape = param.ROIShape;   //260330 hbk — 성공적으로 적용된 shape 기록
+                canvas_shot.SetParam((ParamBase)param);
             }));
         }
 
@@ -214,8 +229,12 @@ namespace FinalVisionProject.UI
                     canvas_shot.Background = new ImageBrush(frame);
                     _bgW = (int)frame.Width;
                     _bgH = (int)frame.Height;
-                    canvas_shot.Width  = _bgW * _scale.ScaleX;
-                    canvas_shot.Height = _bgH * _scale.ScaleY;
+                    // Grab 시 슬라이더 현재값 적용 (기본 52%) — _scale이 초기 1.0인 문제 방지   //260330 hbk
+                    double s = Math.Max(0.2, Math.Min(2.0, slider_scale.Value / 100.0));   //260330 hbk
+                    _scale.ScaleX = s;   //260330 hbk
+                    _scale.ScaleY = s;   //260330 hbk
+                    canvas_shot.Width  = _bgW * s;
+                    canvas_shot.Height = _bgH * s;
                 }
                 else
                 {
