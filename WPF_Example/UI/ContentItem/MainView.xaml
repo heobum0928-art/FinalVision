@@ -5,7 +5,8 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:local="clr-namespace:FinalVisionProject.UI"
              mc:Ignorable="d" Loaded="MainView_Loaded" d:DesignWidth="600" d:DesignHeight="400">
-    <TabControl x:Name="tabControl_view" TabStripPlacement="Top" FontSize="16">
+    <TabControl x:Name="tabControl_view" TabStripPlacement="Top" FontSize="16"
+                SelectionChanged="TabControl_SelectionChanged">
         <TabControl.ItemContainerStyle>
             <Style TargetType="{x:Type TabItem}">
                 <Setter Property="Visibility" Value="Visible"/>

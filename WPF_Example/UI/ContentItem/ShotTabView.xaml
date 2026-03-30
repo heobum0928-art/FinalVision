@@ -8,12 +8,11 @@
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
 
-        <!-- 툴바: Grab + 원본/측정 + 결과 + 줌 슬라이더 -->
+        <!-- 툴바: Grab + 원본/측정 + 결과 + 줌 슬라이더 (MainView와 동일 레이아웃)   //260330 hbk -->
         <Grid Grid.Row="0">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="Auto"/>
                 <ColumnDefinition Width="*"/>
-                <ColumnDefinition Width="160"/>
             </Grid.ColumnDefinitions>
 
             <StackPanel Grid.Column="0" Orientation="Horizontal" Margin="6,4" VerticalAlignment="Center">
@@ -29,8 +28,8 @@
                        FontWeight="Bold" VerticalAlignment="Center"/>
             </StackPanel>
 
-            <StackPanel Grid.Column="2" Orientation="Vertical" Margin="4,2" VerticalAlignment="Center">
-                <Slider x:Name="slider_scale" Value="100" Minimum="20" Maximum="200"
+            <StackPanel Grid.Column="1" Orientation="Vertical" Margin="8,2,8,2" VerticalAlignment="Center">
+                <Slider x:Name="slider_scale" Value="52" Minimum="20" Maximum="200"
                         Thumb.DragStarted="Slider_DragStarted"
                         Thumb.DragCompleted="Slider_DragCompleted"
                         ValueChanged="Slider_scale_ValueChanged"

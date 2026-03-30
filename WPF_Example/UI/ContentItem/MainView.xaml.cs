@@ -447,7 +447,7 @@ namespace FinalVisionProject.UI {
             return seq[shotIndex].Param as InspectionParam;   //260326 hbk
         }
 
-        // Shot 탭 헤더 색상 + 이미지 업데이트 (외부 호출 가능)   //260327 hbk Shot탭
+        // Shot 탭 헤더 색상 업데이트 — 선택 탭=DodgerBlue, Pass=Lime, Fail=Red, 기본=Gray   //260327 hbk Shot탭
         public void UpdateShotStrip()
         {
             if (pSeq == null) return;
@@ -458,23 +458,42 @@ namespace FinalVisionProject.UI {
                 shotTabHeader_1, shotTabHeader_2, shotTabHeader_3,
                 shotTabHeader_4, shotTabHeader_5
             };
+            ShotTabView[] views = { shotView_1, shotView_2, shotView_3, shotView_4, shotView_5 };
 
             for (int i = 0; i < tabHeaders.Length && i < seq.ActionCount; i++)
             {
+                bool isSelected = (tabControl_view.SelectedIndex == i + 1);   //260330 hbk — Tab 0=Main View, Tab 1~5=Shot 1~5
                 EContextResult result = seq[i].Context.Result;
                 SolidColorBrush bg;
-                switch (result)
-                {
-                    case EContextResult.Pass: bg = new SolidColorBrush(Colors.Lime); break;
-                    case EContextResult.Fail: bg = new SolidColorBrush(Colors.Red);  break;
-                    default:                  bg = new SolidColorBrush(Colors.Gray); break;
-                }
+                if (isSelected)
+                    bg = new SolidColorBrush(Colors.DodgerBlue);   //260330 hbk — 현재 선택된 Shot 탭 강조
+                else
+                    switch (result)
+                    {
+                        case EContextResult.Pass: bg = new SolidColorBrush(Colors.Lime); break;
+                        case EContextResult.Fail: bg = new SolidColorBrush(Colors.Red);  break;
+                        default:                  bg = new SolidColorBrush(Colors.Gray); break;
+                    }
                 tabHeaders[i].Background = bg;
-
-                // ShotTabView 결과 레이블 갱신   //260327 hbk Shot탭
-                ShotTabView[] views = { shotView_1, shotView_2, shotView_3, shotView_4, shotView_5 };
                 if (i < views.Length) views[i].UpdateResultLabel();
             }
+        }
+
+        // tabControl 탭 선택 변경 시 헤더 색상 갱신   //260330 hbk
+        private void TabControl_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            if (!this.IsLoaded) return;
+            UpdateShotStrip();
+        }
+
+        // Edit 모드 변경 시 모든 Shot 탭 IsEditable 동기화   //260330 hbk
+        public void SetShotViewsEditable(bool editable)
+        {
+            shotView_1.IsEditable = editable;
+            shotView_2.IsEditable = editable;
+            shotView_3.IsEditable = editable;
+            shotView_4.IsEditable = editable;
+            shotView_5.IsEditable = editable;
         }
         
         private void Canvas_main_MouseWheel(object sender, System.Windows.Input.MouseWheelEventArgs e) {

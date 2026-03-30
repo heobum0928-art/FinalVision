@@ -181,13 +181,15 @@
 
                 <ToolBarTray x:Name="toolbar_tray" Grid.Column="0" Grid.Row="0" IsLocked="True" Orientation="Vertical">
                     <ToolBar>
-                        <Button x:Name="button_grab" Click="button_grab_Click" IsEnabled="False"  Style="{StaticResource disalbedStyle}">
+                        <Button x:Name="button_grab" Click="button_grab_Click" IsEnabled="False"  Style="{StaticResource disalbedStyle}"
+                                ToolTip="선택된 Shot의 카메라로 이미지 촬상">
                             <StackPanel Orientation="Vertical" >
                                 <Image Source="/Resource/camera.png" Stretch="Uniform" Width="42" Height="42"></Image>
                                 <TextBlock Text="Grab" HorizontalAlignment="Center" VerticalAlignment="Center"></TextBlock>
                             </StackPanel>
                         </Button>
-                        <Button x:Name="button_light" Click="button_light_Click" IsEnabled="False"  Style="{StaticResource disalbedStyle}">
+                        <Button x:Name="button_light" Click="button_light_Click" IsEnabled="False"  Style="{StaticResource disalbedStyle}"
+                                ToolTip="선택된 Shot의 조명 켜기">
                             <StackPanel Orientation="Vertical" >
                                 <Image Source="/Resource/light.png" Stretch="Uniform" Width="42" Height="42"></Image>
                                 <TextBlock Text="Light" HorizontalAlignment="Center" VerticalAlignment="Center"></TextBlock>
@@ -207,7 +209,8 @@
                     </ToolBar>
                     -->
                     <ToolBar>
-                        <Button x:Name="button_copy" Click="button_copy_Click"  Style="{StaticResource disalbedStyle}">
+                        <Button x:Name="button_copy" Click="button_copy_Click"  Style="{StaticResource disalbedStyle}"
+                                ToolTip="선택된 Shot 파라미터 복사 (다른 Shot에 Paste 가능)">
                             <StackPanel Orientation="Vertical">
                                 <Image Source="/Resource/copy.png" Stretch="Uniform" Width="42" Height="42"></Image>
                                 <TextBlock Text="Copy" HorizontalAlignment="Center" VerticalAlignment="Center"></TextBlock>

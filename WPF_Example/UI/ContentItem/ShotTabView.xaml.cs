@@ -32,6 +32,12 @@ namespace FinalVisionProject.UI
         private System.Windows.Point? _lastMousePos;
         private System.Windows.Point? _lastCenterPos;
 
+        public bool IsEditable   //260330 hbk — Edit 모드 외에는 ROI 드래그 비활성
+        {
+            get { return canvas_shot.IsEditable; }
+            set { canvas_shot.IsEditable = value; }
+        }
+
         public double DrawScale
         {
             get { return _scale.ScaleX; }
@@ -54,7 +60,7 @@ namespace FinalVisionProject.UI
             canvas_shot.RenderTransform    = _scale;
             canvas_shot._ScaleTransform    = _scale;
             canvas_shot.ParentScrollViewer = sv_shot;
-            canvas_shot.IsEditable         = true;
+            canvas_shot.IsEditable         = false;
         }
 
         // MainView_Loaded에서 호출 — shot 인덱스 0~4   //260327 hbk Shot탭

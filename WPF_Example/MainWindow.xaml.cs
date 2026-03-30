@@ -64,6 +64,7 @@ namespace FinalVisionProject {
                     mainView.IsEditable = value;
                     inspectionList.IsEditable = value;
                     menuBar.IsEditable = value;
+                    mainView.SetShotViewsEditable(value);   //260330 hbk — Shot 탭 ROI 편집도 Edit 모드 연동
                     _IsEditable = value;
                 }));
             }

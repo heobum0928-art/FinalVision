@@ -10,6 +10,7 @@ using FinalVisionProject.UI;
 using FinalVisionProject.Utility;
 using FinalVisionProject.Setting;
 using OpenCvSharp;
+using System.ComponentModel;
 using System.Windows;
 
 //260326 hbk — Action_Inspection: 5-Shot 공통 검사 Action + InspectionParam + SimpleBlobDetector
@@ -50,15 +51,17 @@ namespace FinalVisionProject.Sequence
         public UI.Circle ROICircle { get; set; }          //260327 hbk 그리기 — 원형 ROI (ROIShape=Circle 시 사용)
 
         [Category("Blob")]                                        //260326 hbk
-        public double BlobMinArea { get; set; } = 100;           //260326 hbk — Blob 최소 면적 (자재 없으면 미검출)
-        public double BlobMaxArea { get; set; } = 50000;         //260326 hbk — Blob 최대 면적 (노이즈 필터)
-        public int BlobThreshold { get; set; } = 128;            //260327 hbk — 이진화 임계값 (0~255, ROI 내부 적용)
+        public double BlobMinArea { get; set; } = 100000;         //260326 hbk — Blob 최소 면적 (자재 없으면 미검출) //260330 hbk 기본값 100→100000
+        public double BlobMaxArea { get; set; } = 9999999;       //260326 hbk — Blob 최대 면적 (노이즈 필터) //260330 hbk 기본값 50000→9999999
+        public int BlobThreshold { get; set; } = 100;            //260327 hbk — 이진화 임계값 (0~255, ROI 내부 적용) //260330 hbk 기본값 128→100
 
         [Category("General")]                       //260326 hbk
         public int DelayMs { get; set; } = 0;       //260326 hbk — 촬상 전 대기시간(ms), 자재 이동 안정화용
 
         // Shot 이미지 버퍼   //260326 hbk // Shot별 원본/오버레이 이미지 보관
+        [Browsable(false)]   //260330 hbk — PropertyGrid 표시 제외 (내부 이미지 버퍼)
         public Mat LastOriginalImage { get; private set; }    //260326 hbk // Grab 시 저장 (항상 최신 원본)
+        [Browsable(false)]   //260330 hbk — PropertyGrid 표시 제외
         public Mat LastAnnotatedImage { get; private set; }   //260326 hbk // 실검사 완료 시 1회 저장, 이후 잠금
 
         // 잠금 플래그: 실운영(SIMUL_MODE 미정의) BlobDetect 완료 후 true   //260326 hbk
