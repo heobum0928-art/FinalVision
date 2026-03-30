@@ -136,3 +136,20 @@
 ### 다음 작업 후보
 - 실행 테스트 (슬라이더 이미지 맞춤 확인, ROIShape 즉시 전환 확인, Paste 후 ROI 갱신 확인)
 - 카메라 연결 테스트
+
+---
+
+## 2026-03-30 (월) — 버그 수정 2건 (ROIShape Edit보호 / Grab 후 52%)
+
+### 완료
+- **ROIShape 변경 Edit 보호**: PropertyGrid에서 ROIShape 변경 시 Edit ROI 버튼 활성 상태에서만 허용
+  - `_lastAppliedROIShape` 필드: 마지막으로 canvas에 적용된 shape 기록
+  - `_revertingROIShape` 플래그: 되돌리기 중 재진입(이벤트 루프) 차단
+  - Edit 비활성 시 `OnParamROIShapeChanged`에서 `_lastAppliedROIShape`로 자동 복원
+- **Grab 후 52% 기본 적용**: `DisplayToBackground`에서 `slider_scale.Value / 100.0`으로 `_scale` 강제 적용
+  - 원인: `new ScaleTransform(1,1)` 초기화 후 Loaded 핸들러 없어 scale = 1.0 유지
+  - 수정: Grab 시마다 슬라이더 현재값(기본 52%)을 `_scale`에 반영
+
+### 다음 작업 후보
+- 실행 테스트 확인
+- 카메라 연결 테스트
