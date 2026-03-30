@@ -18,9 +18,9 @@ namespace FinalVisionProject.Sequence {
         private LightHandler pLight;
 
 
-        [Category("General|AOI")]
-        // 레거시 필드 제거  //260327 hbk
+        [System.ComponentModel.Browsable(false)]   //260330 hbk — PropertyGrid 숨김 (레거시 미사용 필드)
         public int FrameWidth { get; set; }
+        [System.ComponentModel.Browsable(false)]   //260330 hbk
         public int FrameHeight { get; set; }
 
 
