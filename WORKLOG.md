@@ -119,3 +119,20 @@
 ### 다음 작업 후보
 - 빌드 + 실행 테스트 (줌, ROI 표시, Copy/Paste, Edit 버튼)
 - 카메라 연결 테스트 (Grab → Circle/Rectangle Blob 검출)
+
+---
+
+## 2026-03-30 (월) — 버그 수정 3건 (슬라이더/ROIShape/Paste)
+
+### 완료
+- **슬라이더 52% 이미지 불일치**: `ShotTabView.xaml` ImageBrush `Stretch="None"` → `"Fill"`
+  - `Stretch="None"`은 이미지 원본 크기 고정 → 캔버스 Width(_bgW×scale)와 이미지 크기 불일치 원인
+  - `Fill`로 변경 시 캔버스 크기에 맞게 이미지 표시 → 슬라이더 값과 일치
+- **ROIShape 즉시 반영 안됨**: PropertyGrid에서 Rectangle↔Circle 변경 시 Grab 전까지 이전 도형 유지되던 문제
+  - `InspectionParam.ROIShape` auto-property → full property + `ROIShapeChanged` 이벤트 추가
+  - `ShotTabView.RefreshImage()`에서 이벤트 구독 → 변경 즉시 `canvas_shot.SetParam` 재호출
+- **Copy/Paste 후 강제 갱신**: Paste 후 `SelectionChanged`가 미발생할 경우를 대비해 `SetParam` 직접 호출 추가
+
+### 다음 작업 후보
+- 실행 테스트 (슬라이더 이미지 맞춤 확인, ROIShape 즉시 전환 확인, Paste 후 ROI 갱신 확인)
+- 카메라 연결 테스트
