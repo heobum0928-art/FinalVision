@@ -203,6 +203,10 @@ namespace FinalVisionProject.UI {
                 //reselect (update)
                 treeListBox_sequence.UnselectAll();
                 treeListBox_sequence.SelectedIndex = index;
+
+                // Paste 후 ShotTabView 강제 갱신 — SelectionChanged가 발생하지 않을 경우 대비   //260330 hbk
+                if (SelectedParam is InspectionParam ip)   //260330 hbk
+                    mParentWindow.mainView.SetParam(ESequence.Inspection, ip);   //260330 hbk
             }
         }
 

@@ -38,8 +38,19 @@ namespace FinalVisionProject.Sequence
         [ReadOnly(true)]
         public string ProcessName { get; set; }   //260326 hbk — UI 표시용 Action 이름 (ReadOnly)
 
+        private ERoiShape _roiShape = ERoiShape.Rectangle;   //260330 hbk — full property로 변경 (변경 이벤트 지원)
         [Category("ROI Setting")]                  //260326 hbk
-        public ERoiShape ROIShape { get; set; } = ERoiShape.Rectangle;   //260327 hbk 그리기 — ROI 도형 선택 (Rectangle or Circle)
+        public ERoiShape ROIShape   //260330 hbk
+        {
+            get => _roiShape;
+            set
+            {
+                if (_roiShape == value) return;
+                _roiShape = value;
+                ROIShapeChanged?.Invoke(this, EventArgs.Empty);   //260330 hbk — PropertyGrid 변경 즉시 캔버스 갱신 트리거
+            }
+        }
+        public event EventHandler ROIShapeChanged;   //260330 hbk — ROIShape 변경 시 ShotTabView에서 SetParam 재호출
 
         [Category("ROI Setting")]                  //260326 hbk
         [Rectangle, Converter(typeof(UI.RectConverter))]

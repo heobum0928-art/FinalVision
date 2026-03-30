@@ -27,6 +27,7 @@ namespace FinalVisionProject.UI
         private readonly ScaleTransform _scale = new ScaleTransform(1, 1);
         private int _bgW, _bgH;
         private MemoryStream _bgStream;
+        private InspectionParam _subscribedParam = null;   //260330 hbk — ROIShapeChanged 구독 중인 param 추적
 
         private bool _dragStarted = false;
         private System.Windows.Point? _lastMousePos;
@@ -145,6 +146,15 @@ namespace FinalVisionProject.UI
             var param = GetParam();
             if (param == null) return;
 
+            // ROIShape 변경 이벤트 구독 — 이전 param 해제 후 새 param 구독   //260330 hbk
+            if (_subscribedParam != param)   //260330 hbk
+            {
+                if (_subscribedParam != null)
+                    _subscribedParam.ROIShapeChanged -= OnParamROIShapeChanged;   //260330 hbk
+                param.ROIShapeChanged += OnParamROIShapeChanged;                  //260330 hbk
+                _subscribedParam = param;                                          //260330 hbk
+            }
+
             bool showOriginal = rb_original.IsChecked == true;
             Mat img = showOriginal
                 ? param.LastOriginalImage
@@ -152,6 +162,17 @@ namespace FinalVisionProject.UI
 
             DisplayToBackground(img);
             canvas_shot.SetParam((ParamBase)param);
+        }
+
+        // ROIShape 변경 시 DrawableList 즉시 갱신   //260330 hbk
+        private void OnParamROIShapeChanged(object sender, EventArgs e)   //260330 hbk
+        {
+            this.Dispatcher.BeginInvoke(System.Windows.Threading.DispatcherPriority.Normal, new Action(() =>
+            {
+                var param = GetParam();
+                if (param != null)
+                    canvas_shot.SetParam((ParamBase)param);
+            }));
         }
 
         // 결과 레이블 갱신 — OK/NG/---   //260327 hbk Shot탭

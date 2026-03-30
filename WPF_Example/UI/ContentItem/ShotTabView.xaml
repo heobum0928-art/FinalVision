@@ -52,7 +52,7 @@
                                   HorizontalAlignment="Left" VerticalAlignment="Top"
                                   MouseWheel="Canvas_shot_MouseWheel">
                 <Canvas.Background>
-                    <ImageBrush Stretch="None" AlignmentX="Left" AlignmentY="Top"/>
+                    <ImageBrush Stretch="Fill"/>
                 </Canvas.Background>
             </local:RuntimeResizer>
         </ScrollViewer>
