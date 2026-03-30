@@ -39,7 +39,7 @@
             </Grid.RowDefinitions>
 
 
-            <Label x:Name="Title" Grid.Column="0" FontSize="12" FontWeight="Bold" Content="{Binding [Window_Title], Source={StaticResource DR}}"
+            <Label x:Name="label_title" Grid.Column="0" FontSize="12" FontWeight="Bold" Content="{Binding [Window_Title], Source={StaticResource DR}}"
                    MouseDown="Title_MouseDown" MouseMove="Title_MouseMove"></Label>
             <TextBlock x:Name="ComboLanguage" FontSize="12" Margin="0,2,0,2" Grid.Column="1" Visibility="Visible" TextAlignment="Center" VerticalAlignment="Center" HorizontalAlignment="Center"
                   Text="{Binding ElementName=Title, Path=Language}"/>

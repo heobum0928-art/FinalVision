@@ -190,7 +190,7 @@ namespace FinalVisionProject {
                     this.WindowState = WindowState.Normal;
 
                     this.Left = point.X - this.ActualWidth / 2;
-                    this.Top = point.Y - Title.ActualHeight / 2;
+                    this.Top = point.Y - label_title.ActualHeight / 2;
                 }
                 DragMove();
             }
