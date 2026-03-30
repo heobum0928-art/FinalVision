@@ -94,3 +94,28 @@
 ### 다음 작업 후보
 - 빌드 후 실제 동작 확인 (슬라이더 위치, 탭 색상, Edit 모드 ROI 보호)
 - 실제 카메라 연결 테스트
+
+---
+
+## 2026-03-30 (월) — 버그 수정 5건
+
+### 완료
+- **Slider 크기**: 3컬럼 레이아웃으로 가로 절반 크기 축소
+- **ROI Edit 버튼**: ToggleButton "Edit ROI" 추가
+  - 로그인 시 버튼 활성, 눌러야 ROI 드래그 가능 (이중 잠금)
+  - `IsEditable` 프로퍼티 = 전역 권한(로그인), `canvas_shot.IsEditable` = 실제 편집 상태 분리
+- **Copy/Paste 미작동**: `InspectionParam.CopyTo` 오버라이드 추가
+  - ROI, ROIShape, ROICircle, BlobMinArea/MaxArea/Threshold, DelayMs 모두 복사
+- **ROI 테두리 비표시**: RuntimeResizer.OnRender에서 `IsEditable==false`일 때 조기 return 제거
+  - ROI 테두리는 항상 표시, Picker 핸들만 Edit 모드 시 표시
+- **줌 이중 적용**: ShotTabView에서 `canvas_shot.RenderTransform = _scale` 제거
+  - 원인: Width(bgW×scale) + RenderTransform(scale) 이중 적용 → 52%가 27%처럼 보임
+  - 수정: Width 조정만 사용, OnRender의 dc.PushTransform으로만 스케일링
+
+### 미해결 (추후 확인 필요)
+- PropertyGrid에서 ROIShape에 따라 ROI/ROICircle 중 하나만 표시 (ICustomTypeDescriptor 필요)
+- ROI Circle 드래그 후 파라미터 적용 확인 (빌드 후 실 테스트 필요)
+
+### 다음 작업 후보
+- 빌드 + 실행 테스트 (줌, ROI 표시, Copy/Paste, Edit 버튼)
+- 카메라 연결 테스트 (Grab → Circle/Rectangle Blob 검출)
