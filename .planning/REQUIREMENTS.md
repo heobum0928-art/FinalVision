@@ -7,7 +7,7 @@
 
 ### 레시피 관리
 
-- [ ] **RCP-01**: 레시피 복사 시 Site 대상 디렉터리가 없으면 자동 생성하여 복사 성공
+- [x] **RCP-01**: 레시피 복사 시 Site 대상 디렉터리가 없으면 자동 생성하여 복사 성공
 - [ ] **RCP-02**: RecipeEditorWindow에서 Shot1~5 탭 전환 시 해당 Shot의 ROI/Blob/Delay 파라미터를 PropertyGrid로 편집 가능
 - [ ] **RCP-03**: RecipeEditorWindow에서 Grab 버튼으로 현재 Shot 미리보기 검사 실행 가능
 - [ ] **RCP-04**: RecipeEditorWindow에서 Save 버튼으로 현재 레시피 저장
@@ -45,7 +45,7 @@
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| RCP-01 | Phase 10 | Pending |
+| RCP-01 | Phase 10 | Complete |
 | OPS-01 | Phase 10 | Complete |
 | IMG-01 | Phase 11 | Pending |
 | IMG-02 | Phase 11 | Pending |

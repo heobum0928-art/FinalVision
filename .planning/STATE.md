@@ -3,8 +3,8 @@ gsd_state_version: 1.0
 milestone: v2.0
 milestone_name: 레시피 편집 + 이미지 관리 + 운영 안정화
 status: Phase complete — ready for verification
-stopped_at: Completed 10-recipe-copy-infra 10-02-PLAN.md
-last_updated: "2026-04-02T23:45:08.146Z"
+stopped_at: Completed 10-recipe-copy-infra-01-PLAN.md
+last_updated: "2026-04-02T23:45:29.425Z"
 progress:
   total_phases: 4
   completed_phases: 1
@@ -53,6 +53,8 @@ Plan: 2 of 2
 - [v1.0]: HIK 전용 (Basler 제거), PLC 미사용 (TCP/IP 전용), OpenCvSharp FindContours
 - [v2.0]: 신규 NuGet 패키지 추가 금지 — 기존 PropertyTools.Wpf, Ookii.Dialogs.Wpf로 충분
 - [Phase 10-recipe-copy-infra]: [10-02] ELogType.Trace 재사용 + [TAKT] 접두사로 ActionBase.OnEnd() 택타임 로그 출력 (D-01~D-04 준수)
+- [Phase 10-recipe-copy-infra]: Copy() 구 시그니처(string,string,bool) 완전 제거 — siteNumber 필수 파라미터로 API 일관성 확보
+- [Phase 10-recipe-copy-infra]: CopyFilesRecursively: Directory.CreateDirectory 무조건 호출(no-op 안전), if(!Exists) TOCTOU 패턴 금지
 
 ### Pending Todos
 
@@ -65,6 +67,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-04-02T23:44:55.106Z
-Stopped at: Completed 10-recipe-copy-infra 10-02-PLAN.md
+Last session: 2026-04-02T23:45:29.421Z
+Stopped at: Completed 10-recipe-copy-infra-01-PLAN.md
 Resume file: None
