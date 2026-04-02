@@ -77,13 +77,17 @@ namespace FinalVisionProject.UI {
                 CustomMessageBox.Show("Error", "Recipe name to be copied must be different.", MessageBoxImage.Error);
                 return;
             }
+            //260402 hbk — D-06: siteNumber=1 전달, D-08: 덮어쓰기 시 forceCopy=true
             if (RecipeFiles.Handle.HasRecipe(newName)) {
                 if (CustomMessageBox.ShowConfirmation(newName + " Has Already Exists.", "Are you sure you want to overwrite the existing directory?", MessageBoxButton.YesNo) != MessageBoxResult.Yes) {
                     return;
                 }
+                RecipeFiles.Handle.Copy(curRecipe, newName, 1, forceCopy: true);
             }
-            RecipeFiles.Handle.Copy(curRecipe, newName);
-            SystemHandler.Handle.Recipes.CollectRecipe();
+            else {
+                RecipeFiles.Handle.Copy(curRecipe, newName, 1);
+            }
+            SystemHandler.Handle.Recipes.CollectRecipe(1);   //260402 hbk — Site1 경로 기준
         }
 
         private void MenuItem_open_Click(object sender, RoutedEventArgs e) {
@@ -267,7 +271,7 @@ namespace FinalVisionProject.UI {
                 }
             }
 
-            if (nextIndex < 0) return;   //260326 hbk // Shot 5 이후 → 더 이상 진행 없음
+            if (nextIndex < 0) return;   //260326 hbk // Shot 5 이후 더 이상 진행 없음
 
             // 다음 Action 선택   //260326 hbk
             treeListBox_sequence.UnselectAll();   //260326 hbk
