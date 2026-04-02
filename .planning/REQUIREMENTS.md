@@ -23,7 +23,7 @@
 
 ### 운영/로그
 
-- [ ] **OPS-01**: Action별 소요시간(ms)을 로그에 기록 (기존 Stopwatch 활용)
+- [x] **OPS-01**: Action별 소요시간(ms)을 로그에 기록 (기존 Stopwatch 활용)
 - [ ] **OPS-02**: Grab 버튼은 카메라 촬상+검사, Run 버튼은 로드된 이미지로 검사 테스트로 역할 분리
 
 ## Future Requirements
@@ -46,7 +46,7 @@
 | Requirement | Phase | Status |
 |-------------|-------|--------|
 | RCP-01 | Phase 10 | Pending |
-| OPS-01 | Phase 10 | Pending |
+| OPS-01 | Phase 10 | Complete |
 | IMG-01 | Phase 11 | Pending |
 | IMG-02 | Phase 11 | Pending |
 | OPS-02 | Phase 12 | Pending |

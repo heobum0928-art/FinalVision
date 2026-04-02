@@ -104,8 +104,8 @@ Plans:
 **Plans**: 2 plans
 
 Plans:
-- [ ] 10-01-PLAN.md — RecipeFiles.Copy() siteNumber 오버로드 + CopyFilesRecursively 대상 디렉토리 자동 생성
-- [ ] 10-02-PLAN.md — ActionBase.OnEnd() 택타임 Trace 로그 출력
+- [x] 10-01-PLAN.md — RecipeFiles.Copy() siteNumber 오버로드 + CopyFilesRecursively 대상 디렉토리 자동 생성
+- [x] 10-02-PLAN.md — ActionBase.OnEnd() 택타임 Trace 로그 출력
 
 ---
 
@@ -179,7 +179,7 @@ Plans:
 | 7. 검사 알고리즘 안정화 | v1.0 | — | Complete | 2026-03-30 |
 | 8. ShotTabView/ROI/Copy | v1.0 | — | Complete | 2026-03-31 |
 | 9. 통신 테스트 + 버그 수정 | v1.0 | — | Complete | 2026-03-31 |
-| 10. 레시피 복사 버그 + 인프라 | v2.0 | 0/2 | Not started | - |
+| 10. 레시피 복사 버그 + 인프라 | v2.0 | 2/2 | Complete   | 2026-04-02 |
 | 11. 이미지 저장 구조 개선 | v2.0 | 0/2 | Not started | - |
 | 12. Run/Grab 분리 + 이미지 UI | v2.0 | 0/3 | Not started | - |
 | 13. RecipeEditorWindow | v2.0 | 0/3 | Not started | - |
