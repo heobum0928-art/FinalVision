@@ -1,54 +1,68 @@
-# FinalVision — Requirements
+# Requirements: FinalVision
 
-## REQ-001: 프로젝트 리팩토링
-- [ ] 솔루션/프로젝트명 `ECi_Dispenser` → `FinalVision` 으로 변경
-- [ ] 네임스페이스 `ReringProject` → `FinalVisionProject` 전체 교체
-- [ ] Basler 카메라 관련 코드 제거
-- [ ] ATRAS/Project.HWC MX Component(PLC) 관련 코드 제거
-- [ ] 불필요한 Corner Align 시퀀스 코드 정리
+**Defined:** 2026-04-02
+**Core Value:** 카메라 1대 + 5-Shot 순차 촬상으로 자재 유무를 정확히 판정하고, TCP 통신으로 설비와 연동하여 자동 검사를 수행한다.
 
-## REQ-002: HIK 카메라 단일화
-- [ ] HIK 카메라 1대 연결 및 초기화
-- [ ] 카메라 설정 (노출, 게인, 해상도) — 레시피 연동
-- [ ] Grab 이벤트 → OpenCvSharp Mat 변환 유지
-- [ ] 가상 카메라(VirtualCamera) 시뮬레이션 모드 유지
+## v2.0 Requirements
 
-## REQ-003: 5-Shot 검사 시퀀스
-- [ ] 검사 시작 명령 수신 시 Shot 1→5 순차 실행
-- [ ] 각 Shot에서 촬상 → Blob 검사 → 결과 저장
-- [ ] Shot 위치 정보 레시피화 (ROI, 딜레이 등)
-- [ ] 검사 완료 후 전체 결과 집계 (5개 Shot 중 NG 존재 시 전체 NG)
+### 레시피 관리
 
-## REQ-004: OpenCV Blob Detection 검사 알고리즘
-- [ ] OpenCvSharp SimpleBlobDetector 구현
-- [ ] 자재유무 판정 로직: Blob 면적/수 임계값 기반 OK/NG
-- [ ] Blob 파라미터 레시피 저장/로드 (MinArea, MaxArea, MinCircularity 등)
-- [ ] 검사 결과 이미지 저장 (OK/NG 폴더 분류)
-- [ ] 검사 결과 로그 기록
+- [ ] **RCP-01**: 레시피 복사 시 Site 대상 디렉터리가 없으면 자동 생성하여 복사 성공
+- [ ] **RCP-02**: RecipeEditorWindow에서 Shot1~5 탭 전환 시 해당 Shot의 ROI/Blob/Delay 파라미터를 PropertyGrid로 편집 가능
+- [ ] **RCP-03**: RecipeEditorWindow에서 Grab 버튼으로 현재 Shot 미리보기 검사 실행 가능
+- [ ] **RCP-04**: RecipeEditorWindow에서 Save 버튼으로 현재 레시피 저장
+- [ ] **RCP-05**: RecipeEditorWindow에서 Reset 버튼으로 파라미터 기본값 초기화
+- [ ] **RCP-06**: OpenRecipeWindow에서 Edit 버튼 클릭 시 RecipeEditorWindow 팝업 열림
 
-## REQ-005: 5개 운영 Site 분리
-- [ ] Site 1~5 독립 운영 (각 Site별 레시피, 결과)
-- [ ] Site별 검사 명령 수신 처리
-- [ ] Site별 현재 레시피 표시 및 변경
-- [ ] Site별 통계 (검사수, OK수, NG수, 수율)
+### 이미지 관리
 
-## REQ-006: TCP/IP 통신
-- [ ] 기존 VisionServer 구조 유지 (STX/ETX 프레임)
-- [ ] 검사 명령 패킷: `$TEST:Site,TestType,ID@`
-- [ ] 검사 결과 응답: Shot별 OK/NG + 전체 판정
-- [ ] 레시피 변경/조회 명령 유지
-- [ ] 연결 상태 모니터링 (재연결 자동 처리)
+- [ ] **IMG-01**: 검사 이미지를 날짜>시간 하위폴더 구조로 저장 (`D:\Log\{yyyyMMdd}\{HHmmss}\{ShotName}_{OK|NG}.jpg`)
+- [ ] **IMG-02**: OK 이미지 기본 미저장, NG 이미지만 기본 저장 (설정에서 변경 가능)
+- [ ] **IMG-03**: 시간 폴더 선택 시 Shot1~5 이미지를 일괄 로드하여 UI에 표시
+- [ ] **IMG-04**: 날짜/시간 폴더 단위로 저장된 검사 이미지 삭제 가능
 
-## REQ-007: UI 개선
-- [ ] 메인 화면: 5개 Shot 이미지 동시 표시
-- [ ] Site 선택 탭 또는 패널 (Site 1~5)
-- [ ] 실시간 검사 결과 표시 (OK=녹색, NG=빨간색)
-- [ ] Blob 결과 오버레이 표시 (검출된 Blob 위치/크기 표시)
-- [ ] 통계 대시보드 (Site별 수율)
-- [ ] 레시피 편집 UI (Blob 파라미터 조정)
+### 운영/로그
 
-## REQ-008: 레시피 관리
-- [ ] Site별 독립 레시피 파일 (JSON 또는 XML)
-- [ ] 레시피 항목: 카메라 파라미터 + Blob 검사 파라미터 + ROI
-- [ ] 레시피 생성/수정/삭제/복사
-- [ ] TCP 명령으로 레시피 전환 지원
+- [ ] **OPS-01**: Action별 소요시간(ms)을 로그에 기록 (기존 Stopwatch 활용)
+- [ ] **OPS-02**: Grab 버튼은 카메라 촬상+검사, Run 버튼은 로드된 이미지로 검사 테스트로 역할 분리
+
+## Future Requirements
+
+(없음 — v2.0에서 전부 처리)
+
+## Out of Scope
+
+| Feature | Reason |
+|---------|--------|
+| 통계 대시보드 (Site별 수율) | 현장 불필요 확인 |
+| FAI/Halcon 에지 측정 | Blob 유무 검사 프로젝트, 절대 추가 금지 |
+| 딥러닝 검사 | 과도한 복잡도 |
+| PLC 연동 | TCP/IP 전용 |
+| 레시피 버전관리 | 불필요한 복잡도 |
+| 택타임 트렌드 그래프 | v2.0 범위 초과 |
+
+## Traceability
+
+| Requirement | Phase | Status |
+|-------------|-------|--------|
+| RCP-01 | — | Pending |
+| RCP-02 | — | Pending |
+| RCP-03 | — | Pending |
+| RCP-04 | — | Pending |
+| RCP-05 | — | Pending |
+| RCP-06 | — | Pending |
+| IMG-01 | — | Pending |
+| IMG-02 | — | Pending |
+| IMG-03 | — | Pending |
+| IMG-04 | — | Pending |
+| OPS-01 | — | Pending |
+| OPS-02 | — | Pending |
+
+**Coverage:**
+- v2.0 requirements: 12 total
+- Mapped to phases: 0
+- Unmapped: 12
+
+---
+*Requirements defined: 2026-04-02*
+*Last updated: 2026-04-02 after initial definition*
