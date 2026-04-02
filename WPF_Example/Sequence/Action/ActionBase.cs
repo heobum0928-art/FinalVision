@@ -54,6 +54,8 @@ namespace FinalVisionProject.Sequence {
 
         public virtual void OnEnd() {
             Context.Timer.Stop();
+            //260402 hbk — OPS-01: Action별 택타임 Trace 로그 출력 (D-01: ELogType.Trace + [TAKT] 접두사, D-02: 개별 형식)
+            Logging.PrintLog((int)ELogType.Trace, "[TAKT] {0}: {1}ms", Name, Context.Timer.ElapsedMilliseconds);
 
             Context.State = EContextState.Idle;
         }
