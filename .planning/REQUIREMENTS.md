@@ -45,24 +45,24 @@
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| RCP-01 | — | Pending |
-| RCP-02 | — | Pending |
-| RCP-03 | — | Pending |
-| RCP-04 | — | Pending |
-| RCP-05 | — | Pending |
-| RCP-06 | — | Pending |
-| IMG-01 | — | Pending |
-| IMG-02 | — | Pending |
-| IMG-03 | — | Pending |
-| IMG-04 | — | Pending |
-| OPS-01 | — | Pending |
-| OPS-02 | — | Pending |
+| RCP-01 | Phase 10 | Pending |
+| OPS-01 | Phase 10 | Pending |
+| IMG-01 | Phase 11 | Pending |
+| IMG-02 | Phase 11 | Pending |
+| OPS-02 | Phase 12 | Pending |
+| IMG-03 | Phase 12 | Pending |
+| IMG-04 | Phase 12 | Pending |
+| RCP-02 | Phase 13 | Pending |
+| RCP-03 | Phase 13 | Pending |
+| RCP-04 | Phase 13 | Pending |
+| RCP-05 | Phase 13 | Pending |
+| RCP-06 | Phase 13 | Pending |
 
 **Coverage:**
 - v2.0 requirements: 12 total
-- Mapped to phases: 0
-- Unmapped: 12
+- Mapped to phases: 12
+- Unmapped: 0
 
 ---
 *Requirements defined: 2026-04-02*
-*Last updated: 2026-04-02 after initial definition*
+*Last updated: 2026-04-02 after roadmap v2.0 creation (Phases 10-13)*
