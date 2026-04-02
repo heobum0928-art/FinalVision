@@ -101,11 +101,11 @@ Plans:
   1. OpenRecipeWindow에서 레시피를 다른 Site로 복사 시 대상 Site 디렉터리가 없어도 복사가 성공하고 CollectRecipe()에서 조회된다
   2. 검사 시퀀스 실행 시 Action별 소요시간(ms)이 로그 파일에 기록된다
   3. 이미 존재하는 대상 경로에 복사해도 기존 파일이 덮어쓰여진다
-**Plans**: TBD
+**Plans**: 2 plans
 
 Plans:
-- [ ] 10-01: RecipeFiles.Copy — 대상 Site 디렉터리 자동 생성 (Directory.CreateDirectory 선행)
-- [ ] 10-02: ActionContext.Timer Start() 활성화 + 각 Action 완료 시점에 ElapsedMilliseconds 로그 출력
+- [ ] 10-01-PLAN.md — RecipeFiles.Copy() siteNumber 오버로드 + CopyFilesRecursively 대상 디렉토리 자동 생성
+- [ ] 10-02-PLAN.md — ActionBase.OnEnd() 택타임 Trace 로그 출력
 
 ---
 
