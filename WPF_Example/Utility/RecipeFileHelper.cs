@@ -120,13 +120,13 @@ namespace FinalVisionProject.Utility {
         }
 
         /// <summary>
-        /// 기존 레시피 디렉터리를 새 이름으로 복사합니다.
+        /// 기존 레시피 디렉터리를 새 이름으로 복사합니다. (Site 하위 경로 기준)
         ///
-        public bool Copy(string prevName, string newName, bool forceCopy = false) {
-            //check already exist recipe as newName
-            //get recipe save path
-            string prevDirPath = Path.Combine(SystemHandler.Handle.Setting.RecipeSavePath, prevName);
-            string newDirPath = Path.Combine(SystemHandler.Handle.Setting.RecipeSavePath, newName);
+        //260402 hbk — D-06: siteNumber 파라미터 추가, Site 하위 경로 기준으로 복사
+        public bool Copy(string prevName, string newName, int siteNumber, bool forceCopy = false) {
+            string siteDir     = Path.Combine(SystemHandler.Handle.Setting.RecipeSavePath, "Site" + siteNumber);
+            string prevDirPath = Path.Combine(siteDir, prevName);
+            string newDirPath  = Path.Combine(siteDir, newName);
 
             //해당 dir이 이미 존재함
             if (Directory.Exists(newDirPath) && (forceCopy == false)) {
@@ -140,6 +140,9 @@ namespace FinalVisionProject.Utility {
         }
 
         private static void CopyFilesRecursively(string sourcePath, string targetPath) {
+            //260402 hbk — D-07: 대상 루트 디렉터리가 없어도 자동 생성 (이미 존재해도 안전)
+            Directory.CreateDirectory(targetPath);
+
             //Now Create all of the directories
             foreach (string dirPath in Directory.GetDirectories(sourcePath, "*", SearchOption.AllDirectories)) {
                 Directory.CreateDirectory(dirPath.Replace(sourcePath, targetPath));
@@ -165,31 +168,30 @@ namespace FinalVisionProject.Utility {
             return fvi.FileVersion;
         }
 
-        public string GetDLLVersion() {
-            FileVersionInfo dllInfo = FileVersionInfo.GetVersionInfo(AppDomain.CurrentDomain.BaseDirectory + "\\AlligatorAlgMil.dll");
-            return dllInfo.FileVersion;
-        }
 
         public int CollectRecipe() {
             SystemHandler pSys = SystemHandler.Handle;
             string recipePath = pSys.Setting.RecipeSavePath;  //load from default path
-            
-            List.Clear();
 
+            var tempList = new System.Collections.Generic.List<RecipeFileInfo>();   //260330 hbk SystemProcess 스레드에서 직접 ObservableCollection 수정 시 cross-thread 예외 방지
             string [] recipeDirList = Directory.GetDirectories(recipePath, "*");
             foreach(string recipeDir in recipeDirList) {
 
                 string recipeName = new DirectoryInfo(recipeDir).Name;
-                
+
                 string filePath = Path.Combine(recipeDir, FILE_RECIPE + EXT_RECIPE);
                 if (File.Exists(filePath)) {
                     DateTime creationDate = File.GetCreationTime(filePath);
                     DateTime lastOpenDate = File.GetLastAccessTime(filePath);
-                    
-                    List.Add(new RecipeFileInfo { Name = recipeName, CreateDate = creationDate, LastOpenDate = lastOpenDate, FilePath = filePath });
+
+                    tempList.Add(new RecipeFileInfo { Name = recipeName, CreateDate = creationDate, LastOpenDate = lastOpenDate, FilePath = filePath });
                 }
             }
-            return List.Count;
+            System.Windows.Application.Current.Dispatcher.Invoke(() => {   //260330 hbk List(ObservableCollection) 수정은 UI 스레드에서만 허용
+                List.Clear();
+                foreach (var item in tempList) List.Add(item);
+            });
+            return tempList.Count;
         }
 
         public string GetRecipeFilePath(string name) {
@@ -214,8 +216,11 @@ namespace FinalVisionProject.Utility {
         public int CollectRecipe(int siteNumber) {
             SystemHandler pSys = SystemHandler.Handle;
             string sitePath = Path.Combine(pSys.Setting.RecipeSavePath, "Site" + siteNumber);
-            List.Clear();
-            if (Directory.Exists(sitePath) == false) return 0;
+            if (Directory.Exists(sitePath) == false) {
+                System.Windows.Application.Current.Dispatcher.Invoke(() => List.Clear());   //260330 hbk UI 스레드에서 Clear
+                return 0;
+            }
+            var tempList = new System.Collections.Generic.List<RecipeFileInfo>();   //260330 hbk SystemProcess 스레드에서 직접 ObservableCollection 수정 시 cross-thread 예외 방지
             string[] recipeDirList = Directory.GetDirectories(sitePath, "*");
             foreach (string recipeDir in recipeDirList) {
                 string recipeName = new DirectoryInfo(recipeDir).Name;
@@ -223,10 +228,14 @@ namespace FinalVisionProject.Utility {
                 if (File.Exists(filePath)) {
                     DateTime creationDate = File.GetCreationTime(filePath);
                     DateTime lastOpenDate = File.GetLastAccessTime(filePath);
-                    List.Add(new RecipeFileInfo { Name = recipeName, CreateDate = creationDate, LastOpenDate = lastOpenDate, FilePath = filePath });
+                    tempList.Add(new RecipeFileInfo { Name = recipeName, CreateDate = creationDate, LastOpenDate = lastOpenDate, FilePath = filePath });
                 }
             }
-            return List.Count;
+            System.Windows.Application.Current.Dispatcher.Invoke(() => {   //260330 hbk List(ObservableCollection) 수정은 UI 스레드에서만 허용
+                List.Clear();
+                foreach (var item in tempList) List.Add(item);
+            });
+            return tempList.Count;
         }
 
         public bool HasRecipe(string name) {
