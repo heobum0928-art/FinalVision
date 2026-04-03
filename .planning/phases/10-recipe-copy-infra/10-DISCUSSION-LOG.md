@@ -84,6 +84,29 @@
 
 ---
 
+## 레시피 경로 구조 재논의 (2026-04-03 업데이트)
+
+### 발단
+- Copy()는 Site 경로 기준, Delete()는 루트 기준 — 경로 불일치로 복사된 레시피 삭제 실패
+- Site 폴더 밖 레시피는 Copy에서 찾을 수 없음
+
+### Q1: 레시피 경로 통일 방안
+
+| Option | Description | Selected |
+|--------|-------------|----------|
+| 전부 Site 안에 넣기 | 레거시 레시피도 Site 폴더로 마이그레이션 | |
+| 전부 루트에 넣기 | Site 폴더 구조 제거 | |
+| UI에서 Site 선택 | OpenRecipeWindow에 Site 콤보박스 추가 | |
+| 세팅 경로로 관리 | RecipeSavePath를 세팅에서 변경하여 유동적 관리 | ✓ |
+
+**User's choice:** 세팅의 RecipeSavePath 경로를 직접 지정하여 관리
+**Notes:**
+- UI(Copy/Delete/CollectRecipe)는 RecipeSavePath 루트 기준으로 통일
+- TCP쪽은 siteNumber 기반 경로 유지하되 "Site" + N → N.ToString()으로 변경
+- 사용자가 RecipeSavePath = "Recipe\1\"로 설정하면 UI와 TCP 모두 같은 폴더 참조 가능
+
+---
+
 ## Claude's Discretion
 
 - ActionBase Timer.Stop() 이후 ElapsedMilliseconds 로그 출력 위치
