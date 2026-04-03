@@ -33,12 +33,12 @@ Host(설비)가 TCP로 Shot 1개씩 순차 요청하여 검사를 수행하며, 
 - ✓ TCP/IP 통신 ($TEST 프로토콜) — v1.0 Phase 5
 - ✓ UI/파라미터 개선 (ShotTabView, ROI 드래그, Copy/Paste) — v1.0 Phase 8
 - ✓ 통신 테스트 + 버그 수정 — v1.0 Phase 9
+- ✓ 레시피 복사 버그 수정 — v2.0 Phase 10
+- ✓ 택타임 로그 — v2.0 Phase 10
 
 ### Active
 
-- [ ] 레시피 복사 버그 수정
 - [ ] 레시피 편집 UI (RecipeEditorWindow)
-- [ ] 택타임 로그
 - [ ] 이미지 저장 구조 개선
 - [ ] 이미지 삭제 기능
 - [ ] 이미지 디렉터리 로드
@@ -95,4 +95,4 @@ This document evolves at phase transitions and milestone boundaries.
 4. Update Context with current state
 
 ---
-*Last updated: 2026-04-02 after milestone v2.0 start*
+*Last updated: 2026-04-03 after Phase 10 complete*
