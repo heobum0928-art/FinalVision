@@ -3,8 +3,8 @@ gsd_state_version: 1.0
 milestone: v2.0
 milestone_name: 레시피 편집 + 이미지 관리 + 운영 안정화
 status: Ready to plan
-stopped_at: Phase 10 context updated — recipe path structure changed
-last_updated: "2026-04-03T03:51:07.032Z"
+stopped_at: Phase 11 context gathered
+last_updated: "2026-04-03T05:53:06.241Z"
 progress:
   total_phases: 4
   completed_phases: 1
@@ -67,6 +67,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-04-03T01:09:54.599Z
-Stopped at: Phase 10 context updated — recipe path structure changed
-Resume file: .planning/phases/10-recipe-copy-infra/10-CONTEXT.md
+Last session: 2026-04-03T05:53:06.231Z
+Stopped at: Phase 11 context gathered
+Resume file: .planning/phases/11-image-save-structure/11-CONTEXT.md
