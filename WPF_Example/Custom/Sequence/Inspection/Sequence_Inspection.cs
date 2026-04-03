@@ -8,17 +8,25 @@ using FinalVisionProject.Define;
 using FinalVisionProject.Device;
 using FinalVisionProject.Network;
 using FinalVisionProject.UI;
+using FinalVisionProject.Utility;   //260403 hbk -- ImageFolderManager 참조
 
 //260326 hbk — Sequence_Inspection: CornerAlignSequence 대체
 namespace FinalVisionProject.Sequence
 {
     public class InspectionSequenceContext : SequenceContext   //260326 hbk
     {
+        #region properties
+
+        public string CurrentFolderPath { get; set; } = "";   //260403 hbk -- inspection time-folder path (D-09)
+
+        #endregion
+
         #region methods
 
         public override void Clear()
         {
             base.Clear();
+            CurrentFolderPath = ImageFolderManager.BeginInspection();   //260403 hbk -- create time-folder at inspection start (D-02, D-09)
         }
 
         public override void CopyFrom(ActionContext actionContext)

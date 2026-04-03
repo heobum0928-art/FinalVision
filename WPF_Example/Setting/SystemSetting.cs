@@ -57,7 +57,7 @@ namespace FinalVisionProject.Setting {
         public string TraceLogSavePath { get; set; } = AppDomain.CurrentDomain.BaseDirectory + @"Trace";
         [DirectoryPath]
         [AutoUpdateText]
-        public string ImageSavePath { get; set; } = AppDomain.CurrentDomain.BaseDirectory + @"Image";
+        public string ImageSavePath { get; set; } = @"D:\Log";   //260403 hbk -- default image save path (D-01)
         [DirectoryPath]
         [AutoUpdateText]
         public string ResultSavePath { get; set; } = AppDomain.CurrentDomain.BaseDirectory + @"Result";

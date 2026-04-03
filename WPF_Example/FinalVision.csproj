@@ -292,6 +292,7 @@
     </Compile>
     <Compile Include="UI\ViewModel\CalibrationViewModel.cs" />
     <Compile Include="UI\ViewModel\ModelFinderViewModel.cs" />
+    <Compile Include="Utility\ImageFolderManager.cs" />
     <Compile Include="Utility\RecipeFileHelper.cs" />
     <Compile Include="Sequence\SequenceHandler.cs" />
     <Compile Include="UI\ControlItem\Node.cs" />
