@@ -466,29 +466,48 @@ namespace FinalVisionProject.Sequence
             }
         }
 
-        // 이미지 저장 — D:\Log\{날짜}\{Shot명}_{OK|NG}_{시간}.jpg   //260326 hbk
-        private void SaveResultImage(Mat image, bool isOK)   //260326 hbk
+        //260403 hbk -- ImageFolderManager-based save: original + annotated pair (D-03, D-04, D-06, D-07)
+        private void SaveResultImage(Mat image, bool isOK)
         {
-            if (image == null) return;
+            if (image == null) return;   //260403 hbk
 
             var setting = SystemSetting.Handle;
             if (isOK && !setting.SaveOkImage) return;    //260326 hbk
             if (!isOK && !setting.SaveNgImage) return;   //260326 hbk
 
+            if (string.IsNullOrEmpty(_FolderPath)) return;   //260403 hbk -- guard: no folder path
+
             try
             {
-                string dateDir  = DateTime.Now.ToString("yyyyMMdd");                     
-                string timeStr  = DateTime.Now.ToString("HHmmss_fff");                   
-                string resultStr = isOK ? "OK" : "NG";                                   
-                string dir = System.IO.Path.Combine(@"D:\Log", dateDir);                 
-                System.IO.Directory.CreateDirectory(dir);                                
-                string filePath = System.IO.Path.Combine(dir,
-                    string.Format("{0}_{1}_{2}.jpg", Name, resultStr, timeStr));         
-                image.SaveImage(filePath);                                               
+                // original image -- async save with Clone (D-03)   //260403 hbk
+                string origPath = ImageFolderManager.GetSavePath(_FolderPath, Name, isOK);   //260403 hbk
+                Mat imgClone = image.Clone();   //260403 hbk -- Clone으로 비동기 저장 시 원본 생명주기 독립
+                Task.Factory.StartNew((obj) =>
+                {
+                    var mat = obj as Mat;   //260403 hbk
+                    try { mat.SaveImage(origPath); }   //260403 hbk
+                    catch (Exception ex) { Logging.PrintLog((int)ELogType.Error, string.Format("SaveImage Error: {0}", ex.Message)); }   //260403 hbk
+                    finally { mat.Dispose(); }   //260403 hbk -- Clone 해제
+                }, imgClone);
+
+                // annotated image -- async save with Clone (D-04, D-06)   //260403 hbk
+                Mat annotated = _MyParam.LastAnnotatedImage;   //260403 hbk
+                if (annotated != null && !annotated.IsDisposed)   //260403 hbk -- null guard for SIMUL mode
+                {
+                    string annotatedPath = ImageFolderManager.GetAnnotatedSavePath(_FolderPath, Name, isOK);   //260403 hbk
+                    Mat annotatedClone = annotated.Clone();   //260403 hbk -- Clone으로 비동기 저장
+                    Task.Factory.StartNew((obj) =>
+                    {
+                        var mat = obj as Mat;   //260403 hbk
+                        try { mat.SaveImage(annotatedPath); }   //260403 hbk
+                        catch (Exception ex) { Logging.PrintLog((int)ELogType.Error, string.Format("SaveAnnotatedImage Error: {0}", ex.Message)); }   //260403 hbk
+                        finally { mat.Dispose(); }   //260403 hbk -- Clone 해제
+                    }, annotatedClone);
+                }
             }
             catch (Exception ex)
             {
-                Logging.PrintLog((int)ELogType.Error, string.Format("SaveImage Error: {0}", ex.Message));   
+                Logging.PrintLog((int)ELogType.Error, string.Format("SaveImage Error: {0}", ex.Message));   //260403 hbk
             }
         }
 
