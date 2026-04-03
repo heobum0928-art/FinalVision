@@ -2,14 +2,14 @@
 gsd_state_version: 1.0
 milestone: v2.0
 milestone_name: 레시피 편집 + 이미지 관리 + 운영 안정화
-status: Ready to plan
-stopped_at: Phase 11 context gathered
-last_updated: "2026-04-03T05:53:06.241Z"
+status: Ready to execute
+stopped_at: Completed 11-01-PLAN.md
+last_updated: "2026-04-03T06:27:50.650Z"
 progress:
   total_phases: 4
   completed_phases: 1
-  total_plans: 2
-  completed_plans: 2
+  total_plans: 4
+  completed_plans: 3
 ---
 
 # FinalVision — Project State
@@ -19,12 +19,12 @@ progress:
 See: .planning/PROJECT.md (updated 2026-04-02)
 
 **Core value:** 카메라 1대 + 5-Shot 순차 촬상으로 자재 유무를 정확히 판정하고, TCP 통신으로 설비와 연동하여 자동 검사를 수행한다.
-**Current focus:** Phase 10 — recipe-copy-infra
+**Current focus:** Phase 11 — image-save-structure
 
 ## Current Position
 
-Phase: 11
-Plan: Not started
+Phase: 11 (image-save-structure) — EXECUTING
+Plan: 2 of 2
 
 ## Performance Metrics
 
@@ -45,6 +45,7 @@ Plan: Not started
 *Updated after each plan completion*
 | Phase 10-recipe-copy-infra P02 | 15 | 1 tasks | 1 files |
 | Phase 10-recipe-copy-infra P01 | 8 | 2 tasks | 3 files |
+| Phase 11-image-save-structure P01 | 7 | 2 tasks | 4 files |
 
 ## Accumulated Context
 
@@ -55,6 +56,7 @@ Plan: Not started
 - [Phase 10-recipe-copy-infra]: [10-02] ELogType.Trace 재사용 + [TAKT] 접두사로 ActionBase.OnEnd() 택타임 로그 출력 (D-01~D-04 준수)
 - [Phase 10-recipe-copy-infra]: Copy() 구 시그니처(string,string,bool) 완전 제거 — siteNumber 필수 파라미터로 API 일관성 확보
 - [Phase 10-recipe-copy-infra]: CopyFilesRecursively: Directory.CreateDirectory 무조건 호출(no-op 안전), if(!Exists) TOCTOU 패턴 금지
+- [Phase 11-image-save-structure]: ImageFolderManager static utility (no singleton) for path generation only; collision suffix _2/_3 for millisecond uniqueness; FinalVision.csproj requires explicit Compile includes
 
 ### Pending Todos
 
@@ -67,6 +69,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-04-03T05:53:06.231Z
-Stopped at: Phase 11 context gathered
-Resume file: .planning/phases/11-image-save-structure/11-CONTEXT.md
+Last session: 2026-04-03T06:27:50.643Z
+Stopped at: Completed 11-01-PLAN.md
+Resume file: None
