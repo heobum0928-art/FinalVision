@@ -61,6 +61,12 @@ namespace FinalVisionProject.UI {
         private bool _isDrawingNew = false;   //260326 hbk // 신규 ROI 드래그 중 플래그
         private Point _drawStartPoint;        //260326 hbk // 드래그 시작 이미지 좌표 (ScaleTransform 역변환)
 
+        private OpenCvSharp.Mat _displayMat;   //260331 hbk
+
+        public void SetDisplayMat(OpenCvSharp.Mat mat) {   //260331 hbk
+            _displayMat = mat;
+        }
+
         private string _CurrentPosDisplay;
         public string CurrentPosDisplay {
             get {
@@ -236,7 +242,7 @@ namespace FinalVisionProject.UI {
                 }
             }
             if (!IsSelected) {   //260326 hbk
-                // IsEditable + 좌클릭 + DrawableList에 ROI 존재 → 신규 ROI 드래그 시작   //260326 hbk
+                // IsEditable + 좌클릭 + DrawableList에 ROI 존재하면 신규 ROI 드래그 시작   //260326 hbk
                 if (IsEditable && e.LeftButton == MouseButtonState.Pressed && DrawableList.Count > 0)   //260326 hbk
                 {
                     _isDrawingNew = true;   //260326 hbk // 신규 ROI 드래그 시작
@@ -246,7 +252,7 @@ namespace FinalVisionProject.UI {
                         e.GetPosition(this).Y / _ScaleTransform.ScaleY);  //260326 hbk
                     this.CaptureMouse();   //260326 hbk // 드래그 중 마우스 캡처
                 }
-                else   //260326 hbk // 우클릭 or IsEditable=false or ROI 없음 → 기존 스크롤
+                else   //260326 hbk 우클릭이거나 IsEditable=false이거나 ROI 없으면 기존 스크롤
                 {
                     this.CaptureMouse();
                     ScrollStartPos = e.GetPosition(ParentScrollViewer);
@@ -258,7 +264,25 @@ namespace FinalVisionProject.UI {
         public void OnMouseMove(object sender, MouseEventArgs e) {
             
             CurrentPos = e.GetPosition(this);
-            CurrentPosDisplay = string.Format("X:{0:0.0}, Y:{1:0.0}", CurrentPos.X / _ScaleTransform.ScaleX, CurrentPos.Y / _ScaleTransform.ScaleY);
+            int _imgX = (int)(CurrentPos.X / _ScaleTransform.ScaleX);   //260331 hbk
+            int _imgY = (int)(CurrentPos.Y / _ScaleTransform.ScaleY);   //260331 hbk
+            string _gvStr = "";   //260331 hbk
+            if (_displayMat != null && !_displayMat.IsDisposed &&   //260331 hbk
+                _imgX >= 0 && _imgX < _displayMat.Cols &&
+                _imgY >= 0 && _imgY < _displayMat.Rows)
+            {
+                try {
+                    int _gv;
+                    if (_displayMat.Channels() == 1)
+                        _gv = _displayMat.At<byte>(_imgY, _imgX);
+                    else {
+                        OpenCvSharp.Vec3b _px = _displayMat.At<OpenCvSharp.Vec3b>(_imgY, _imgX);
+                        _gv = (int)(_px.Item0 * 0.114 + _px.Item1 * 0.587 + _px.Item2 * 0.299);   //260331 hbk — 가중 평균
+                    }
+                    _gvStr = string.Format("  Gray:{0,3}", _gv);   //260331 hbk
+                } catch { }
+            }
+            CurrentPosDisplay = string.Format("X:{0,5}  Y:{1,5}{2}", _imgX, _imgY, _gvStr);   //260331 hbk — 고정폭 포맷
 
             if (this.IsMouseCaptured) {
                 if (_isDrawingNew)   //260326 hbk // 신규 ROI 드래그 미리보기 — 스크롤 없이 캔버스만 갱신
@@ -449,7 +473,7 @@ namespace FinalVisionProject.UI {
         public void OnMouseUp(object sender, MouseEventArgs e) {
             this.ReleaseMouseCapture();
 
-            if (_isDrawingNew)   //260326 hbk // 신규 ROI 드래그 완료 → SelectedItem ROI 업데이트
+            if (_isDrawingNew)   //260326 hbk 신규 ROI 드래그 완료 후 SelectedItem ROI 업데이트
             {
                 _isDrawingNew = false;   //260326 hbk
 
@@ -484,7 +508,7 @@ namespace FinalVisionProject.UI {
                 }
                 else   //260327 hbk 그리기 — Rectangle 모드
                 {
-                    // 드래그 범위 → Rect 계산 (음수 폭/높이 방지)   //260326 hbk
+                    // 드래그 범위로 Rect 계산 (음수 폭/높이 방지)   //260326 hbk
                     double rx = Math.Min(_drawStartPoint.X, endPt.X);
                     double ry = Math.Min(_drawStartPoint.Y, endPt.Y);
                     double rw = Math.Abs(endPt.X - _drawStartPoint.X);
@@ -523,22 +547,33 @@ namespace FinalVisionProject.UI {
                 DrawableList.Clear();
                 if ((SequenceResult != null) && (SequenceResult.ActionParam != null)) {
                     pParam = SequenceResult.ActionParam;
-                    
-                    for (int i = 0; i < pParam.GetRectCount(); i++) {
-                        //pParam.GetROI(i, out Rect item);
-                        pParam.GetRectName(i, out string name);
-                        pParam.GetRectOwner(i, out object owner);
-                        DrawableList.Add(new DrawableRectangle(pParam, owner, name));
+
+                    // ROIShape 필터링: InspectionParam이면 선택된 도형만 표시   //260331 hbk
+                    bool showRect   = true;
+                    bool showCircle = true;
+                    if (pParam is FinalVisionProject.Sequence.InspectionParam ip) {
+                        showRect   = (ip.ROIShape == FinalVisionProject.Sequence.ERoiShape.Rectangle);
+                        showCircle = (ip.ROIShape == FinalVisionProject.Sequence.ERoiShape.Circle);
+                    }
+
+                    if (showRect) {   //260331 hbk
+                        for (int i = 0; i < pParam.GetRectCount(); i++) {
+                            pParam.GetRectName(i, out string name);
+                            pParam.GetRectOwner(i, out object owner);
+                            DrawableList.Add(new DrawableRectangle(pParam, owner, name));
+                        }
                     }
                     for (int i = 0; i < pParam.GetLineCount(); i++) {
                         pParam.GetLineName(i, out string name);
                         pParam.GetLineOwner(i, out object owner);
                         DrawableList.Add(new DrawableLine(pParam, owner, name));
                     }
-                    for (int i = 0; i < pParam.GetCircleCount(); i++) {
-                        pParam.GetCircleName(i, out string name);
-                        pParam.GetCircleOwner(i, out object owner);
-                        DrawableList.Add(new DrawableCircle(pParam, owner, name));
+                    if (showCircle) {   //260331 hbk
+                        for (int i = 0; i < pParam.GetCircleCount(); i++) {
+                            pParam.GetCircleName(i, out string name);
+                            pParam.GetCircleOwner(i, out object owner);
+                            DrawableList.Add(new DrawableCircle(pParam, owner, name));
+                        }
                     }
                 }
             }

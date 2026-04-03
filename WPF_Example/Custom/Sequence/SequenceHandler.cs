@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using FinalVisionProject.Define;
 using FinalVisionProject.Device;
+using FinalVisionProject.Utility;
 
 namespace FinalVisionProject.Sequence {
     public sealed partial class SequenceHandler {
@@ -58,5 +59,6 @@ namespace FinalVisionProject.Sequence {
             );
             RegisterSequence(seq);
         }
+
     }
 }

@@ -311,13 +311,16 @@ namespace FinalVisionProject.Sequence {
 
         protected bool Start(int actionIndex = 0) {
             if (State != EContextState.Idle) return false;
-         
+
             CurrentActionIndex = actionIndex;
             EndActionIndex = actionIndex;
-            
+
             Context.Clear();
             Command = ESequenceCommmand.Start;
             IsFinished = false;
+
+            string actName = (Actions != null && actionIndex < Actions.Length) ? Actions[actionIndex].Name : "?";
+            Logging.PrintLog((int)ELogType.Trace, "[SEQ] {0} Start, Action:{1}", Name, actName);   //260330 hbk
 
             OnStart?.Invoke(Context);
             return true;
@@ -329,6 +332,7 @@ namespace FinalVisionProject.Sequence {
             Command = ESequenceCommmand.Stop;
             if(RequestPacket != null) AddResponse();
 
+            Logging.PrintLog((int)ELogType.Trace, "[SEQ] {0} Stop", Name);   //260330 hbk
             OnStop?.Invoke(Context);
             return true;
         }
@@ -370,6 +374,7 @@ namespace FinalVisionProject.Sequence {
             Command = ESequenceCommmand.Stop;
             if (RequestPacket != null) AddResponse();
 
+            Logging.PrintLog((int)ELogType.Trace, "[SEQ] {0} Error, Action:{1}", Name, CurActionName);   //260330 hbk
             SaveResultImage(CurActionName);
             OnError?.Invoke(Context);
 
@@ -385,6 +390,7 @@ namespace FinalVisionProject.Sequence {
             Command = ESequenceCommmand.Stop;
             if (RequestPacket != null) AddResponse();
 
+            Logging.PrintLog((int)ELogType.Trace, "[SEQ] {0} Finish, Result:{1}", Name, Context.Result);   //260330 hbk
             if (Context.Result == EContextResult.Fail) {
                 SaveResultImage(CurActionName);
             }
@@ -395,24 +401,26 @@ namespace FinalVisionProject.Sequence {
 
         public bool Pause() {
             if (State != EContextState.Running) return false;
-            
+
             if(CurAction != null) {
                 CurAction.OnPaused();
                 Context.Timer.Restart();
             }
             Command = ESequenceCommmand.Pause;
+            Logging.PrintLog((int)ELogType.Trace, "[SEQ] {0} Paused", Name);   //260330 hbk
             OnPaused?.Invoke(Context);
             return true;
         }
 
         public bool Resume() {
             if (State != EContextState.Paused) return false;
-            
+
             if(CurAction != null) {
                 CurAction.OnResume();
                 Context.Timer.Restart();
             }
             Command = ESequenceCommmand.Resume;
+            Logging.PrintLog((int)ELogType.Trace, "[SEQ] {0} Resumed", Name);   //260330 hbk
             OnResume?.Invoke(Context);
             return true;
         }

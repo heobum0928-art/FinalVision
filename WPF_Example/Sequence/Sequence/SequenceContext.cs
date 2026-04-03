@@ -98,7 +98,7 @@ namespace FinalVisionProject.Sequence {
                 return _State;
             }
             set {
-                _State = State;
+                _State = value; //260402 hbk State setter 버그 수정 (State→value)
             }
         }
         
@@ -145,6 +145,7 @@ namespace FinalVisionProject.Sequence {
             //현재 시작하는 index만 clear 시킬 것인지?
             //Source.CurrentActionIndex
             ResultImageFileName = "";
+            ResultImage = null;   //260331 hbk — 이전 실행의 stale 이미지 방지
 
             Timer.Restart();
             State = EContextState.Idle;

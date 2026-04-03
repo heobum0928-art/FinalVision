@@ -360,6 +360,10 @@ namespace FinalVisionProject.Sequence {
                         modelView.Save(saveFile, group, prop.Name);
                         break;
                     default:
+                        if (prop.PropertyType.IsEnum)   //260401 hbk — enum 타입 직렬화 지원
+                        {
+                            saveFile[group][name] = (int)prop.GetValue(this);
+                        }
                         break;
                 }
             }
@@ -418,6 +422,13 @@ namespace FinalVisionProject.Sequence {
                         case "ModelFinderViewModel":
                             ModelFinderViewModel modelView = (ModelFinderViewModel)prop.GetValue(this);
                             modelView.Load(loadFile, group, prop.Name);
+                            break;
+                        default:
+                            if (prop.PropertyType.IsEnum)   //260401 hbk — enum 타입 역직렬화 지원
+                            {
+                                int eValue = loadFile[group][name].ToInt();
+                                prop.SetValue(this, Enum.ToObject(prop.PropertyType, eValue));
+                            }
                             break;
                     }
                 }

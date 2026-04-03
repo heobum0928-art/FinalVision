@@ -20,7 +20,7 @@ namespace FinalVisionProject.UI {
     public partial class OpenRecipeWindow : Window {
         private RecipeListViewModel Model;
         public OpenRecipeWindow() {
-            SystemHandler.Handle.Recipes.CollectRecipe(1);   //260401 hbk — Site1 경로 기준
+            SystemHandler.Handle.Recipes.CollectRecipe();   //260403 hbk — D-11: RecipeSavePath 루트 기준
             InitializeComponent();
             
             Model = new RecipeListViewModel();
@@ -78,22 +78,21 @@ namespace FinalVisionProject.UI {
                 return;
             }
             try {
-                //260402 hbk — D-06: siteNumber=1 전달, D-08: 덮어쓰기 시 forceCopy=true
+                //260403 hbk — D-06: RecipeSavePath 루트 기준 복사, D-08: 덮어쓰기 시 forceCopy=true
                 if (RecipeFiles.Handle.HasRecipe(newName)) {
                     if(CustomMessageBox.ShowConfirmation(newName + SystemHandler.Handle.Localize[" Has Already Exists."], SystemHandler.Handle.Localize["Are you sure you want to overwrite the existing directory?"], MessageBoxButton.YesNo) != MessageBoxResult.Yes) {
                         return;
                     }
-                    //덮어쓰기 확인 완료 — forceCopy=true
-                    if(RecipeFiles.Handle.Copy(SelectedRecipeName, newName, 1, forceCopy: true) == false) {
+                    if(RecipeFiles.Handle.Copy(SelectedRecipeName, newName, forceCopy: true) == false) {
                         CustomMessageBox.Show(SystemHandler.Handle.Localize["Fail to copy recipe"], string.Format(SystemHandler.Handle.Localize["copy fail recipe {0} to {1}."], SelectedRecipeName, newName), MessageBoxImage.Error);
                     }
                 }
                 else {
-                    if(RecipeFiles.Handle.Copy(SelectedRecipeName, newName, 1) == false) {
+                    if(RecipeFiles.Handle.Copy(SelectedRecipeName, newName) == false) {
                         CustomMessageBox.Show(SystemHandler.Handle.Localize["Fail to copy recipe"], string.Format(SystemHandler.Handle.Localize["copy fail recipe {0} to {1}."], SelectedRecipeName, newName), MessageBoxImage.Error);
                     }
                 }
-                SystemHandler.Handle.Recipes.CollectRecipe(1);   //260401 hbk — Site1 경로 기준
+                SystemHandler.Handle.Recipes.CollectRecipe();   //260403 hbk — D-11: RecipeSavePath 루트 기준
                 Model.Items = SystemHandler.Handle.Recipes.List;
 
             }
@@ -121,7 +120,7 @@ namespace FinalVisionProject.UI {
                 if (RecipeFiles.Handle.Delete(removeName) == false) {
                     throw new Exception("recipe directory delete fail.");
                 }
-                SystemHandler.Handle.Recipes.CollectRecipe(1);   //260401 hbk — Site1 경로 기준
+                SystemHandler.Handle.Recipes.CollectRecipe();   //260403 hbk — D-11: RecipeSavePath 루트 기준
                 Model.Items = SystemHandler.Handle.Recipes.List;
             }
             catch(Exception ex) {

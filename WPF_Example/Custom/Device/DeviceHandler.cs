@@ -69,7 +69,7 @@ namespace FinalVisionProject.Device {
         /// </summary>
         private void RegisterRequiredDevices() {
 
-           // Default                                   //260326 hbk
+           // Default                                  
            SetRequiredDevice(
                 ECameraType.HIK,
                 ECaptureImageType.Gray8,

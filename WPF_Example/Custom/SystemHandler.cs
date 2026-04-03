@@ -18,7 +18,9 @@ namespace FinalVisionProject {
             //send test response message
             for (int i = 0; i < Sequences.Count; i++) {
                 TestResultPacket response = Sequences[i].PopResponse();
-                if (response == null) continue; 
+                if (response == null) continue;
+                Logging.PrintLog((int)ELogType.TcpConnection, "[TCP][SEND] TEST Result To:{0} Site:{1} Type:{2} Result:{3}",   //260330 hbk
+                    response.Target, response.Site, response.InspectionType, response.Result);
                 if (!Server.SendPacket(response.Target, response)) {
                     //occurs error
                 }
@@ -33,6 +35,8 @@ namespace FinalVisionProject {
                 if(packet == null) {
                     continue;
                 }
+                Logging.PrintLog((int)ELogType.TcpConnection, "[TCP][RECV] From:{0} Type:{1}",   //260330 hbk
+                    packet.Sender, packet.RequestType);
                 //메시지를 받음 (operator 모드로 변경함)
                 VisionResponsePacket responsePacket = null;
                 switch (packet.RequestType) {
@@ -157,7 +161,7 @@ namespace FinalVisionProject {
             int siteNumber = packet.Site;       // 1~5 (패킷에서 직접 Site 번호 사용)
             string recipeName = packet.RecipeName;
 
-            // Site별 레시피 목록을 수집하여 HasRecipe 체크
+            //260403 hbk — D-10: TCP쪽은 siteNumber 기반 경로로 CollectRecipe
             Recipes.CollectRecipe(siteNumber);
 
             if (Recipes.HasRecipe(recipeName) == false) {

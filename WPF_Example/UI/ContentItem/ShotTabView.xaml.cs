@@ -2,6 +2,7 @@ using System;
 using System.IO;
 using System.Threading.Tasks;
 using System.Windows;
+using Microsoft.Win32;
 using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
 using System.Windows.Input;
@@ -35,6 +36,7 @@ namespace FinalVisionProject.UI
         private System.Windows.Point? _lastMousePos;
         private System.Windows.Point? _lastCenterPos;
         private bool _editPermitted = false;   //260330 hbk — 로그인 등 전역 Edit 권한
+        private SequenceBase _subscribedSeq = null; //260402 hbk OnFinish 해제용 시퀀스 참조
 
         public bool IsEditable   //260330 hbk — 전역 Edit 권한 (로그인 상태 연동)
         {
@@ -84,6 +86,34 @@ namespace FinalVisionProject.UI
             _pDev   = SystemHandler.Handle.Devices;
             _pSeq   = SystemHandler.Handle.Sequences;
             _pLight = SystemHandler.Handle.Lights;
+
+            // TCP 검사 완료 시 UI 자동 갱신 — OnFinish 구독   //260330 hbk
+            var seq = _pSeq[ESequence.Inspection];
+            if (seq != null)
+            {
+                _subscribedSeq = seq; //260402 hbk 해제용 참조 저장
+                seq.OnFinish += OnInspectionFinish; //260402 hbk 람다→named handler (해제 가능)
+            }
+        }
+
+        //260402 hbk OnFinish named handler (람다 대체 — 이벤트 해제 가능)
+        private void OnInspectionFinish(SequenceContext ctx)
+        {
+            Dispatcher.BeginInvoke(DispatcherPriority.Normal, new Action(() =>
+            {
+                RefreshImage();
+                UpdateResultLabel();
+            }));
+        }
+
+        //260402 hbk 이벤트 정리 (MainWindow 종료 시 호출)
+        public void Cleanup()
+        {
+            if (_subscribedSeq != null)
+            {
+                _subscribedSeq.OnFinish -= OnInspectionFinish;
+                _subscribedSeq = null;
+            }
         }
 
         // 해당 Shot의 InspectionParam 반환
@@ -113,8 +143,17 @@ namespace FinalVisionProject.UI
             btn_grab.IsEnabled = false;
             _grabTask = Task.Run(() =>
             {
-                _pLight.ApplyLight(camParam);
-                Mat grabbed = _pDev.GrabImage(camParam);
+                Mat grabbed;
+                // Shot별 이미지 파일 지정 시 파일에서 직접 로드   //260331 hbk
+                if (!string.IsNullOrEmpty(param.SimulImagePath) && File.Exists(param.SimulImagePath))
+                {
+                    grabbed = OpenCvSharp.Cv2.ImRead(param.SimulImagePath, OpenCvSharp.ImreadModes.Color);   //260331 hbk
+                }
+                else
+                {
+                    _pLight.ApplyLight(camParam);
+                    grabbed = _pDev.GrabImage(camParam);
+                }
                 camParam.PutImage(grabbed);
                 param.SetOriginalImage(grabbed);
 
@@ -149,6 +188,7 @@ namespace FinalVisionProject.UI
             if (param == null) return;
 
             // ROIShape 변경 이벤트 구독 — 이전 param 해제 후 새 param 구독   //260330 hbk
+
             if (_subscribedParam != param)   //260330 hbk
             {
                 if (_subscribedParam != null)
@@ -159,12 +199,37 @@ namespace FinalVisionProject.UI
             _lastAppliedROIShape = param.ROIShape;   //260330 hbk — 현재 param의 shape를 기준으로 초기화
 
             bool showOriginal = rb_original.IsChecked == true;
-            Mat img = showOriginal
-                ? param.LastOriginalImage
-                : (param.LastAnnotatedImage ?? param.GetAnnotatedImageTemp() ?? param.LastOriginalImage);
+            Mat img;                                                                       //260401 hbk
+            if (showOriginal)
+            {
+                img = param.LastOriginalImage;                                              //260401 hbk — 원본 보기 모드
+            }
+            else
+            {
+                if (param.LastAnnotatedImage != null)
+                    img = param.LastAnnotatedImage;                                         //260401 hbk — 1순위: 실검사 결과 이미지
+                else if (param.GetAnnotatedImageTemp() != null)
+                    img = param.GetAnnotatedImageTemp();                                    //260401 hbk — 2순위: 시뮬 재검사 임시 이미지
+                else
+                    img = param.LastOriginalImage;                                          //260401 hbk — 3순위: 둘 다 없으면 원본이라도
+            }
 
             DisplayToBackground(img);
             canvas_shot.SetParam((ParamBase)param);
+
+            // 경로 표시 갱신   //260331 hbk
+            if (!string.IsNullOrEmpty(param.SimulImagePath))
+            {
+                tb_imagePath.Text       = Path.GetFileName(param.SimulImagePath);   //260331 hbk
+                tb_imagePath.Foreground = System.Windows.Media.Brushes.White;       //260331 hbk
+                tb_imagePath.ToolTip    = param.SimulImagePath;                      //260331 hbk
+            }
+            else
+            {
+                tb_imagePath.Text       = "(없음)";                                   //260331 hbk
+                tb_imagePath.Foreground = System.Windows.Media.Brushes.Gray;        //260331 hbk
+                tb_imagePath.ToolTip    = null;                                      //260331 hbk
+            }
         }
 
         // ROIShape 변경 시 DrawableList 즉시 갱신 — Edit 모드일 때만 허용, 아니면 되돌리기   //260330 hbk
@@ -177,7 +242,7 @@ namespace FinalVisionProject.UI
                 var param = GetParam();
                 if (param == null) return;
 
-                if (!canvas_shot.IsEditable)   //260330 hbk — Edit ROI 버튼 비활성 → 변경 되돌리기
+                if (!canvas_shot.IsEditable)   //260330 hbk Edit ROI 버튼 비활성 상태면 변경 되돌리기
                 {
                     _revertingROIShape = true;
                     param.ROIShape = _lastAppliedROIShape;   //260330 hbk — 이전 shape로 복원
@@ -190,6 +255,49 @@ namespace FinalVisionProject.UI
             }));
         }
 
+        // Shot별 이미지 열기   //260331 hbk
+        private void Btn_OpenImage_Click(object sender, RoutedEventArgs e)
+        {
+            var param = GetParam();
+            if (param == null) return;
+
+            var dlg = new OpenFileDialog
+            {
+                Title  = "Shot 이미지 파일 선택",
+                Filter = "이미지 파일|*.bmp;*.jpg;*.jpeg;*.png;*.tiff|모든 파일|*.*",
+            };
+            if (!string.IsNullOrEmpty(param.SimulImagePath))
+                dlg.InitialDirectory = Path.GetDirectoryName(param.SimulImagePath);
+
+            if (dlg.ShowDialog() != true) return;
+
+            param.SimulImagePath = dlg.FileName;   //260331 hbk — 경로 저장 (레시피에 자동 저장)
+
+            // 파일 즉시 로드하여 화면 표시   //260331 hbk
+            var mat = OpenCvSharp.Cv2.ImRead(param.SimulImagePath, OpenCvSharp.ImreadModes.Color);
+            param.SetOriginalImage(mat);
+            mat?.Dispose();
+
+            // 로드된 이미지로 Blob 검사 실행   //260401 hbk
+            var seq = _pSeq[ESequence.Inspection];
+            if (seq != null && seq[_shotIndex] is Action_Inspection act)
+                act.RunBlobOnLastGrab();
+
+            RefreshImage();
+            UpdateResultLabel();   //260401 hbk — OK/NG 결과 즉시 반영
+        }
+
+        // Shot별 이미지 삭제   //260331 hbk
+        private void Btn_DeleteImage_Click(object sender, RoutedEventArgs e)
+        {
+            var param = GetParam();
+            if (param == null) return;
+
+            param.SimulImagePath = "";          //260331 hbk — 경로 초기화
+            param.SetOriginalImage(null);       //260331 hbk — 이미지 버퍼 해제
+            RefreshImage();
+        }
+
         // 결과 레이블 갱신 — OK/NG/---   //260327 hbk Shot탭
         public void UpdateResultLabel()
         {
@@ -197,14 +305,16 @@ namespace FinalVisionProject.UI
             if (seq == null || _shotIndex >= seq.ActionCount) return;
 
             var result = seq[_shotIndex].Context.Result;
+            var p = seq[_shotIndex].Param as InspectionParam;
+            double blobArea = p?.LastBlobArea ?? 0;
             switch (result)
             {
                 case EContextResult.Pass:
-                    label_result.Content    = "OK";
+                    label_result.Content    = $"OK  {blobArea:F0}";   //260331 hbk — 면적 표시
                     label_result.Foreground = new SolidColorBrush(Colors.Lime);
                     break;
                 case EContextResult.Fail:
-                    label_result.Content    = "NG";
+                    label_result.Content    = $"NG  {blobArea:F0}";   //260331 hbk — NG시 0 또는 실제 면적
                     label_result.Foreground = new SolidColorBrush(Colors.Red);
                     break;
                 default:
@@ -229,6 +339,7 @@ namespace FinalVisionProject.UI
                     canvas_shot.Background = new ImageBrush(frame);
                     _bgW = (int)frame.Width;
                     _bgH = (int)frame.Height;
+                    canvas_shot.SetDisplayMat(img);   //260331 hbk — RuntimeResizer.CurrentPosDisplay용 Mat 전달
                     // Grab 시 슬라이더 현재값 적용 (기본 52%) — _scale이 초기 1.0인 문제 방지   //260330 hbk
                     double s = Math.Max(0.2, Math.Min(2.0, slider_scale.Value / 100.0));   //260330 hbk
                     _scale.ScaleX = s;   //260330 hbk

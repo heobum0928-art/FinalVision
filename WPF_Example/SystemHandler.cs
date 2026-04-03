@@ -106,7 +106,7 @@ namespace FinalVisionProject {
             Sequences.ExecOnCreate();
 
             //collect recipe
-            Recipes.CollectRecipe();
+            Recipes.CollectRecipe();   //260403 hbk — RecipeSavePath 루트 기준 (Site 하위 경로 사용 안 함)
 
             //localization resource
             Localize = App.Current.Resources["DR"] as LocalizationResource;
@@ -122,6 +122,17 @@ namespace FinalVisionProject {
             }
             else {
                 Logging.PrintLog((int)ELogType.Trace, "[RECIPE] Load fail : {0}", recipeName);
+            }
+            return result;
+        }
+
+        public bool LoadRecipe(int siteNumber, string recipeName) {   //260331 hbk — Site 경로(Site1)로 로드 (SaveRecipe(1,name)과 경로 일치)
+            bool result = Sequences.LoadRecipe(siteNumber, recipeName);
+            if (result) {
+                Logging.PrintLog((int)ELogType.Trace, "[RECIPE] Loaded Site{0} : {1}", siteNumber, recipeName);
+            }
+            else {
+                Logging.PrintLog((int)ELogType.Trace, "[RECIPE] Load fail Site{0} : {1}", siteNumber, recipeName);
             }
             return result;
         }

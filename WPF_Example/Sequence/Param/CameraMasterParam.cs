@@ -68,6 +68,10 @@ namespace FinalVisionProject.Sequence
             ChildList.Add(child);
         }
 
+        public void ClearChildren() {   //260401 hbk — 동적 Action 재등록 시 기존 자식 제거
+            ChildList.Clear();
+        }
+
         public override bool Load(IniFile loadFile, string groupName) {
             return base.Load(loadFile, groupName);
         }

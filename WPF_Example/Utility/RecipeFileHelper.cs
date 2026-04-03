@@ -119,14 +119,10 @@ namespace FinalVisionProject.Utility {
             return false;
         }
 
-        /// <summary>
-        /// 기존 레시피 디렉터리를 새 이름으로 복사합니다. (Site 하위 경로 기준)
-        ///
-        //260402 hbk — D-06: siteNumber 파라미터 추가, Site 하위 경로 기준으로 복사
-        public bool Copy(string prevName, string newName, int siteNumber, bool forceCopy = false) {
-            string siteDir     = Path.Combine(SystemHandler.Handle.Setting.RecipeSavePath, "Site" + siteNumber);
-            string prevDirPath = Path.Combine(siteDir, prevName);
-            string newDirPath  = Path.Combine(siteDir, newName);
+        //260403 hbk — D-06: siteNumber 제거, RecipeSavePath 루트 기준으로 복사
+        public bool Copy(string prevName, string newName, bool forceCopy = false) {
+            string prevDirPath = Path.Combine(SystemHandler.Handle.Setting.RecipeSavePath, prevName);
+            string newDirPath  = Path.Combine(SystemHandler.Handle.Setting.RecipeSavePath, newName);
 
             //해당 dir이 이미 존재함
             if (Directory.Exists(newDirPath) && (forceCopy == false)) {
@@ -207,7 +203,8 @@ namespace FinalVisionProject.Utility {
         /// </summary>
         public string GetRecipeFilePath(int siteNumber, string name) {
             string recipeSavePath = SystemHandler.Handle.Setting.RecipeSavePath;
-            return Path.Combine(recipeSavePath, "Site" + siteNumber, name, FILE_RECIPE + EXT_RECIPE);
+            //260403 hbk — D-10: "Site" + siteNumber → siteNumber.ToString()
+            return Path.Combine(recipeSavePath, siteNumber.ToString(), name, FILE_RECIPE + EXT_RECIPE);
         }
 
         /// <summary>
@@ -215,7 +212,8 @@ namespace FinalVisionProject.Utility {
         /// </summary>
         public int CollectRecipe(int siteNumber) {
             SystemHandler pSys = SystemHandler.Handle;
-            string sitePath = Path.Combine(pSys.Setting.RecipeSavePath, "Site" + siteNumber);
+            //260403 hbk — D-10: "Site" + siteNumber → siteNumber.ToString()
+            string sitePath = Path.Combine(pSys.Setting.RecipeSavePath, siteNumber.ToString());
             if (Directory.Exists(sitePath) == false) {
                 System.Windows.Application.Current.Dispatcher.Invoke(() => List.Clear());   //260330 hbk UI 스레드에서 Clear
                 return 0;

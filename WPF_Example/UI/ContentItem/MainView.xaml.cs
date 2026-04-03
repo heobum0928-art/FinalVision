@@ -97,6 +97,7 @@ namespace FinalVisionProject.UI {
         private ScaleTransform ScaleTransform = new ScaleTransform();
 
         private Task GrabTask = null;
+        private SequenceBase _subscribedInspSeq = null; //260402 hbk OnFinish 해제용 시퀀스 참조
        
         private bool dragStarted = false;
 
@@ -193,6 +194,14 @@ namespace FinalVisionProject.UI {
             shotView_4.Initialize(3);
             shotView_5.Initialize(4);
 
+            // TCP 검사 완료 시 MainView 이미지/결과 자동 갱신   //260330 hbk
+            var inspSeq = pSeq[ESequence.Inspection];
+            if (inspSeq != null)
+            {
+                _subscribedInspSeq = inspSeq; //260402 hbk 해제용 참조 저장
+                inspSeq.OnFinish += OnInspectionFinish; //260402 hbk 람다→named handler (해제 가능)
+            }
+
             this.DrawScale = pDev.Config.DrawScale;
         }
 
@@ -238,6 +247,34 @@ namespace FinalVisionProject.UI {
             }
         }
 
+        //260402 hbk OnFinish named handler (람다 대체 — 이벤트 해제 가능)
+        private void OnInspectionFinish(SequenceContext ctx)
+        {
+            var param = ctx.ActionParam as InspectionParam;   //260331 hbk — CurrentActionIndex 대신 ctx에서 직접 참조 (다음 Shot 시작 시 인덱스 변경 방지)
+            if (param == null) return;
+            Dispatcher.BeginInvoke(System.Windows.Threading.DispatcherPriority.Normal, new Action(() =>
+            {
+                // ctx.ResultImage는 stale 가능 → param에서 직접 조회   //260331 hbk
+                Mat img = param.LastAnnotatedImage
+                          ?? param.GetAnnotatedImageTemp()
+                          ?? param.LastOriginalImage;
+                if (img != null) DisplayToBackground(img);
+                canvas_main.SetParam((ParamBase)param);   //260330 hbk — ROIShape 필터링 포함
+                canvas_main.InvalidateVisual();
+                UpdateShotStrip();   //260331 hbk
+            }));
+        }
+
+        //260402 hbk 이벤트 정리 (MainWindow 종료 시 호출)
+        public void Cleanup()
+        {
+            if (_subscribedInspSeq != null)
+            {
+                _subscribedInspSeq.OnFinish -= OnInspectionFinish;
+                _subscribedInspSeq = null;
+            }
+        }
+
         private bool DisplayToBackground(Mat img) {
             try {
                 //background
@@ -247,13 +284,14 @@ namespace FinalVisionProject.UI {
                         BackgroundImageStream.Seek(0, SeekOrigin.Begin);
                         BitmapFrame frame = BitmapFrame.Create(BackgroundImageStream, BitmapCreateOptions.PreservePixelFormat, BitmapCacheOption.OnLoad);
                         canvas_main.Background = new ImageBrush(frame);
-                        
+
                         BackgroundWidth = (int)frame.Width;
                         BackgroundHeight = (int)frame.Height;
 
                         canvas_main.Width = (BackgroundWidth * DrawScale);
                         canvas_main.Height = (BackgroundHeight * DrawScale);
                     }
+                    canvas_main.SetDisplayMat(img);   //260331 hbk GV 표시용 Mat 전달
                 }
                 else {
                     canvas_main.Background = Brushes.Black;
@@ -287,7 +325,7 @@ namespace FinalVisionProject.UI {
                     if (param is InspectionParam ip) {
                         ip.SetOriginalImage(grabbedImage);   //260326 hbk // Grab 시 Shot 뷰어용 원본 이미지 저장
 #if SIMUL_MODE
-                        // SIMUL B방식: Grab 직후 BlobDetect+FinishAction → Context.Result 갱신 → Strip 색상 반영   //260327 hbk
+                        // SIMUL B방식: Grab 직후 BlobDetect+FinishAction 수행, Context.Result 갱신, Strip 색상 반영   //260327 hbk
                         int _shotIdx = Array.IndexOf(SHOT_ACTION_NAMES, param.ActionName);   //260327 hbk
                         SequenceBase _seq = pSeq?[ESequence.Inspection];                     //260327 hbk
                         if (_seq != null && _shotIdx >= 0 && _seq[_shotIdx] is Action_Inspection _act)

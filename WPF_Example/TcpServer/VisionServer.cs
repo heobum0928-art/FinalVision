@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using FinalVisionProject.Setting;
+using FinalVisionProject.Utility;
 
 namespace FinalVisionProject.Network {
     public partial class VisionServer : TcpServer {
@@ -22,14 +24,8 @@ namespace FinalVisionProject.Network {
 
         protected override void PerformOnAlarm(AlarmEventArgs e) {
             base.PerformOnAlarm(e);
-        }
-
-        protected override void PerformOnRecvMessage(MessageEventArgs e) {
-            base.PerformOnRecvMessage(e);
-        }
-
-        protected override void PerformOnSendMessage(MessageEventArgs e) {
-            base.PerformOnSendMessage(e);
+            Logging.PrintLog((int)ELogType.TcpConnection, "[TCP][{0}] Target:{1} Msg:{2}",   //260330 hbk
+                e.AlarmType, e.Target, e.Message);
         }
 
         

@@ -168,7 +168,7 @@ namespace FinalVisionProject.Sequence {
             OnRecipeChanged?.Invoke(this, new RecipeChangedEventArgs(name));
 
             // 레시피 파일 존재 여부와 무관하게 항상 OnLoad 호출
-            // → 파일 없을 때도 카메라 참조(_Camera) 초기화가 보장됨
+            // 파일 없을 때도 카메라 참조(_Camera) 초기화가 보장됨
             ExecOnLoad(name);
 
             return result;
@@ -228,7 +228,7 @@ namespace FinalVisionProject.Sequence {
 
             }
 
-            // 시퀀스 → 액션 순서로 파라미터를 순차 로드 (저장 순서와 반드시 일치해야 함)
+            // 시퀀스, 액션 순서로 파라미터를 순차 로드 (저장 순서와 반드시 일치해야 함)
             int m = 0;
             for (int i = 0; i < Sequences.Count; i++) {
                 for (int j = 0; j < this[i].ActionCount; j++) {
@@ -299,8 +299,7 @@ namespace FinalVisionProject.Sequence {
             saveFile["Info"]["ModelName"] = ModelName;
             saveFile["Info"]["Version"] = Version;
 
-            // 시퀀스 → 액션 순서로 파라미터를 순차 저장 (로드 순서와 반드시 일치해야 함)
-            //saveFile["Params"]["Count"] = Params.Count; (개수는 고정되어 있으므로 저장할 필요가 없음)
+            // 시퀀스, 액션 순서로 파라미터를 순차 저장 (로드 순서와 반드시 일치해야 함)
             int m = 0;
             for (int i = 0; i < Sequences.Count; i++) {
                 for (int j = 0; j < this[i].ActionCount; j++) {

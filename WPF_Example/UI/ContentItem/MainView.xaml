@@ -48,7 +48,8 @@
                                    Text="{Binding Value, ElementName=slider_scale, StringFormat={}{0:0} %}"/>
                     </StackPanel>
                     <Label x:Name="label_pos" Grid.Column="4" HorizontalContentAlignment="Right"
-                           Content="{Binding CurrentPosDisplay, ElementName=canvas_main}"/>
+                           FontFamily="Consolas" FontSize="13" Foreground="#FF666666"
+                           Content="{Binding CurrentPosDisplay, ElementName=canvas_main}"/><!-- 260331 hbk -->
                 </Grid>
 
                 <ScrollViewer x:Name="scrollViewer" Grid.Column="0" Grid.Row="1"

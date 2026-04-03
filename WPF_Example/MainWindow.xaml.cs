@@ -61,7 +61,6 @@ namespace FinalVisionProject {
 
             set {
                 this.Dispatcher.BeginInvoke(System.Windows.Threading.DispatcherPriority.Normal, new Action(() => {
-                    mainView.IsEditable = value;
                     inspectionList.IsEditable = value;
                     menuBar.IsEditable = value;
                     mainView.SetShotViewsEditable(value);   //260330 hbk — Shot 탭 ROI 편집도 Edit 모드 연동
@@ -223,7 +222,7 @@ namespace FinalVisionProject {
                 CustomMessageBox.Show("Error", SystemHandler.Handle.Localize["System Is Running"], MessageBoxImage.Error);
                 return;
             }
-            if(!mSystemHandler.Sequences.SaveRecipe(name, ERecipeFileType.Ini)) {
+            if(!mSystemHandler.Sequences.SaveRecipe(name)) {   //260403 hbk — RecipeSavePath 루트 기준 저장
                 CustomMessageBox.Show("Error", SystemHandler.Handle.Localize["fail to save recipe"], MessageBoxImage.Error);
                 return;
             }
@@ -299,7 +298,7 @@ namespace FinalVisionProject {
                     mModalWindow.Owner = this;
                     if (mModalWindow.ShowDialog() == true) {
                         string selectedName = (mModalWindow as OpenRecipeWindow).SelectedRecipeName;
-                        if (!mSystemHandler.LoadRecipe(selectedName)) {
+                        if (!mSystemHandler.LoadRecipe(selectedName)) {   //260403 hbk — RecipeSavePath 루트 기준 로드
                             CustomMessageBox.Show("Error", SystemHandler.Handle.Localize["fail to load recipe"], MessageBoxImage.Error);
                         }
                     }
@@ -348,7 +347,7 @@ namespace FinalVisionProject {
 
             if (mSystemHandler.Setting.CurrentRecipeName != null)
             {
-                mSystemHandler.LoadRecipe(mSystemHandler.Setting.CurrentRecipeName);
+                mSystemHandler.LoadRecipe(mSystemHandler.Setting.CurrentRecipeName);   //260403 hbk — RecipeSavePath 루트 기준 로드
             }
             
             IsEditable = false;
@@ -422,6 +421,20 @@ namespace FinalVisionProject {
             }
 
             //register
+            mTimer.Stop(); //260402 hbk DispatcherTimer 정리 (메모리 누수 방지)
+            mTimer.Tick -= TimerTick; //260402 hbk
+
+            mainView.Cleanup(); //260402 hbk MainView OnFinish 이벤트 해제
+            mainView.shotView_1.Cleanup(); //260402 hbk ShotTabView OnFinish 이벤트 해제
+            mainView.shotView_2.Cleanup(); //260402 hbk
+            mainView.shotView_3.Cleanup(); //260402 hbk
+            mainView.shotView_4.Cleanup(); //260402 hbk
+            mainView.shotView_5.Cleanup(); //260402 hbk
+
+            mainView.canvas_main.OnSelectionItemChanged -= SelectedDrawingItemChanged; //260402 hbk 이벤트 해제 누락 수정
+            mSystemHandler.Sequences.OnRecipeChanged -= this.OnLoadRecipe; //260402 hbk 이벤트 해제 누락 수정
+            mSystemHandler.Login.OnLoginStateChanged -= this.OnLoginChanged; //260402 hbk 이벤트 해제 누락 수정
+
             for (int i = 0; i < mSystemHandler.Sequences.Count; i++) {
                 mSystemHandler.Sequences[i].OnStart -= OnSequenceStart;
                 mSystemHandler.Sequences[i].OnStop -= OnSequenceStop;

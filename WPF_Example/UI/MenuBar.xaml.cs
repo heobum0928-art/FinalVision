@@ -27,7 +27,6 @@ namespace FinalVisionProject.UI {
 
             label_title.Text = SystemHandler.ProjectName;
             label_Version.Text = string.Format("Platform : {0}", SystemHandler.Handle.Recipes.GetVersion());
-            label_DLLVersion.Text = string.Format("DLL : {0}", SystemHandler.Handle.Recipes.GetDLLVersion());
         }
 
         private bool _IsEditable = false;

@@ -61,12 +61,18 @@ namespace FinalVisionProject.Sequence
         public UI.Circle ROICircle { get; set; }          //260327 hbk 그리기 — 원형 ROI (ROIShape=Circle 시 사용)
 
         [Category("Blob")]                                        //260326 hbk
-        public double BlobMinArea { get; set; } = 100000;         //260326 hbk — Blob 최소 면적 (자재 없으면 미검출) //260330 hbk 기본값 100→100000
-        public double BlobMaxArea { get; set; } = 9999999;       //260326 hbk — Blob 최대 면적 (노이즈 필터) //260330 hbk 기본값 50000→9999999
-        public int BlobThreshold { get; set; } = 100;            //260327 hbk — 이진화 임계값 (0~255, ROI 내부 적용) //260330 hbk 기본값 128→100
+        public double BlobMinArea { get; set; } = 100000;         //260326 hbk Blob 최소 면적 (자재 없으면 미검출)
+        public double BlobMaxArea { get; set; } = 9999999;       //260326 hbk Blob 최대 면적 (노이즈 필터)
+        public int BlobThreshold { get; set; } = 100;            //260327 hbk 이진화 임계값 (0~255, ROI 내부 적용)
 
         [Category("General")]                       //260326 hbk
         public int DelayMs { get; set; } = 0;       //260326 hbk — 촬상 전 대기시간(ms), 자재 이동 안정화용
+
+        [System.ComponentModel.Browsable(false)]                           //260331 hbk — PropertyGrid 표시 제외
+        public string SimulImagePath { get; set; } = "";                   //260331 hbk — Shot별 개별 로드 이미지 파일 경로
+
+        [System.ComponentModel.Browsable(false)]                           //260331 hbk
+        public double LastBlobArea { get; set; } = 0;                      //260331 hbk — 최근 검사 Blob 면적 (검출 없으면 0)
 
         // Shot 이미지 버퍼   //260326 hbk // Shot별 원본/오버레이 이미지 보관
         [System.ComponentModel.Browsable(false)]   //260330 hbk — PropertyGrid 표시 제외 (내부 이미지 버퍼)
@@ -77,10 +83,21 @@ namespace FinalVisionProject.Sequence
         // 잠금 플래그: 실운영(SIMUL_MODE 미정의) BlobDetect 완료 후 true   //260326 hbk
         private bool _AnnotatedImageLocked = false;           //260326 hbk
 
+        private readonly object _imageLock = new object();   //260403 hbk — 이미지 접근 동기화
+
         public void SetOriginalImage(Mat img)   //260326 hbk // Grab 완료 후 호출
         {
-            LastOriginalImage?.Dispose();        //260326 hbk // 이전 이미지 해제
-            LastOriginalImage = img?.Clone();    //260326 hbk // 클론 저장 (원본 생명주기 독립)
+            lock (_imageLock) {   //260403 hbk — TCP/UI 스레드 동시 접근 방지
+                LastOriginalImage?.Dispose();        //260326 hbk // 이전 이미지 해제
+                LastOriginalImage = img?.Clone();    //260326 hbk // 클론 저장 (원본 생명주기 독립)
+            }
+        }
+
+        //260403 hbk — 시뮬모드: 로드된 이미지 Clone 반환 (원본 보호)
+        public Mat GetOriginalImageClone() {
+            lock (_imageLock) {
+                return LastOriginalImage?.Clone();
+            }
         }
 
         public void SetAnnotatedImage(Mat img)   //260326 hbk // 실검사(비SIMUL) BlobDetect 완료 후 1회만 호출
@@ -139,6 +156,7 @@ namespace FinalVisionProject.Sequence
             target.BlobMaxArea   = this.BlobMaxArea;    //260330 hbk
             target.BlobThreshold = this.BlobThreshold;  //260330 hbk
             target.DelayMs       = this.DelayMs;        //260330 hbk
+            target.SimulImagePath = this.SimulImagePath; //260331 hbk
             return result;
         }
 
@@ -152,7 +170,7 @@ namespace FinalVisionProject.Sequence
         #endregion
     }
 
-    public class Action_Inspection : ActionBase   //260326 hbk — 5-Shot 공통 Action (Grab→Blob→Save→End)
+    public class Action_Inspection : ActionBase   //260326 hbk 5-Shot 공통 Action (Grab, BlobDetect, SaveImage, End)
     {
         #region fields
         private VirtualCamera _Camera;          //260326 hbk — HIK 카메라 (또는 SIMUL VirtualCamera)
@@ -178,11 +196,6 @@ namespace FinalVisionProject.Sequence
             _Camera = SystemHandler.Handle.Devices[_MyParam.DeviceName];   //260326 hbk
             if (_Camera != null)
             {
-                // SIMUL_MODE: SystemSetting.SimulImagePath → BackgroundImagePath 주입   //260326 hbk
-                var setting = SystemSetting.Handle;                                       //260326 hbk
-                if (!string.IsNullOrEmpty(setting.SimulImagePath))                        //260326 hbk
-                    _Camera.BackgroundImagePath = setting.SimulImagePath;                 //260326 hbk
-
                 if (_Camera.Properties == null)
                 {
                     CustomMessageBox.Show(_Camera.Name + " Camera Not Open!", "Camera is not open. Please check your connection status.", System.Windows.MessageBoxImage.Error);
@@ -214,21 +227,30 @@ namespace FinalVisionProject.Sequence
                     // 딜레이 적용
                     if (_MyParam.DelayMs > 0)
                         System.Threading.Thread.Sleep(_MyParam.DelayMs);
-                    // SW Trigger로 Grab
-                    _GrabbedImage = _Camera.GrabImage();   //260326 hbk
+#if SIMUL_MODE
+                    //260403 hbk — 시뮬모드: 로드된 이미지 Clone으로 재사용, 없으면 VirtualCamera Grab
+                    _GrabbedImage = _MyParam.GetOriginalImageClone() ?? _Camera.GrabImage();
+                    //260403 hbk — 시뮬모드에서는 SetOriginalImage 호출 안 함 (원본 보존)
+#else
+                    //260403 hbk — 실제모드: 카메라에서 Grab
+                    _GrabbedImage = _Camera.GrabImage();
                     _MyParam.SetOriginalImage(_GrabbedImage);   //260326 hbk // 원본 이미지 버퍼 저장
+#endif
                     if (_GrabbedImage == null)
                     {
+                        Logging.PrintLog((int)ELogType.Trace, "[ALGO] {0} Grab 실패 NG", Name);   //260330 hbk
                         _IsOK = false;
-                        Step = (int)EStep.SaveImage;   //260326 hbk — Grab 실패 → NG, SaveImage로 이동
+                        Step = (int)EStep.SaveImage;   //260326 hbk Grab 실패시 SaveImage로 이동
                         break;
                     }
+                    Logging.PrintLog((int)ELogType.Trace, "[ALGO] {0} Grab OK", Name);   //260330 hbk
                     Step++;
                     break;
 
                 case EStep.BlobDetect:   //260326 hbk
-                    var (isOk, annotated) = RunBlobDetection(_GrabbedImage, _MyParam);   //260326 hbk
-                    _IsOK = isOk;                                                          //260326 hbk
+                    Mat annotated;
+                    _IsOK = RunBlobDetection(_GrabbedImage, _MyParam, out annotated);      //260326 hbk
+                    Logging.PrintLog((int)ELogType.Trace, "[ALGO] {0} BlobDetect Result:{1}", Name, _IsOK ? "OK" : "NG");   //260330 hbk
 #if SIMUL_MODE
                     // SIMUL 재검사: LastAnnotatedImage 변경 없이 캔버스용 임시 저장   //260326 hbk
                     _MyParam.SetAnnotatedImageTemp(annotated);   //260326 hbk // LastAnnotatedImage 잠금 유지
@@ -247,6 +269,7 @@ namespace FinalVisionProject.Sequence
                     break;
 
                 case EStep.End:   //260326 hbk
+                    Logging.PrintLog((int)ELogType.Trace, "[ALGO] {0} End, Result:{1}", Name, _IsOK ? "Pass" : "Fail");   //260330 hbk
                     FinishAction(_IsOK ? EContextResult.Pass : EContextResult.Fail);   //260326 hbk
                     break;
             }
@@ -259,8 +282,8 @@ namespace FinalVisionProject.Sequence
             Mat img = _MyParam.LastOriginalImage;   //260327 hbk
             if (img == null)
                 return;               //260327 hbk
-            var (isOk, annotated) = RunBlobDetection(img, _MyParam);   //260327 hbk
-            _IsOK = isOk;                                               //260327 hbk
+            Mat annotated;
+            _IsOK = RunBlobDetection(img, _MyParam, out annotated);     //260327 hbk
             _MyParam.SetAnnotatedImageTemp(annotated);   //260327 hbk — SIMUL: Temp 갱신, LastAnnotatedImage 잠금 유지
             annotated?.Dispose();                        //260327 hbk
             SaveResultImage(img, _IsOK);                 //260327 hbk
@@ -268,25 +291,32 @@ namespace FinalVisionProject.Sequence
         }
 
         // Blob 검출 — SimpleBlobDetector, filterByArea만 + 오버레이 Mat 반환   //260326 hbk
-        private (bool isOk, Mat annotated) RunBlobDetection(Mat image, InspectionParam param)   //260326 hbk
+        private bool RunBlobDetection(Mat image, InspectionParam param, out Mat annotated)   //260326 hbk
         {
-            if (image == null) return (false, null);   //260326 hbk
+            if (image == null)
+            {
+                annotated = null;
+                return false;   //260326 hbk
+            }
+
+            Mat gray = null; //260402 hbk try 밖 선언 (finally에서 Dispose 보장)
+            Mat roiMat = null; //260402 hbk try 밖 선언 (finally에서 Dispose 보장)
+            bool needDisposeGray = false; //260402 hbk gray가 새로 생성된 경우만 Dispose
 
             try
             {
                 // Gray 변환   //260326 hbk
-                Mat gray;
                 if (image.Channels() == 1)
                     gray = image;
                 else
                 {
                     gray = new Mat();
                     Cv2.CvtColor(image, gray, ColorConversionCodes.BGR2GRAY);
+                    needDisposeGray = true; //260402 hbk 새로 생성한 경우 표시
                 }
 
                 // ROI 결정: ROIShape에 따라 Rectangle 또는 Circle 적용   //260327 hbk 그리기
                 int x, y, w, h;
-                Mat roiMat;
                 bool isCircleMode = (param.ROIShape == ERoiShape.Circle);   //260327 hbk 그리기
                 OpenCvSharp.Point circleCenter = new OpenCvSharp.Point(0, 0);   //260327 hbk 그리기
                 int circleRadius = 0;                                            //260327 hbk 그리기
@@ -296,16 +326,22 @@ namespace FinalVisionProject.Sequence
                     var circ = param.ROICircle;
                     circleRadius = (int)circ.Radius;
                     if (circleRadius <= 0)
-                        return (false, null);   //260327 hbk 그리기 — Circle 미설정 → NG
+                    {
+                        annotated = null;
+                        return false;   //260327 hbk Circle 미설정이면 NG 반환
+                    }
                     circleCenter = new OpenCvSharp.Point((int)circ.CenterX, (int)circ.CenterY);
                     x = Math.Max(0, (int)circ.CenterX - circleRadius);
                     y = Math.Max(0, (int)circ.CenterY - circleRadius);
-                    int bx2 = Math.Min(gray.Width,  (int)circ.CenterX + circleRadius);
+                    int bx2 = Math.Min(gray.Width, (int)circ.CenterX + circleRadius);
                     int by2 = Math.Min(gray.Height, (int)circ.CenterY + circleRadius);
                     w = bx2 - x;
                     h = by2 - y;
                     if (w <= 0 || h <= 0)
-                        return (false, null);   //260327 hbk 그리기
+                    {
+                        annotated = null;
+                        return false;   //260327 hbk 그리기
+                    }
                     roiMat = new Mat(gray, new OpenCvSharp.Rect(x, y, w, h)).Clone();   //260327 hbk 그리기 — Clone으로 독립 메모리
                 }
                 else
@@ -313,11 +349,14 @@ namespace FinalVisionProject.Sequence
                     var roi = param.ROI;
                     x = Math.Max(0, (int)roi.X);
                     y = Math.Max(0, (int)roi.Y);
-                    w = Math.Min((int)roi.Width,  gray.Width  - x);
+                    w = Math.Min((int)roi.Width, gray.Width - x);
                     h = Math.Min((int)roi.Height, gray.Height - y);
                     if (w <= 0 || h <= 0)   //260327 hbk — ROI 미설정(0,0,0,0)이면 NG 반환 (티칭 필수)
-                        return (false, null);
-                    roiMat = new Mat(gray, new OpenCvSharp.Rect(x, y, w, h));
+                    {
+                        annotated = null;
+                        return false;
+                    }
+                    roiMat = new Mat(gray, new OpenCvSharp.Rect(x, y, w, h)).Clone(); //260402 hbk Clone 추가 (gray 독립 + finally에서 안전 Dispose)
                 }
 
                 // 스무딩 — 노이즈 제거 후 이진화   //260327 hbk
@@ -326,10 +365,13 @@ namespace FinalVisionProject.Sequence
 
                 // ROI 내 이진화 (BlobThreshold 적용)   //260327 hbk
                 Mat threshed = new Mat();
-                Cv2.Threshold(smoothed, threshed, param.BlobThreshold, 255, ThresholdTypes.Binary);   //260327 hbk — 밝은 자재→흰색(255), 배경→검정(0)
+                Cv2.Threshold(smoothed, threshed, param.BlobThreshold, 255, ThresholdTypes.Binary);   //260327 hbk 밝은 자재 흰색(255), 배경 검정(0)
                 smoothed.Dispose();
 
                 // Circle 모드: 원 외부 마스킹 (바운딩 박스에서 원 영역만 남김)   //260327 hbk 그리기
+                roiMat.Dispose(); //260402 hbk roiMat 즉시 해제 (Rectangle/Circle 공통)
+                roiMat = null; //260402 hbk finally 중복 Dispose 방지
+
                 if (isCircleMode)
                 {
                     Mat circleMask = Mat.Zeros(threshed.Size(), MatType.CV_8UC1);
@@ -341,7 +383,6 @@ namespace FinalVisionProject.Sequence
                     circleMask.Dispose();
                     threshed.Dispose();
                     threshed = maskedThreshed;   //260327 hbk 그리기
-                    roiMat.Dispose();            //260327 hbk 그리기 — Clone 해제
                 }
 
                 // connection — FindContours (Halcon connection 대응)   //260327 hbk
@@ -359,19 +400,20 @@ namespace FinalVisionProject.Sequence
                     // 중심 계산 (Moments)   //260327 hbk
                     var M = Cv2.Moments(contour);
                     if (M.M00 == 0) continue;
-                    int cx = (int)(M.M10 / M.M00) + x;   // ROI 오프셋 → 전체 이미지 좌표
+                    int cx = (int)(M.M10 / M.M00) + x;   // ROI 오프셋 적용하여 전체 이미지 좌표로 변환
                     int cy = (int)(M.M01 / M.M00) + y;
                     selected.Add((new OpenCvSharp.Point(cx, cy), area));
                 }
 
                 // 오버레이용 컬러 Mat 생성   //260326 hbk
-                Mat annotated = new Mat();
+                annotated = new Mat();
                 if (image.Channels() == 1)
                     Cv2.CvtColor(image, annotated, ColorConversionCodes.GRAY2BGR);
                 else
                     annotated = image.Clone();
 
                 bool isOk = (selected.Count >= 1);   //260327 hbk — 자재 있으면 OK
+                param.LastBlobArea = selected.Count > 0 ? selected.Max(s => s.area) : 0;   //260331 hbk — 최대 면적 저장
                 Scalar blobColor = isOk ? new Scalar(0, 255, 0) : new Scalar(0, 0, 255);
 
                 foreach (var (center, area) in selected)
@@ -395,12 +437,20 @@ namespace FinalVisionProject.Sequence
                         new Scalar(255, 255, 0), 1);
 
                 threshed.Dispose();
-                return (isOk, annotated);
+                return isOk;
+
             }
             catch (Exception ex)
             {
                 Logging.PrintLog((int)ELogType.Error, string.Format("BlobDetect Error: {0}", ex.Message));   //260326 hbk
-                return (false, null);   //260326 hbk
+                annotated = null;
+                return false;   //260326 hbk
+            }
+            finally
+            {
+                //260402 hbk 예외 발생 시에도 Mat 해제 보장 (메모리 누수 방지)
+                if (needDisposeGray && gray != null) gray.Dispose();
+                if (roiMat != null) roiMat.Dispose();
             }
         }
 

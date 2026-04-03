@@ -8,12 +8,13 @@
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
 
-        <!-- 툴바: Grab + 원본/측정 + 결과 + 줌 슬라이더 (MainView와 동일 레이아웃)   //260330 hbk -->
+        <!-- 툴바   //260330 hbk -->
         <Grid Grid.Row="0">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="Auto"/>
-                <ColumnDefinition Width="*"/>
-                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="Auto"/><!-- 슬라이더 고정폭   //260331 hbk -->
+                <ColumnDefinition Width="*"/>   <!-- X/Y/Gray — MainView와 동일 위치   //260331 hbk -->
+                <ColumnDefinition Width="Auto"/>
             </Grid.ColumnDefinitions>
 
             <StackPanel Grid.Column="0" Orientation="Horizontal" Margin="6,4" VerticalAlignment="Center">
@@ -32,7 +33,8 @@
                        FontWeight="Bold" VerticalAlignment="Center"/>
             </StackPanel>
 
-            <StackPanel Grid.Column="1" Orientation="Vertical" Margin="8,2,8,2" VerticalAlignment="Center">
+            <!-- 슬라이더 — 절반 폭(120px)   //260331 hbk -->
+            <StackPanel Grid.Column="1" Orientation="Vertical" Width="120" Margin="8,2,8,2" VerticalAlignment="Center">
                 <Slider x:Name="slider_scale" Value="52" Minimum="20" Maximum="200"
                         Thumb.DragStarted="Slider_DragStarted"
                         Thumb.DragCompleted="Slider_DragCompleted"
@@ -41,9 +43,28 @@
                 <TextBlock TextAlignment="Center"
                            Text="{Binding Value, ElementName=slider_scale, StringFormat={}{0:0} %}"/>
             </StackPanel>
+
+            <!-- X/Y/Gray — MainView label_pos와 동일 방식   //260331 hbk -->
+            <Label Grid.Column="2" HorizontalContentAlignment="Right"
+                   FontFamily="Consolas" FontSize="13" Foreground="#FF666666" VerticalAlignment="Center"
+                   Content="{Binding CurrentPosDisplay, ElementName=canvas_shot}"/>
+
+            <!-- Shot별 이미지 열기/삭제   //260331 hbk -->
+            <StackPanel Grid.Column="3" Orientation="Horizontal" Margin="4,4" VerticalAlignment="Center">
+                <Button x:Name="btn_openImage" Content="열기" Width="52" FontSize="12"
+                        Click="Btn_OpenImage_Click" Margin="0,0,4,0"
+                        ToolTip="이미지 파일 열기 (Shot별 개별 지정)"/>
+                <Button x:Name="btn_deleteImage" Content="삭제" Width="52" FontSize="12"
+                        Click="Btn_DeleteImage_Click" Margin="0,0,8,0"
+                        ToolTip="로드된 이미지 삭제"/>
+                <TextBlock x:Name="tb_imagePath" FontSize="11" VerticalAlignment="Center"
+                           Text="(없음)" Foreground="Gray" MaxWidth="220"
+                           TextTrimming="CharacterEllipsis"
+                           ToolTip="{Binding Text, RelativeSource={RelativeSource Self}}"/>
+            </StackPanel>
         </Grid>
 
-        <!-- 이미지 캔버스: ROI 드래그 + 결과 표시 -->
+        <!-- 이미지 캔버스 -->
         <ScrollViewer x:Name="sv_shot" Grid.Row="1"
                       HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto"
                       Background="#FF303030"

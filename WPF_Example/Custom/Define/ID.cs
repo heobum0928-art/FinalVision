@@ -23,6 +23,7 @@ namespace FinalVisionProject.Define {
         Bolt_Three_Inspection     = 3,   //260326 hbk — TCP type:3, 볼트 3번 검사
         Assy_Rail_One_Inspection  = 4,   //260326 hbk — TCP type:4, 어셈블리 레일 1번 검사
         Assy_Rail_Two_Inspection  = 5,   //260326 hbk — TCP type:5, 어셈블리 레일 2번 검사
+
         Unknown = Int32.MaxValue
     }
 
