@@ -4,7 +4,7 @@ milestone: v2.0
 milestone_name: 레시피 편집 + 이미지 관리 + 운영 안정화
 status: Ready to plan
 stopped_at: Phase 10 context updated — recipe path structure changed
-last_updated: "2026-04-03T01:09:54.609Z"
+last_updated: "2026-04-03T03:51:07.032Z"
 progress:
   total_phases: 4
   completed_phases: 1
