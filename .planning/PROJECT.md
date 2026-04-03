@@ -35,11 +35,11 @@ Host(설비)가 TCP로 Shot 1개씩 순차 요청하여 검사를 수행하며, 
 - ✓ 통신 테스트 + 버그 수정 — v1.0 Phase 9
 - ✓ 레시피 복사 버그 수정 — v2.0 Phase 10
 - ✓ 택타임 로그 — v2.0 Phase 10
+- ✓ 이미지 저장 구조 개선 — v2.0 Phase 11
 
 ### Active
 
 - [ ] 레시피 편집 UI (RecipeEditorWindow)
-- [ ] 이미지 저장 구조 개선
 - [ ] 이미지 삭제 기능
 - [ ] 이미지 디렉터리 로드
 - [ ] Run/Grab 버튼 역할 정리
@@ -57,7 +57,7 @@ Host(설비)가 TCP로 Shot 1개씩 순차 요청하여 검사를 수행하며, 
 - 비전: OpenCvSharp FindContours + 면적 필터 (Halcon 사용 안 함)
 - 통신: TCP/IP 포트 7701, $TEST:Site,TestType,ID@ 프로토콜
 - 레시피 경로: D:\Data\Recipe\Site{N}\{레시피명}\main.ini
-- 이미지 저장 경로: D:\Log\{날짜}\{Shot명}_{OK|NG}_{시간}.jpg (v2.0에서 구조 변경 예정)
+- 이미지 저장 경로: D:\Log\{yyyyMMdd}\{HHmmss_fff}\{ShotName}_{OK|NG}.jpg (Phase 11에서 구조 변경 완료)
 - 기존 ActionContext.Timer / SequenceContext.Timer (Stopwatch) 구조 있음 — 로그 출력만 추가 필요
 
 ## Constraints
@@ -75,7 +75,7 @@ Host(설비)가 TCP로 Shot 1개씩 순차 요청하여 검사를 수행하며, 
 | PLC 미사용 (TCP/IP 전용) | 설비 구조 | ✓ Good |
 | OpenCvSharp FindContours + 면적 필터 | Halcon 라이선스 불필요, Blob 유무 검사에 충분 | ✓ Good |
 | 5-Site × 5-Shot 구조 | 독립 운영 요구 | ✓ Good |
-| OK 이미지 기본 미저장 | 디스크 절약, NG만 관리 | — Pending (v2.0) |
+| OK 이미지 기본 미저장 | 디스크 절약, NG만 관리 | ✓ Good (Phase 11) |
 
 ## Evolution
 
@@ -95,4 +95,4 @@ This document evolves at phase transitions and milestone boundaries.
 4. Update Context with current state
 
 ---
-*Last updated: 2026-04-03 after Phase 10 complete*
+*Last updated: 2026-04-03 after Phase 11 complete*
