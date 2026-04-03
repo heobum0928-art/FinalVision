@@ -118,12 +118,12 @@ Plans:
   2. 기본 설정에서 OK 이미지는 저장되지 않고 NG 이미지만 저장된다
   3. SystemSetting에서 OK 이미지 저장 옵션을 활성화하면 OK 이미지도 저장된다
   4. 같은 초에 여러 검사가 실행되어도 시간폴더 이름이 충돌하지 않는다
-**Plans**: TBD
+**Plans**: 2 plans
 **UI hint**: yes
 
 Plans:
-- [ ] 11-01: ImageFolderManager 신규 생성 — 날짜>시간 경로 생성, D:\Log 하드코딩 교체
-- [ ] 11-02: Action_Inspection.SaveResultImage — ImageFolderManager.GetSavePath() 사용, SaveOkImage 기본값 false 적용
+- [ ] 11-01-PLAN.md — ImageFolderManager + InspectionSequenceContext + SystemSetting.ImageSavePath
+- [ ] 11-02-PLAN.md — Action_Inspection.SaveResultImage with ImageFolderManager paths + annotated image
 
 ---
 
@@ -136,7 +136,7 @@ Plans:
   2. Run 버튼 클릭 시 이전에 로드된 이미지로 카메라 없이 검사 테스트가 실행된다
   3. 시간 폴더를 선택하면 Shot1~5 이미지가 UI에 일괄 로드된다
   4. 날짜 또는 시간 폴더 단위로 저장된 이미지를 삭제할 수 있다
-**Plans**: TBD
+**Plans**: 2 plans
 **UI hint**: yes
 
 Plans:
@@ -156,7 +156,7 @@ Plans:
   3. Grab 버튼으로 현재 Shot의 카메라 촬상 + 검사 미리보기가 실행된다
   4. Save 버튼으로 편집된 파라미터가 레시피 파일에 저장된다
   5. Reset 버튼으로 모든 파라미터가 기본값으로 초기화된다
-**Plans**: TBD
+**Plans**: 2 plans
 **UI hint**: yes
 
 Plans:
