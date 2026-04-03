@@ -177,6 +177,7 @@ namespace FinalVisionProject.Sequence
         private InspectionParam _MyParam;       //260326 hbk — Shot별 독립 파라미터 참조
         private Mat _GrabbedImage;              //260326 hbk — Grab된 원본 이미지
         private bool _IsOK;                     //260326 hbk — 검사 판정 결과 (true=OK, false=NG)
+        private string _FolderPath = "";        //260403 hbk -- current inspection time-folder path (D-09)
 
         public enum EStep                       //260326 hbk — Run() 상태머신 Step 정의
         {
@@ -188,6 +189,17 @@ namespace FinalVisionProject.Sequence
         #endregion
 
         #region methods
+
+        //260403 hbk -- capture time-folder path from InspectionSequenceContext (D-09)
+        public override void OnBegin(SequenceContext prevResult = null)
+        {
+            base.OnBegin(prevResult);   //260403 hbk -- Step 리셋, Timer 재시작, Context 초기화
+            var inspContext = prevResult as InspectionSequenceContext;   //260403 hbk -- InspectionSequenceContext로 캐스트
+            if (inspContext != null)
+            {
+                _FolderPath = inspContext.CurrentFolderPath;   //260403 hbk -- 검사 시작 시 생성된 time-folder 경로 캡처
+            }
+        }
 
         public override void OnLoad()   //260326 hbk
         {
