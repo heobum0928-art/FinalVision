@@ -2,14 +2,14 @@
 gsd_state_version: 1.0
 milestone: v2.0
 milestone_name: 레시피 편집 + 이미지 관리 + 운영 안정화
-status: Ready to execute
-stopped_at: Completed 11-01-PLAN.md
-last_updated: "2026-04-03T06:27:50.650Z"
+status: Phase complete — ready for verification
+stopped_at: Completed 11-02-PLAN.md
+last_updated: "2026-04-03T06:32:32.727Z"
 progress:
   total_phases: 4
-  completed_phases: 1
+  completed_phases: 2
   total_plans: 4
-  completed_plans: 3
+  completed_plans: 4
 ---
 
 # FinalVision — Project State
@@ -46,6 +46,7 @@ Plan: 2 of 2
 | Phase 10-recipe-copy-infra P02 | 15 | 1 tasks | 1 files |
 | Phase 10-recipe-copy-infra P01 | 8 | 2 tasks | 3 files |
 | Phase 11-image-save-structure P01 | 7 | 2 tasks | 4 files |
+| Phase 11-image-save-structure P02 | 2 | 2 tasks | 1 files |
 
 ## Accumulated Context
 
@@ -57,6 +58,7 @@ Plan: 2 of 2
 - [Phase 10-recipe-copy-infra]: Copy() 구 시그니처(string,string,bool) 완전 제거 — siteNumber 필수 파라미터로 API 일관성 확보
 - [Phase 10-recipe-copy-infra]: CopyFilesRecursively: Directory.CreateDirectory 무조건 호출(no-op 안전), if(!Exists) TOCTOU 패턴 금지
 - [Phase 11-image-save-structure]: ImageFolderManager static utility (no singleton) for path generation only; collision suffix _2/_3 for millisecond uniqueness; FinalVision.csproj requires explicit Compile includes
+- [Phase 11-image-save-structure]: _FolderPath captured once in OnBegin from InspectionSequenceContext.CurrentFolderPath; annotated null+IsDisposed guard for SIMUL mode; async Task.Factory.StartNew+Clone+Dispose pattern
 
 ### Pending Todos
 
@@ -69,6 +71,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-04-03T06:27:50.643Z
-Stopped at: Completed 11-01-PLAN.md
+Last session: 2026-04-03T06:32:32.720Z
+Stopped at: Completed 11-02-PLAN.md
 Resume file: None
