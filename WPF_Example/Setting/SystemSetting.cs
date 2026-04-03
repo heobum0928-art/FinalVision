@@ -95,9 +95,6 @@ namespace FinalVisionProject.Setting {
         public bool SaveOkImage { get; set; } = false;                       //260326 hbk
         public bool SaveNgImage { get; set; } = true;                        //260326 hbk
 
-        [Category("Inspection|Simulation")]                                  //260326 hbk
-        public string SimulImagePath { get; set; } = "";                     //260326 hbk — SIMUL_MODE 테스트 이미지 경로
-
         //config
 
         [Category("System|Enviroment")]

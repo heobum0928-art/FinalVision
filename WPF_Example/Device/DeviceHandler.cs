@@ -232,13 +232,6 @@ namespace FinalVisionProject.Device {
             if (cam == null) return null;
             if (cam.Properties == null) return null;
             if (!cam.Properties.ApplyFromParam(param)) return null;
-            // VirtualCamera: BackgroundImagePath가 없으면 SimulImagePath 즉시 적용
-            // → 레시피 리로드 없이 Settings에서 경로 변경해도 바로 반영됨
-            if (cam.CamType == ECameraType.Virtual && cam.BackgroundImagePath == null) {
-                string simulPath = SystemHandler.Handle.Setting.SimulImagePath;
-                if (!string.IsNullOrEmpty(simulPath))
-                    cam.BackgroundImagePath = simulPath;
-            }
             return cam.GrabImage();
         }
         

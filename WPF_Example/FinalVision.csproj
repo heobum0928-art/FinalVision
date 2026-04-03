@@ -223,8 +223,6 @@
     <Compile Include="Device\Camera\Basler\BaslerCameraProperty.cs" />
     -->
     <Compile Include="Device\LightController\JPFLightController.cs" />
-    <Compile Include="ExternalLib\VisionLib\AlligatorAlgMil\AlligatorAlgMil.cs" />
-    <Compile Include="ExternalLib\VisionLib\AlligatorAlgMil\AlligatorAlgMilDef.cs" />
     <Compile Include="ExternalLib\VisionLib\Alligator\Alligator.cs" />
     <Compile Include="ExternalLib\VisionLib\Alligator\AlligatorDef.cs" />
     <Compile Include="Login\LoginManager.cs" />

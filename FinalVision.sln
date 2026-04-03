@@ -1,19 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 18
-# ============================================================
-# FinalVision.sln
-# 기반: ECi_Dispenser.sln (복사 후 리네임)
-# 변경 내용:
-#   - 프로젝트명: "ECi_Dispenser" → "FinalVision"
-#   - 프로젝트 경로: WPF_Example\ECi_Dispenser.csproj
-#                  → WPF_Example\FinalVision.csproj
-# 보존 항목:
-#   - ATRAS 라이브러리 (Project.BaseLib, Project.UI.Common,
-#                       Project.ProcessLib) 유지
-#   - ProjectGuid 유지 (빌드 설정 그대로 사용)
-# ============================================================
-VisualStudioVersion = 18.5.11619.145 insiders
+VisualStudioVersion = 18.5.11619.145
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Project.BaseLib", "ATRAS\Project.BaseLib\Project.BaseLib.csproj", "{F2ADF58E-07CA-41A1-90E6-BB1B4A332910}"
 EndProject
@@ -23,8 +11,6 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Project.UI.Common", "ATRAS\
 	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Project.ProcessLib", "ATRAS\Project.ProcessLib\Project.ProcessLib.csproj", "{4BD21773-C4AA-45CA-AEE6-16D9C506511B}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ImageBoxEx_Test", "ImageBoxEx_Test\ImageBoxEx_Test.csproj", "{D67090B0-E7DB-43CE-9C75-A5921619B596}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FinalVision", "WPF_Example\FinalVision.csproj", "{07E8A027-F646-4DD4-A30B-06A5035371BD}"
 	ProjectSection(ProjectDependencies) = postProject
@@ -65,14 +51,6 @@ Global
 		{4BD21773-C4AA-45CA-AEE6-16D9C506511B}.Release|Any CPU.Build.0 = Release|Any CPU
 		{4BD21773-C4AA-45CA-AEE6-16D9C506511B}.Release|x64.ActiveCfg = Release|Any CPU
 		{4BD21773-C4AA-45CA-AEE6-16D9C506511B}.Release|x64.Build.0 = Release|Any CPU
-		{D67090B0-E7DB-43CE-9C75-A5921619B596}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{D67090B0-E7DB-43CE-9C75-A5921619B596}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{D67090B0-E7DB-43CE-9C75-A5921619B596}.Debug|x64.ActiveCfg = Debug|x64
-		{D67090B0-E7DB-43CE-9C75-A5921619B596}.Debug|x64.Build.0 = Debug|x64
-		{D67090B0-E7DB-43CE-9C75-A5921619B596}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{D67090B0-E7DB-43CE-9C75-A5921619B596}.Release|Any CPU.Build.0 = Release|Any CPU
-		{D67090B0-E7DB-43CE-9C75-A5921619B596}.Release|x64.ActiveCfg = Release|Any CPU
-		{D67090B0-E7DB-43CE-9C75-A5921619B596}.Release|x64.Build.0 = Release|Any CPU
 		{07E8A027-F646-4DD4-A30B-06A5035371BD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{07E8A027-F646-4DD4-A30B-06A5035371BD}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{07E8A027-F646-4DD4-A30B-06A5035371BD}.Debug|x64.ActiveCfg = Debug|x64
