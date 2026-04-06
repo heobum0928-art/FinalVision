@@ -24,7 +24,6 @@ namespace FinalVisionProject.UI
         private DeviceHandler  _pDev;
         private SequenceHandler _pSeq;
         private LightHandler   _pLight;
-        private Task _grabTask;
         private readonly ScaleTransform _scale = new ScaleTransform(1, 1);
         private int _bgW, _bgH;
         private MemoryStream _bgStream;
@@ -80,11 +79,12 @@ namespace FinalVisionProject.UI
         }
 
         // MainView_Loaded에서 호출 — shot 인덱스 0~4   //260327 hbk Shot탭
+
         public void Initialize(int shotIndex)
         {
             _shotIndex = shotIndex;
-            _pDev   = SystemHandler.Handle.Devices;
-            _pSeq   = SystemHandler.Handle.Sequences;
+            _pDev = SystemHandler.Handle.Devices;
+            _pSeq = SystemHandler.Handle.Sequences;
             _pLight = SystemHandler.Handle.Lights;
 
             // TCP 검사 완료 시 UI 자동 갱신 — OnFinish 구독   //260330 hbk
@@ -95,6 +95,7 @@ namespace FinalVisionProject.UI
                 seq.OnFinish += OnInspectionFinish; //260402 hbk 람다→named handler (해제 가능)
             }
         }
+
 
         //260402 hbk OnFinish named handler (람다 대체 — 이벤트 해제 가능)
         private void OnInspectionFinish(SequenceContext ctx)
@@ -132,48 +133,7 @@ namespace FinalVisionProject.UI
             canvas_shot.InvalidateVisual();
         }
 
-        // Grab 버튼   //260327 hbk Shot탭
-        private async void Btn_Grab_Click(object sender, RoutedEventArgs e)
-        {
-            if (_grabTask != null) return;
-            var param = GetParam();
-            if (!(param is ICameraParam camParam)) return;
-            if (!_pSeq.IsIdle) return;
-
-            btn_grab.IsEnabled = false;
-            _grabTask = Task.Run(() =>
-            {
-                Mat grabbed;
-                // Shot별 이미지 파일 지정 시 파일에서 직접 로드   //260331 hbk
-                if (!string.IsNullOrEmpty(param.SimulImagePath) && File.Exists(param.SimulImagePath))
-                {
-                    grabbed = OpenCvSharp.Cv2.ImRead(param.SimulImagePath, OpenCvSharp.ImreadModes.Color);   //260331 hbk
-                }
-                else
-                {
-                    _pLight.ApplyLight(camParam);
-                    grabbed = _pDev.GrabImage(camParam);
-                }
-                camParam.PutImage(grabbed);
-                param.SetOriginalImage(grabbed);
-
-#if SIMUL_MODE
-                var seq = _pSeq[ESequence.Inspection];
-                if (seq != null && seq[_shotIndex] is Action_Inspection act)
-                    act.RunBlobOnLastGrab();
-#endif
-
-                this.Dispatcher.BeginInvoke(DispatcherPriority.Normal, new Action(() =>
-                {
-                    RefreshImage();
-                    UpdateResultLabel();
-                    btn_grab.IsEnabled = true;
-                }));
-            });
-            await _grabTask;
-            _grabTask.Dispose();
-            _grabTask = null;
-        }
+        //260406 hbk -- D-01: ShotTabView Grab 버튼 제거 (InspectionListView button_grab으로 통합)
 
         // 원본/측정 RadioButton 전환
         private void Rb_ImageMode_Checked(object sender, RoutedEventArgs e)
@@ -310,21 +270,21 @@ namespace FinalVisionProject.UI
             switch (result)
             {
                 case EContextResult.Pass:
-                    label_result.Content    = $"OK  {blobArea:F0}";   //260331 hbk — 면적 표시
+                    label_result.Content = $"OK  {blobArea:F0}";   //260331 hbk — 면적 표시
                     label_result.Foreground = new SolidColorBrush(Colors.Lime);
                     break;
                 case EContextResult.Fail:
-                    label_result.Content    = $"NG  {blobArea:F0}";   //260331 hbk — NG시 0 또는 실제 면적
+                    label_result.Content = $"NG  {blobArea:F0}";   //260331 hbk — NG시 0 또는 실제 면적
                     label_result.Foreground = new SolidColorBrush(Colors.Red);
                     break;
                 default:
-                    label_result.Content    = "---";
+                    label_result.Content = "---";
                     label_result.Foreground = new SolidColorBrush(Colors.Gray);
                     break;
             }
         }
 
-        // 캔버스 배경에 이미지 표시   //260327 hbk Shot탭
+        ///캔버스 배경에 이미지 표시   //260327 hbk Shot탭
         private void DisplayToBackground(Mat img)
         {
             try
@@ -344,7 +304,7 @@ namespace FinalVisionProject.UI
                     double s = Math.Max(0.2, Math.Min(2.0, slider_scale.Value / 100.0));   //260330 hbk
                     _scale.ScaleX = s;   //260330 hbk
                     _scale.ScaleY = s;   //260330 hbk
-                    canvas_shot.Width  = _bgW * s;
+                    canvas_shot.Width = _bgW * s;
                     canvas_shot.Height = _bgH * s;
                 }
                 else
