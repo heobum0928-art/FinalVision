@@ -40,9 +40,9 @@ Host(설비)가 TCP로 Shot 1개씩 순차 요청하여 검사를 수행하며, 
 ### Active
 
 - [ ] 레시피 편집 UI (RecipeEditorWindow)
-- [ ] 이미지 삭제 기능
-- [ ] 이미지 디렉터리 로드
-- [ ] Run/Grab 버튼 역할 정리
+- ✓ 이미지 삭제 기능 — Validated in Phase 12: run-grab
+- ✓ 이미지 디렉터리 로드 — Validated in Phase 12: run-grab
+- ✓ Run/Grab 버튼 역할 정리 — Validated in Phase 12: run-grab
 
 ### Out of Scope
 
@@ -95,4 +95,4 @@ This document evolves at phase transitions and milestone boundaries.
 4. Update Context with current state
 
 ---
-*Last updated: 2026-04-03 after Phase 11 complete*
+*Last updated: 2026-04-06 after Phase 12 complete*
