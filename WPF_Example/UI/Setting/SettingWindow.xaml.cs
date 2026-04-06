@@ -40,6 +40,13 @@ namespace FinalVisionProject.UI {
             Close();
         }
 
+        //260406 hbk -- D-09: 이미지 관리 창 열기
+        private void Btn_imageManage_Click(object sender, RoutedEventArgs e) {
+            var win = new ImageManageWindow();
+            win.Owner = this;
+            win.ShowDialog();
+        }
+
         private void Window_ContentRendered(object sender, EventArgs e) {
 
         }

@@ -57,7 +57,7 @@ namespace FinalVisionProject.Setting {
         public string TraceLogSavePath { get; set; } = AppDomain.CurrentDomain.BaseDirectory + @"Trace";
         [DirectoryPath]
         [AutoUpdateText]
-        public string ImageSavePath { get; set; } = @"D:\Log";   //260403 hbk -- default image save path (D-01)
+        public string ImageSavePath { get; set; } = @"D:\Data\Image";   //260403 hbk -- default image save path
         [DirectoryPath]
         [AutoUpdateText]
         public string ResultSavePath { get; set; } = AppDomain.CurrentDomain.BaseDirectory + @"Result";
@@ -91,9 +91,10 @@ namespace FinalVisionProject.Setting {
 
 
         //inspection image save                                              //260326 hbk
-        [Category("Inspection|Image Save")]                                  //260326 hbk
-        public bool SaveOkImage { get; set; } = false;                       //260326 hbk
-        public bool SaveNgImage { get; set; } = true;                        //260326 hbk
+        [Category("Inspection|Image Save")]                                  //260403 hbk
+        public bool SaveOriginImage { get; set; } = true;                    //260403 hbk -- 원본 이미지 BMP 저장
+        public bool SaveGoodImage { get; set; } = false;                     //260403 hbk -- OK 캡처 이미지 JPG 저장
+        public bool SaveNGImage { get; set; } = true;                        //260403 hbk -- NG 캡처 이미지 JPG 저장
 
         //config
 
@@ -102,7 +103,7 @@ namespace FinalVisionProject.Setting {
 
         public bool AutoLogoutWhenRecvTest { get; set; } = true;
 
-        public bool SaveFailImage { get; set; } = false;
+        //260403 hbk -- SaveFailImage 삭제 (원본/캡처 저장으로 대체)
 
 
         [Category("System|Localize")]
@@ -128,6 +129,18 @@ namespace FinalVisionProject.Setting {
         
         private SystemSetting() {
             Load();
+        }
+
+        //260406 hbk -- IMG-04: 이미지 저장 경로의 날짜 폴더 목록 반환 (D-10)
+        public string[] GetImageDateFolders() {
+            if (!Directory.Exists(ImageSavePath)) return new string[0];
+            return Directory.GetDirectories(ImageSavePath)
+                .Where(d => {
+                    string name = Path.GetFileName(d);
+                    return name.Length == 8 && name.All(char.IsDigit);
+                })
+                .OrderByDescending(d => d)
+                .ToArray();
         }
 
         public string GetCameraImageSavePath(string camName) {

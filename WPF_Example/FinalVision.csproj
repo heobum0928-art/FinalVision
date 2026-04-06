@@ -328,6 +328,9 @@
       <DependentUpon>OpenRecipeWindow.xaml</DependentUpon>
     </Compile>
     <Compile Include="UI\Recipe\RecipeListViewModel.cs" />
+    <Compile Include="UI\Setting\ImageManageWindow.xaml.cs">
+      <DependentUpon>ImageManageWindow.xaml</DependentUpon>
+    </Compile>
     <Compile Include="UI\Setting\SettingWindow.xaml.cs">
       <DependentUpon>SettingWindow.xaml</DependentUpon>
     </Compile>
@@ -437,6 +440,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="UI\Dialog\TextInputBoxWindow.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="UI\Setting\ImageManageWindow.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
