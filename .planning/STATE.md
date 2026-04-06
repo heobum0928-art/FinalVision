@@ -2,14 +2,14 @@
 gsd_state_version: 1.0
 milestone: v2.0
 milestone_name: 레시피 편집 + 이미지 관리 + 운영 안정화
-status: Ready to execute
-stopped_at: Completed 12-run-grab 12-02-PLAN.md
-last_updated: "2026-04-06T05:02:38.992Z"
+status: Phase complete — ready for verification
+stopped_at: Completed 12-run-grab 12-03-PLAN.md (Task 1 done; at checkpoint Task 2 human-verify)
+last_updated: "2026-04-06T05:13:48.446Z"
 progress:
   total_phases: 4
-  completed_phases: 2
+  completed_phases: 3
   total_plans: 7
-  completed_plans: 6
+  completed_plans: 7
 ---
 
 # FinalVision — Project State
@@ -49,6 +49,7 @@ Plan: 3 of 3
 | Phase 11-image-save-structure P02 | 2 | 2 tasks | 1 files |
 | Phase 12-run-grab P01 | 314 | 2 tasks | 4 files |
 | Phase 12-run-grab P02 | 15 | 1 tasks | 3 files |
+| Phase 12-run-grab P03 | 15 | 1 tasks | 6 files |
 
 ## Accumulated Context
 
@@ -65,6 +66,8 @@ Plan: 3 of 3
 - [Phase 12-run-grab]: IsIdle guard on both BackgroundImagePath and SimulImagePath branches to prevent TCP collision
 - [Phase 12-run-grab]: ShotTabView accesses MainView via VisualTreeHelper.GetParent walk — no injected reference needed
 - [Phase 12-run-grab]: XML XAML comments must not use -- (MC3000); fixed both pre-existing and new occurrences
+- [Phase 12-run-grab]: PropertyGrid-based SettingWindow uses separate ImageManageWindow Dialog (Alt A) — PropertyGrid cannot host custom TabItems
+- [Phase 12-run-grab]: DateFolderItem ViewModel uses INotifyPropertyChanged for CheckBox IsChecked two-way binding
 
 ### Pending Todos
 
@@ -77,6 +80,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-04-06T05:02:38.985Z
-Stopped at: Completed 12-run-grab 12-02-PLAN.md
+Last session: 2026-04-06T05:13:48.439Z
+Stopped at: Completed 12-run-grab 12-03-PLAN.md (Task 1 done; at checkpoint Task 2 human-verify)
 Resume file: None
