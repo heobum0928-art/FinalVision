@@ -3,13 +3,13 @@ gsd_state_version: 1.0
 milestone: v2.0
 milestone_name: 레시피 편집 + 이미지 관리 + 운영 안정화
 status: Ready to execute
-stopped_at: Completed 12-run-grab 12-01-PLAN.md
-last_updated: "2026-04-06T04:57:41.333Z"
+stopped_at: Completed 12-run-grab 12-02-PLAN.md
+last_updated: "2026-04-06T05:02:38.992Z"
 progress:
   total_phases: 4
   completed_phases: 2
   total_plans: 7
-  completed_plans: 5
+  completed_plans: 6
 ---
 
 # FinalVision — Project State
@@ -24,7 +24,7 @@ See: .planning/PROJECT.md (updated 2026-04-02)
 ## Current Position
 
 Phase: 12 (run-grab) — EXECUTING
-Plan: 2 of 3
+Plan: 3 of 3
 
 ## Performance Metrics
 
@@ -48,6 +48,7 @@ Plan: 2 of 3
 | Phase 11-image-save-structure P01 | 7 | 2 tasks | 4 files |
 | Phase 11-image-save-structure P02 | 2 | 2 tasks | 1 files |
 | Phase 12-run-grab P01 | 314 | 2 tasks | 4 files |
+| Phase 12-run-grab P02 | 15 | 1 tasks | 3 files |
 
 ## Accumulated Context
 
@@ -62,6 +63,8 @@ Plan: 2 of 3
 - [Phase 11-image-save-structure]: _FolderPath captured once in OnBegin from InspectionSequenceContext.CurrentFolderPath; annotated null+IsDisposed guard for SIMUL mode; async Task.Factory.StartNew+Clone+Dispose pattern
 - [Phase 12-run-grab]: RefreshShotImage extracted as MainView method for shot tab UI refresh after RunBlobOnLastGrab (D-04)
 - [Phase 12-run-grab]: IsIdle guard on both BackgroundImagePath and SimulImagePath branches to prevent TCP collision
+- [Phase 12-run-grab]: ShotTabView accesses MainView via VisualTreeHelper.GetParent walk — no injected reference needed
+- [Phase 12-run-grab]: XML XAML comments must not use -- (MC3000); fixed both pre-existing and new occurrences
 
 ### Pending Todos
 
@@ -74,6 +77,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-04-06T04:57:41.326Z
-Stopped at: Completed 12-run-grab 12-01-PLAN.md
+Last session: 2026-04-06T05:02:38.985Z
+Stopped at: Completed 12-run-grab 12-02-PLAN.md
 Resume file: None

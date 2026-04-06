@@ -18,13 +18,13 @@
 
 - [x] **IMG-01**: 검사 이미지를 날짜>시간 하위폴더 구조로 저장 (`D:\Log\{yyyyMMdd}\{HHmmss}\{ShotName}_{OK|NG}.jpg`)
 - [x] **IMG-02**: OK 이미지 기본 미저장, NG 이미지만 기본 저장 (설정에서 변경 가능)
-- [ ] **IMG-03**: 시간 폴더 선택 시 Shot1~5 이미지를 일괄 로드하여 UI에 표시
+- [x] **IMG-03**: 시간 폴더 선택 시 Shot1~5 이미지를 일괄 로드하여 UI에 표시
 - [ ] **IMG-04**: 날짜/시간 폴더 단위로 저장된 검사 이미지 삭제 가능
 
 ### 운영/로그
 
 - [x] **OPS-01**: Action별 소요시간(ms)을 로그에 기록 (기존 Stopwatch 활용)
-- [ ] **OPS-02**: Grab 버튼은 카메라 촬상+검사, Run 버튼은 로드된 이미지로 검사 테스트로 역할 분리
+- [x] **OPS-02**: Grab 버튼은 카메라 촬상+검사, Run 버튼은 로드된 이미지로 검사 테스트로 역할 분리
 
 ## Future Requirements
 
@@ -49,8 +49,8 @@
 | OPS-01 | Phase 10 | Complete |
 | IMG-01 | Phase 11 | Complete |
 | IMG-02 | Phase 11 | Complete |
-| OPS-02 | Phase 12 | Pending |
-| IMG-03 | Phase 12 | Pending |
+| OPS-02 | Phase 12 | Complete |
+| IMG-03 | Phase 12 | Complete |
 | IMG-04 | Phase 12 | Pending |
 | RCP-02 | Phase 13 | Pending |
 | RCP-03 | Phase 13 | Pending |
