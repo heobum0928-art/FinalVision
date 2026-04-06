@@ -38,6 +38,7 @@ namespace FinalVisionProject.Sequence
         [ReadOnly(true)]
         public string ProcessName { get; set; }   //260326 hbk — UI 표시용 Action 이름 (ReadOnly)
 
+
         private ERoiShape _roiShape = ERoiShape.Rectangle;   //260330 hbk — full property로 변경 (변경 이벤트 지원)
         [Category("ROI Setting")]                  //260326 hbk
         public ERoiShape ROIShape   //260330 hbk
@@ -264,9 +265,8 @@ namespace FinalVisionProject.Sequence
                     _IsOK = RunBlobDetection(_GrabbedImage, _MyParam, out annotated);      //260326 hbk
                     Logging.PrintLog((int)ELogType.Trace, "[ALGO] {0} BlobDetect Result:{1}", Name, _IsOK ? "OK" : "NG");   //260330 hbk
 #if SIMUL_MODE
-                    // SIMUL 재검사: LastAnnotatedImage 변경 없이 캔버스용 임시 저장   //260326 hbk
-                    _MyParam.SetAnnotatedImageTemp(annotated);   //260326 hbk // LastAnnotatedImage 잠금 유지
-                    // 캔버스 표시는 GrabAndDisplay(MainView)에서 처리 — DisplayToBackground(annotated) 호출
+                    _MyParam.SetAnnotatedImageTemp(annotated);   //260326 hbk // 캔버스용 임시 저장
+                    _MyParam.SetAnnotatedImage(annotated);        //260403 hbk // 이미지 저장용 LastAnnotatedImage 갱신
 #else
                     // 실운영: 최초 1회만 LastAnnotatedImage 갱신 (이후 잠금)   //260326 hbk
                     _MyParam.SetAnnotatedImage(annotated);   //260326 hbk
@@ -397,7 +397,7 @@ namespace FinalVisionProject.Sequence
                     threshed = maskedThreshed;   //260327 hbk 그리기
                 }
 
-                // connection — FindContours (Halcon connection 대응)   //260327 hbk
+                // connection — FindContours ( connection 대응)   //260327 hbk
                 OpenCvSharp.Point[][] contours;
                 HierarchyIndex[] hierarchy;
                 Cv2.FindContours(threshed, out contours, out hierarchy, RetrievalModes.External, ContourApproximationModes.ApproxSimple);
@@ -466,43 +466,47 @@ namespace FinalVisionProject.Sequence
             }
         }
 
-        //260403 hbk -- ImageFolderManager-based save: original + annotated pair (D-03, D-04, D-06, D-07)
+        //260403 hbk -- 원본(BMP) + 캡처(JPG) 이미지 저장
         private void SaveResultImage(Mat image, bool isOK)
         {
             if (image == null) return;   //260403 hbk
+            if (string.IsNullOrEmpty(_FolderPath)) return;   //260403 hbk -- guard: no folder path
 
             var setting = SystemSetting.Handle;
-            if (isOK && !setting.SaveOkImage) return;    //260326 hbk
-            if (!isOK && !setting.SaveNgImage) return;   //260326 hbk
-
-            if (string.IsNullOrEmpty(_FolderPath)) return;   //260403 hbk -- guard: no folder path
 
             try
             {
-                // original image -- async save with Clone (D-03)   //260403 hbk
-                string origPath = ImageFolderManager.GetSavePath(_FolderPath, Name, isOK);   //260403 hbk
-                Mat imgClone = image.Clone();   //260403 hbk -- Clone으로 비동기 저장 시 원본 생명주기 독립
-                Task.Factory.StartNew((obj) =>
+                //260403 hbk -- 원본 이미지 BMP 저장 (SaveOriginImage 설정)
+                if (setting.SaveOriginImage)
                 {
-                    var mat = obj as Mat;   //260403 hbk
-                    try { mat.SaveImage(origPath); }   //260403 hbk
-                    catch (Exception ex) { Logging.PrintLog((int)ELogType.Error, string.Format("SaveImage Error: {0}", ex.Message)); }   //260403 hbk
-                    finally { mat.Dispose(); }   //260403 hbk -- Clone 해제
-                }, imgClone);
-
-                // annotated image -- async save with Clone (D-04, D-06)   //260403 hbk
-                Mat annotated = _MyParam.LastAnnotatedImage;   //260403 hbk
-                if (annotated != null && !annotated.IsDisposed)   //260403 hbk -- null guard for SIMUL mode
-                {
-                    string annotatedPath = ImageFolderManager.GetAnnotatedSavePath(_FolderPath, Name, isOK);   //260403 hbk
-                    Mat annotatedClone = annotated.Clone();   //260403 hbk -- Clone으로 비동기 저장
+                    string originPath = ImageFolderManager.GetOriginSavePath(_FolderPath, Name, isOK);   //260403 hbk
+                    Mat imgClone = image.Clone();   //260403 hbk -- Clone으로 비동기 저장 시 원본 생명주기 독립
                     Task.Factory.StartNew((obj) =>
                     {
                         var mat = obj as Mat;   //260403 hbk
-                        try { mat.SaveImage(annotatedPath); }   //260403 hbk
-                        catch (Exception ex) { Logging.PrintLog((int)ELogType.Error, string.Format("SaveAnnotatedImage Error: {0}", ex.Message)); }   //260403 hbk
+                        try { mat.SaveImage(originPath); }   //260403 hbk
+                        catch (Exception ex) { Logging.PrintLog((int)ELogType.Error, string.Format("SaveOriginImage Error: {0}", ex.Message)); }   //260403 hbk
                         finally { mat.Dispose(); }   //260403 hbk -- Clone 해제
-                    }, annotatedClone);
+                    }, imgClone);
+                }
+
+                //260403 hbk -- 캡처(어노테이션) 이미지 JPG 저장 (OK→SaveGoodImage, NG→SaveNGImage)
+                bool saveCapture = isOK ? setting.SaveGoodImage : setting.SaveNGImage;   //260403 hbk
+                if (saveCapture)
+                {
+                    Mat annotated = _MyParam.LastAnnotatedImage;   //260403 hbk
+                    if (annotated != null && !annotated.IsDisposed)   //260403 hbk -- null guard for SIMUL mode
+                    {
+                        string capturePath = ImageFolderManager.GetCaptureSavePath(_FolderPath, Name, isOK);   //260403 hbk
+                        Mat annotatedClone = annotated.Clone();   //260403 hbk -- Clone으로 비동기 저장
+                        Task.Factory.StartNew((obj) =>
+                        {
+                            var mat = obj as Mat;   //260403 hbk
+                            try { mat.SaveImage(capturePath); }   //260403 hbk
+                            catch (Exception ex) { Logging.PrintLog((int)ELogType.Error, string.Format("SaveCaptureImage Error: {0}", ex.Message)); }   //260403 hbk
+                            finally { mat.Dispose(); }   //260403 hbk -- Clone 해제
+                        }, annotatedClone);
+                    }
                 }
             }
             catch (Exception ex)

@@ -339,7 +339,7 @@ namespace FinalVisionProject.Sequence {
 
         //생성된 파일명을 반환한다.
         protected void SaveResultImage(string actionName) {
-            if ((Context.ResultImage == null) || (SystemHandler.Handle.Setting.SaveFailImage == false)) {
+            if (Context.ResultImage == null) {   //260403 hbk -- SaveFailImage 삭제, null 체크만 유지
                 Context.ResultImageFileName = null;
                 return;
             }

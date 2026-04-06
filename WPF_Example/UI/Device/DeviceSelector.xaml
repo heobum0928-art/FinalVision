@@ -69,10 +69,7 @@
                 <MenuItem x:Name="menu_openDir" Header="Open Image Dir" MinHeight="34" Click="Menu_openDir_Click"></MenuItem>
 
                 <Separator></Separator>
-                <MenuItem x:Name="menu_loadImage" Header="Load Image in directory" MinHeight="36" Click="MenuItem_LoadImage_Click"></MenuItem>
-                <MenuItem x:Name="menu_nextImage" Header="Next Image" MinHeight="36" Click="Menu_nextImage_Click"></MenuItem>
-                <MenuItem x:Name="menu_prevImage" Header="Prev Image" MinHeight="36" Click="Menu_prevImage_Click"></MenuItem>
-                <Separator></Separator>
+                <!-- 260406 hbk Load Image in directory, Next, Prev 삭제 (InspectionListView 폴더 로드로 통합) -->
                 <MenuItem x:Name="menu_streaming" Header="Streaming" MinHeight="34" Click="Menu_streaming_Click" IsCheckable="True"></MenuItem>
                 
             </ContextMenu.Items>

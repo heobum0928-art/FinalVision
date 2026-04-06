@@ -209,6 +209,17 @@
                     </ToolBar>
                     -->
                     <ToolBar>
+                        <!-- 260406 hbk 시간폴더 일괄 로드 (Action 이름으로 5Shot 매칭) -->
+                        <Button x:Name="button_loadFolder" Click="Btn_LoadFolder_Click" Style="{StaticResource disalbedStyle}"
+                                ToolTip="시간 폴더 선택 → Action 이름으로 5-Shot 이미지 일괄 로드">
+                            <StackPanel Orientation="Vertical">
+                                <Image Source="/Resource/folder.png" Stretch="Uniform" Width="42" Height="42"></Image>
+                                <TextBlock Text="폴더" HorizontalAlignment="Center" VerticalAlignment="Center"></TextBlock>
+                            </StackPanel>
+                        </Button>
+                        <Separator></Separator>
+                    </ToolBar>
+                    <ToolBar>
                         <Button x:Name="button_copy" Click="button_copy_Click"  Style="{StaticResource disalbedStyle}"
                                 ToolTip="선택된 Shot 파라미터 복사 (다른 Shot에 Paste 가능)">
                             <StackPanel Orientation="Vertical">

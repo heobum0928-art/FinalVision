@@ -266,40 +266,7 @@ namespace FinalVisionProject.UI {
             CustomMessageBox.Show("Success to Image Save", string.Format("Image Saved : {0}", filePath), MessageBoxImage.Information, false);
         }
 
-        private void MenuItem_LoadImage_Click(object sender, RoutedEventArgs e) {
-            if (pSelectedDevice == null) return;
-            MenuItem selected = sender as MenuItem;
-            
-            Ookii.Dialogs.Wpf.VistaFolderBrowserDialog dlg = new Ookii.Dialogs.Wpf.VistaFolderBrowserDialog();
-            dlg.Multiselect = false;
-            dlg.RootFolder = Environment.SpecialFolder.CommonStartup;
-            dlg.SelectedPath = SystemHandler.Handle.Setting.ImageSavePath;
-            if ((bool)dlg.ShowDialog()) {
-                pSelectedDevice.BackgroundImagePath = dlg.SelectedPath;
-                selected.IsChecked = true;
-                /*
-                if(pSelectedDevice.CaptureMode == ECaptureModeType.Streaming) {
-                    pSelectedDevice.StopStream();
-                }
-                */
-                
-            }
-            else {
-                pSelectedDevice.BackgroundImagePath = null;
-                selected.IsChecked = false;
-                /*
-                if (pSelectedDevice.CaptureMode == ECaptureModeType.Streaming) {
-                    pSelectedDevice.StartStream();
-                }
-                */
-            }
-            if (pSelectedDevice.CamType == ECameraType.Virtual) {
-                Mat grabbedImage = pSelectedDevice.GrabImage();
-                DisplayToBackground(grabbedImage);
-                //DisplayOverlay(grabbedImage);
-                //pSelectedDevice.Display(image_display);
-            }
-        }
+        //260406 hbk -- MenuItem_LoadImage_Click 삭제 (InspectionListView 폴더 로드로 통합)
 
         private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e) {
             if (pSelectedDevice != null) {
@@ -333,29 +300,7 @@ namespace FinalVisionProject.UI {
             image_foreground.Height = canvas_preview.Height;
         }
 
-        private void Menu_nextImage_Click(object sender, RoutedEventArgs e) {
-            if (pSelectedDevice == null) return;
-            pSelectedDevice.IncreaseBackgroundImageIndex();
-
-            if (pSelectedDevice.CamType == ECameraType.Virtual) {
-                Mat grabbedImage = pSelectedDevice.GrabImage();
-                DisplayToBackground(grabbedImage);
-                //DisplayOverlay(grabbedImage);
-                //pSelectedDevice.Display(image_display);
-            }
-        }
-
-        private void Menu_prevImage_Click(object sender, RoutedEventArgs e) {
-            if (pSelectedDevice == null) return;
-            pSelectedDevice.DecreaseBackgroundImageIndex();
-
-            if (pSelectedDevice.CamType == ECameraType.Virtual) {
-                Mat grabbedImage = pSelectedDevice.GrabImage();
-                DisplayToBackground(grabbedImage);
-                //DisplayOverlay(grabbedImage);
-                //pSelectedDevice.Display(image_display);
-            }
-        }
+        //260406 hbk -- Menu_nextImage_Click / Menu_prevImage_Click 삭제 (InspectionListView 폴더 로드로 통합)
 
         private void Menu_openDir_Click(object sender, RoutedEventArgs e) {
             string savePath = pSetting.GetLogSavePath(ELogType.Image);

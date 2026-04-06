@@ -17,50 +17,39 @@ namespace FinalVisionProject.Utility {
         /// </summary>
         public static string BeginInspection() {
             lock (_lock) {
-                //260403 hbk -- D-01: SystemSetting에서 기준 경로 읽기 (하드코딩 금지)
+                //260403 hbk -- SystemSetting에서 기준 경로 읽기
                 string basePath = SystemSetting.Handle.ImageSavePath;
 
                 string dateDir = DateTime.Now.ToString("yyyyMMdd");   //260403 hbk
-                string timeStr = DateTime.Now.ToString("HHmmss_fff"); //260403 hbk -- D-08: 밀리초 정밀도
+                string minuteDir = DateTime.Now.ToString("HHmm");    //260403 hbk -- 분 단위 폴더
 
-                string baseDir    = Path.Combine(basePath, dateDir);
-                string folderPath = Path.Combine(baseDir, timeStr);
-
-                //260403 hbk -- D-08: 밀리초 충돌 시 _2, _3 ... 접미사로 고유 폴더 보장
-                if (Directory.Exists(folderPath)) {
-                    int suffix = 2;
-                    string candidate;
-                    do {
-                        candidate = Path.Combine(baseDir, string.Format("{0}_{1}", timeStr, suffix));
-                        suffix++;
-                    } while (Directory.Exists(candidate));
-                    folderPath = candidate;
-                }
-
-                Directory.CreateDirectory(folderPath);   //260403 hbk
+                string folderPath = Path.Combine(basePath, dateDir, minuteDir);   //260403 hbk
+                Directory.CreateDirectory(folderPath);   //260403 hbk -- 이미 존재하면 no-op
 
                 return folderPath;
             }
         }
 
         /// <summary>
-        /// 원본 이미지 저장 경로를 반환한다. (D-03)
-        /// 형식: {folderPath}\{shotName}_{OK|NG}.jpg
+        /// 원본 이미지 저장 경로를 반환한다 (BMP).
+        /// 형식: {folderPath}\{shotName}_{OK|NG}.bmp
         /// </summary>
-        public static string GetSavePath(string folderPath, string shotName, bool isOk) {
-            //260403 hbk
+        public static string GetOriginSavePath(string folderPath, string shotName, bool isOk) {
+            //260403 hbk -- 원본 이미지 BMP 경로 (초+밀리초 타임스탬프로 같은 분 내 구분)
             string resultStr = isOk ? "OK" : "NG";
-            return Path.Combine(folderPath, string.Format("{0}_{1}.jpg", shotName, resultStr));
+            string timeStamp = DateTime.Now.ToString("ss_fff");   //260403 hbk
+            return Path.Combine(folderPath, string.Format("{0}_{1}_{2}.bmp", shotName, resultStr, timeStamp));
         }
 
         /// <summary>
-        /// 어노테이션 이미지 저장 경로를 반환한다. (D-04)
-        /// 형식: {folderPath}\{shotName}_{OK|NG}_annotated.jpg
+        /// 캡처(어노테이션) 이미지 저장 경로를 반환한다 (JPG).
+        /// 형식: {folderPath}\{shotName}_{OK|NG}_capture_{ss_fff}.jpg
         /// </summary>
-        public static string GetAnnotatedSavePath(string folderPath, string shotName, bool isOk) {
-            //260403 hbk
+        public static string GetCaptureSavePath(string folderPath, string shotName, bool isOk) {
+            //260403 hbk -- 캡처 이미지 JPG 경로 (초+밀리초 타임스탬프로 같은 분 내 구분)
             string resultStr = isOk ? "OK" : "NG";
-            return Path.Combine(folderPath, string.Format("{0}_{1}_annotated.jpg", shotName, resultStr));
+            string timeStamp = DateTime.Now.ToString("ss_fff");   //260403 hbk
+            return Path.Combine(folderPath, string.Format("{0}_{1}_capture_{2}.jpg", shotName, resultStr, timeStamp));
         }
     }
 }

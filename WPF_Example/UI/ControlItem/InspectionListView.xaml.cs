@@ -2,6 +2,7 @@
 using System;
 using System.Diagnostics;
 using System.IO;
+using System.Linq;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
@@ -9,6 +10,7 @@ using PropertyTools.Wpf;
 using FinalVisionProject.Define;
 using FinalVisionProject.Device;
 using FinalVisionProject.Sequence;
+using FinalVisionProject.Setting;
 using FinalVisionProject.Utility;
 
 namespace FinalVisionProject.UI {
@@ -105,16 +107,7 @@ namespace FinalVisionProject.UI {
         private void Btn_start_Click(object sender, RoutedEventArgs e) {
             if (treeListBox_sequence.SelectedIndex < 0) return;
 
-            //260406 hbk -- D-07: BackgroundImagePath가 설정된 카메라면 시퀀스 Start로 5-Shot Grab (파일에서 읽음)
-            VirtualCamera camera = SystemHandler.Handle.Devices[DeviceHandler.INSPECTION_CAMERA];
-            if (camera != null && !string.IsNullOrEmpty(camera.BackgroundImagePath)) {
-                if (!SystemHandler.Handle.Sequences.IsIdle) return;   //260406 hbk -- TCP 충돌 방지
-                //260406 hbk -- 기존 RUN과 동일하게 시퀀스 Start 호출 — GrabImage()가 BackgroundImagePath에서 순차 로드
-                mParentWindow.StartSequence(ESequence.Inspection);
-                return;
-            }
-
-            //260406 hbk -- D-04: 개별 Shot에 SimulImagePath 설정된 경우 선택된 Shot만 RunBlobOnLastGrab
+            //260406 hbk -- 개별 Shot에 SimulImagePath 설정된 경우 선택된 Shot만 RunBlobOnLastGrab
             if (treeListBox_sequence.SelectedItem is NodeViewModel selNode
                 && selNode.NodeType == ENodeType.Action
                 && selNode.SequenceID == ESequence.Inspection) {
@@ -163,6 +156,66 @@ namespace FinalVisionProject.UI {
                 //show error msg
                 CustomMessageBox.Show("Error", "There is no action to run.\nSelect the sequence or action you want to perform.", MessageBoxImage.Error);
             }
+        }
+
+        //260406 hbk -- 시간폴더 일괄 로드: Action 이름으로 5-Shot 이미지 자동 매칭
+        private void Btn_LoadFolder_Click(object sender, RoutedEventArgs e)
+        {
+            var dlg = new Ookii.Dialogs.Wpf.VistaFolderBrowserDialog
+            {
+                Description = "시간 폴더 선택 (이미지 일괄 로드)",
+                UseDescriptionForTitle = true,
+                SelectedPath = SystemSetting.Handle.ImageSavePath,
+            };
+            if (dlg.ShowDialog() != true) return;
+
+            SequenceBase seq = SystemHandler.Handle.Sequences[ESequence.Inspection];
+            if (seq == null) return;
+
+            //260406 hbk -- 폴더 내 BMP 파일 목록
+            string[] files = Directory.GetFiles(dlg.SelectedPath, "*.bmp");
+            if (files.Length == 0)
+            {
+                CustomMessageBox.Show("알림", "폴더에 BMP 파일이 없습니다.", MessageBoxImage.Information);
+                return;
+            }
+
+            int loaded = 0;
+            for (int i = 0; i < seq.ActionCount; i++)
+            {
+                if (!(seq[i] is Action_Inspection act)) continue;
+                string actionName = act.Name;   //260406 hbk -- e.g. "Bolt_One_Inspect"
+
+                //260406 hbk -- Action 이름으로 시작하는 파일 매칭
+                string matched = files.FirstOrDefault(f => Path.GetFileName(f).StartsWith(actionName));
+                if (matched == null) continue;
+
+                var param = act.Param as InspectionParam;
+                if (param == null) continue;
+
+                param.SimulImagePath = matched;   //260406 hbk -- 경로 저장
+                OpenCvSharp.Mat mat = OpenCvSharp.Cv2.ImRead(matched, OpenCvSharp.ImreadModes.Color);   //260406 hbk -- 이미지 로드
+                param.SetOriginalImage(mat);
+                mat?.Dispose();
+                loaded++;
+            }
+
+            if (loaded == 0)
+            {
+                CustomMessageBox.Show("알림",
+                    "Action 이름과 매칭되는 이미지 파일을 찾지 못했습니다.\n" +
+                    "파일명이 Action 이름으로 시작해야 합니다.\n" +
+                    "(예: Bolt_One_Inspect_OK_23_456.bmp)",
+                    MessageBoxImage.Information);
+                return;
+            }
+
+            //260406 hbk -- 5개 ShotTabView 일괄 갱신
+            mParentWindow.mainView.RefreshAllShotImages();
+
+            Logging.PrintLog((int)ELogType.Trace,
+                "[IMG] 폴더 일괄 로드: {0} ({1}/{2} Shot 매칭)",
+                dlg.SelectedPath, loaded, seq.ActionCount);
         }
 
         public void SetSelectionChange(string seqName) {

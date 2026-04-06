@@ -161,8 +161,8 @@ namespace FinalVisionProject.Sequence
         private void SaveResultImage(bool isOK)   //260401 hbk
         {
             var setting = SystemSetting.Handle;
-            if (isOK && !setting.SaveOkImage) return;
-            if (!isOK && !setting.SaveNgImage) return;
+            if (isOK && !setting.SaveGoodImage) return;   //260403 hbk -- SaveOkImage → SaveGoodImage
+            if (!isOK && !setting.SaveNGImage) return;    //260403 hbk -- SaveNgImage → SaveNGImage
 
             try
             {

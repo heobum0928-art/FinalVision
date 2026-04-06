@@ -80,11 +80,13 @@ namespace FinalVisionProject.Setting {
 
         public int LogDeleteDay { get; set; } = 30;
 
-        //data path
+        //data path — 260406 hbk MapData 항목 숨김 (Browsable false)
         [Category("Path|MapData")]
+        [Browsable(false)]
         [DirectoryPath]
         [AutoUpdateText]
         public string MapDataLoadPath { get; set; } = AppDomain.CurrentDomain.BaseDirectory + @"Load";
+        [Browsable(false)]
         [DirectoryPath]
         [AutoUpdateText]
         public string MapDataSavePath { get; set; } = AppDomain.CurrentDomain.BaseDirectory + @"Save";
