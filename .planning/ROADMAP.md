@@ -136,13 +136,13 @@ Plans:
   2. Run 버튼 클릭 시 이전에 로드된 이미지로 카메라 없이 검사 테스트가 실행된다
   3. 시간 폴더를 선택하면 Shot1~5 이미지가 UI에 일괄 로드된다
   4. 날짜 또는 시간 폴더 단위로 저장된 이미지를 삭제할 수 있다
-**Plans**: 2 plans
+**Plans**: 3 plans
 **UI hint**: yes
 
 Plans:
-- [ ] 12-01: ShotTabView Grab/Run 버튼 역할 분리 — Grab=카메라 촬상+검사, Run=로드 이미지 검사
-- [ ] 12-02: 이미지 디렉터리 로드 — FolderBrowserDialog로 시간폴더 선택 후 Shot1~5 파일명 매핑 + UI 표시
-- [ ] 12-03: 이미지 삭제 UI — 날짜/시간 폴더 단위 삭제 버튼 + 확인 다이얼로그
+- [ ] 12-01-PLAN.md — ShotTabView Grab 버튼 제거 + InspectionListView RUN 버튼 SimulImagePath 분기
+- [ ] 12-02-PLAN.md — ShotTabView 폴더 로드 버튼 + Ookii FolderBrowserDialog Shot1~5 매핑
+- [ ] 12-03-PLAN.md — SystemSetting 이미지 관리 탭 + 날짜 폴더 체크 삭제
 
 ---
 
@@ -181,5 +181,5 @@ Plans:
 | 9. 통신 테스트 + 버그 수정 | v1.0 | — | Complete | 2026-03-31 |
 | 10. 레시피 복사 버그 + 인프라 | v2.0 | 2/2 | Complete    | 2026-04-03 |
 | 11. 이미지 저장 구조 개선 | v2.0 | 2/2 | Complete    | 2026-04-03 |
-| 12. Run/Grab 분리 + 이미지 UI | v2.0 | 0/3 | Not started | - |
+| 12. Run/Grab 분리 + 이미지 UI | v2.0 | 0/3 | Planning  | - |
 | 13. RecipeEditorWindow | v2.0 | 0/3 | Not started | - |
