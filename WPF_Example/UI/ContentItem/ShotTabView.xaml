@@ -17,7 +17,7 @@
                 <ColumnDefinition Width="Auto"/>
             </Grid.ColumnDefinitions>
 
-            <!-- //260406 hbk -- D-01: ShotTabView Grab 버튼 제거 (InspectionListView button_grab으로 통합) -->
+            <!-- 260406 hbk D-01: ShotTabView Grab 버튼 제거 (InspectionListView button_grab으로 통합) -->
             <StackPanel Grid.Column="0" Orientation="Horizontal" Margin="6,4" VerticalAlignment="Center">
                 <ToggleButton x:Name="btn_editRoi" Content="Edit ROI" Width="80" FontSize="12"
                               IsEnabled="False" Click="BtnEditRoi_Click" Margin="0,0,12,0"
@@ -50,6 +50,10 @@
 
             <!-- Shot별 이미지 열기/삭제   //260331 hbk -->
             <StackPanel Grid.Column="3" Orientation="Horizontal" Margin="4,4" VerticalAlignment="Center">
+                <!-- 260406 hbk IMG-03: 시간 폴더 선택 버튼 추가 (BackgroundImagePath 설정) -->
+                <Button x:Name="btn_loadFolder" Content="폴더" Width="52" FontSize="12"
+                        Click="Btn_LoadFolder_Click" Margin="0,0,4,0"
+                        ToolTip="시간 폴더 선택 — BackgroundImagePath로 파일 기반 Grab 활성화"/>
                 <Button x:Name="btn_openImage" Content="열기" Width="52" FontSize="12"
                         Click="Btn_OpenImage_Click" Margin="0,0,4,0"
                         ToolTip="이미지 파일 열기 (Shot별 개별 지정)"/>

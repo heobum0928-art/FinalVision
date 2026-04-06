@@ -544,6 +544,14 @@ namespace FinalVisionProject.UI {
                 views[shotIndex].UpdateResultLabel();
             }
         }
+
+        //260406 hbk -- IMG-03: 5개 ShotTabView 일괄 갱신 (폴더 로드 후 사용)
+        public void RefreshAllShotImages()
+        {
+            ShotTabView[] views = { shotView_1, shotView_2, shotView_3, shotView_4, shotView_5 };
+            for (int i = 0; i < views.Length; i++)
+                views[i].RefreshImage();
+        }
         
         private void Canvas_main_MouseWheel(object sender, System.Windows.Input.MouseWheelEventArgs e) {
 

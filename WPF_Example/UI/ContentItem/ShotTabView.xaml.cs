@@ -13,6 +13,7 @@ using OpenCvSharp;
 using FinalVisionProject.Define;
 using FinalVisionProject.Device;
 using FinalVisionProject.Sequence;
+using FinalVisionProject.Setting;
 using FinalVisionProject.Utility;
 
 namespace FinalVisionProject.UI
@@ -256,6 +257,56 @@ namespace FinalVisionProject.UI
             param.SimulImagePath = "";          //260331 hbk — 경로 초기화
             param.SetOriginalImage(null);       //260331 hbk — 이미지 버퍼 해제
             RefreshImage();
+        }
+
+        //260406 hbk -- IMG-03: 시간폴더 선택 → BackgroundImagePath 설정 (D-05, D-06)
+        private void Btn_LoadFolder_Click(object sender, RoutedEventArgs e)
+        {
+            //260406 hbk -- D-06: 기존 DeviceSelector.MenuItem_LoadImage_Click 패턴 재사용
+            var dlg = new Ookii.Dialogs.Wpf.VistaFolderBrowserDialog
+            {
+                Description = "시간 폴더 선택 (이미지 로드용)",
+                UseDescriptionForTitle = true,
+                SelectedPath = SystemSetting.Handle.ImageSavePath,
+            };
+            if (dlg.ShowDialog() != true) return;
+
+            //260406 hbk -- D-05: VirtualCamera.BackgroundImagePath 설정
+            // setter 내부에서 BackgroundImageFileList 자동 수집됨
+            var camera = _pDev[DeviceHandler.INSPECTION_CAMERA];
+            if (camera == null) return;
+            camera.BackgroundImagePath = dlg.SelectedPath;
+
+            //260406 hbk -- 로드된 파일 수 확인
+            if (camera.BackgroundImageFileList.Count == 0)
+            {
+                MessageBox.Show("폴더에서 이미지 파일을 찾지 못했습니다.", "알림",
+                    MessageBoxButton.OK, MessageBoxImage.Information);
+                camera.BackgroundImagePath = null;  //260406 hbk -- 리셋
+                return;
+            }
+
+            Logging.PrintLog((int)ELogType.Trace, "[IMG] BackgroundImagePath 설정: {0} ({1}개 파일)",
+                dlg.SelectedPath, camera.BackgroundImageFileList.Count);
+
+            //260406 hbk -- 5개 ShotTabView 일괄 갱신 (부모 MainView.RefreshAllShotImages 호출)
+            var mainView = FindParentMainView();
+            if (mainView != null)
+                mainView.RefreshAllShotImages();
+            else
+                RefreshImage();  //260406 hbk -- fallback: 현재 탭만 갱신
+        }
+
+        //260406 hbk -- VisualTree에서 부모 MainView 탐색
+        private MainView FindParentMainView()
+        {
+            DependencyObject current = this;
+            while (current != null)
+            {
+                current = System.Windows.Media.VisualTreeHelper.GetParent(current);
+                if (current is MainView mv) return mv;
+            }
+            return null;
         }
 
         // 결과 레이블 갱신 — OK/NG/---   //260327 hbk Shot탭
