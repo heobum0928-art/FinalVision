@@ -3,8 +3,8 @@ gsd_state_version: 1.0
 milestone: v2.0
 milestone_name: 레시피 편집 + 이미지 관리 + 운영 안정화
 status: Ready to plan
-stopped_at: Completed 11-02-PLAN.md
-last_updated: "2026-04-03T06:35:36.594Z"
+stopped_at: Phase 12 context gathered
+last_updated: "2026-04-06T04:16:50.768Z"
 progress:
   total_phases: 4
   completed_phases: 2
@@ -71,6 +71,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-04-03T06:32:32.720Z
-Stopped at: Completed 11-02-PLAN.md
-Resume file: None
+Last session: 2026-04-06T04:16:50.759Z
+Stopped at: Phase 12 context gathered
+Resume file: .planning/phases/12-run-grab/12-CONTEXT.md
