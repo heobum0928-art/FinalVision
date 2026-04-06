@@ -140,7 +140,7 @@ Plans:
 **UI hint**: yes
 
 Plans:
-- [ ] 12-01-PLAN.md — ShotTabView Grab 버튼 제거 + InspectionListView RUN 버튼 SimulImagePath 분기
+- [x] 12-01-PLAN.md — ShotTabView Grab 버튼 제거 + InspectionListView RUN 버튼 SimulImagePath 분기
 - [ ] 12-02-PLAN.md — ShotTabView 폴더 로드 버튼 + Ookii FolderBrowserDialog Shot1~5 매핑
 - [ ] 12-03-PLAN.md — SystemSetting 이미지 관리 탭 + 날짜 폴더 체크 삭제
 
@@ -181,5 +181,5 @@ Plans:
 | 9. 통신 테스트 + 버그 수정 | v1.0 | — | Complete | 2026-03-31 |
 | 10. 레시피 복사 버그 + 인프라 | v2.0 | 2/2 | Complete    | 2026-04-03 |
 | 11. 이미지 저장 구조 개선 | v2.0 | 2/2 | Complete    | 2026-04-03 |
-| 12. Run/Grab 분리 + 이미지 UI | v2.0 | 0/3 | Planning  | - |
+| 12. Run/Grab 분리 + 이미지 UI | v2.0 | 1/3 | In Progress|  |
 | 13. RecipeEditorWindow | v2.0 | 0/3 | Not started | - |

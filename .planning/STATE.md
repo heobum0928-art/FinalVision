@@ -2,14 +2,14 @@
 gsd_state_version: 1.0
 milestone: v2.0
 milestone_name: 레시피 편집 + 이미지 관리 + 운영 안정화
-status: Ready to plan
-stopped_at: Phase 12 context gathered
-last_updated: "2026-04-06T04:16:50.768Z"
+status: Ready to execute
+stopped_at: Completed 12-run-grab 12-01-PLAN.md
+last_updated: "2026-04-06T04:57:41.333Z"
 progress:
   total_phases: 4
   completed_phases: 2
-  total_plans: 4
-  completed_plans: 4
+  total_plans: 7
+  completed_plans: 5
 ---
 
 # FinalVision — Project State
@@ -19,12 +19,12 @@ progress:
 See: .planning/PROJECT.md (updated 2026-04-02)
 
 **Core value:** 카메라 1대 + 5-Shot 순차 촬상으로 자재 유무를 정확히 판정하고, TCP 통신으로 설비와 연동하여 자동 검사를 수행한다.
-**Current focus:** Phase 11 — image-save-structure
+**Current focus:** Phase 12 — run-grab
 
 ## Current Position
 
-Phase: 12
-Plan: Not started
+Phase: 12 (run-grab) — EXECUTING
+Plan: 2 of 3
 
 ## Performance Metrics
 
@@ -47,6 +47,7 @@ Plan: Not started
 | Phase 10-recipe-copy-infra P01 | 8 | 2 tasks | 3 files |
 | Phase 11-image-save-structure P01 | 7 | 2 tasks | 4 files |
 | Phase 11-image-save-structure P02 | 2 | 2 tasks | 1 files |
+| Phase 12-run-grab P01 | 314 | 2 tasks | 4 files |
 
 ## Accumulated Context
 
@@ -59,6 +60,8 @@ Plan: Not started
 - [Phase 10-recipe-copy-infra]: CopyFilesRecursively: Directory.CreateDirectory 무조건 호출(no-op 안전), if(!Exists) TOCTOU 패턴 금지
 - [Phase 11-image-save-structure]: ImageFolderManager static utility (no singleton) for path generation only; collision suffix _2/_3 for millisecond uniqueness; FinalVision.csproj requires explicit Compile includes
 - [Phase 11-image-save-structure]: _FolderPath captured once in OnBegin from InspectionSequenceContext.CurrentFolderPath; annotated null+IsDisposed guard for SIMUL mode; async Task.Factory.StartNew+Clone+Dispose pattern
+- [Phase 12-run-grab]: RefreshShotImage extracted as MainView method for shot tab UI refresh after RunBlobOnLastGrab (D-04)
+- [Phase 12-run-grab]: IsIdle guard on both BackgroundImagePath and SimulImagePath branches to prevent TCP collision
 
 ### Pending Todos
 
@@ -71,6 +74,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-04-06T04:16:50.759Z
-Stopped at: Phase 12 context gathered
-Resume file: .planning/phases/12-run-grab/12-CONTEXT.md
+Last session: 2026-04-06T04:57:41.326Z
+Stopped at: Completed 12-run-grab 12-01-PLAN.md
+Resume file: None
