@@ -1,11 +1,13 @@
 ﻿
 using System;
 using System.Diagnostics;
+using System.IO;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using PropertyTools.Wpf;
 using FinalVisionProject.Define;
+using FinalVisionProject.Device;
 using FinalVisionProject.Sequence;
 using FinalVisionProject.Utility;
 
@@ -102,10 +104,42 @@ namespace FinalVisionProject.UI {
 
         private void Btn_start_Click(object sender, RoutedEventArgs e) {
             if (treeListBox_sequence.SelectedIndex < 0) return;
-            //get selected sequence
-            if (treeListBox_sequence.SelectedItem is NodeViewModel) {
-                NodeViewModel node = treeListBox_sequence.SelectedItem as NodeViewModel;
 
+            //260406 hbk -- D-07: BackgroundImagePath가 설정된 카메라면 시퀀스 Start로 5-Shot Grab (파일에서 읽음)
+            VirtualCamera camera = SystemHandler.Handle.Devices[DeviceHandler.INSPECTION_CAMERA];
+            if (camera != null && !string.IsNullOrEmpty(camera.BackgroundImagePath)) {
+                if (!SystemHandler.Handle.Sequences.IsIdle) return;   //260406 hbk -- TCP 충돌 방지
+                //260406 hbk -- 기존 RUN과 동일하게 시퀀스 Start 호출 — GrabImage()가 BackgroundImagePath에서 순차 로드
+                mParentWindow.StartSequence(ESequence.Inspection);
+                return;
+            }
+
+            //260406 hbk -- D-04: 개별 Shot에 SimulImagePath 설정된 경우 선택된 Shot만 RunBlobOnLastGrab
+            if (treeListBox_sequence.SelectedItem is NodeViewModel selNode
+                && selNode.NodeType == ENodeType.Action
+                && selNode.SequenceID == ESequence.Inspection) {
+
+                SequenceBase inspSeq = SystemHandler.Handle.Sequences[ESequence.Inspection];
+                if (inspSeq != null) {
+                    int actIndex = -1;
+                    for (int i = 0; i < inspSeq.ActionCount; i++) {
+                        if (inspSeq[i].ID == selNode.ActionID) { actIndex = i; break; }
+                    }
+                    if (actIndex >= 0 && inspSeq[actIndex] is Action_Inspection act) {
+                        InspectionParam p = act.Param as InspectionParam;
+                        if (p != null && !string.IsNullOrEmpty(p.SimulImagePath)
+                            && File.Exists(p.SimulImagePath)) {
+                            if (!SystemHandler.Handle.Sequences.IsIdle) return;   //260406 hbk -- TCP 충돌 방지
+                            act.RunBlobOnLastGrab();   //260406 hbk -- D-04: 선택된 Shot만 검사
+                            mParentWindow.mainView.RefreshShotImage(actIndex);   //260406 hbk -- UI 갱신
+                            return;
+                        }
+                    }
+                }
+            }
+
+            //260406 hbk -- 기본: 기존 시퀀스 실행 로직 유지 (카메라 촬상 + 검사)
+            if (treeListBox_sequence.SelectedItem is NodeViewModel node) {
                 ESequence seqID;
                 EAction actID;
                 if (node.NodeType == ENodeType.Action) {

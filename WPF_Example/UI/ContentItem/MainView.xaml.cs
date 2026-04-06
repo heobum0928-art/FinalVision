@@ -533,6 +533,17 @@ namespace FinalVisionProject.UI {
             shotView_4.IsEditable = editable;
             shotView_5.IsEditable = editable;
         }
+
+        //260406 hbk -- D-04: 특정 Shot 탭 이미지/결과 즉시 갱신 (RunBlobOnLastGrab 후 호출)
+        public void RefreshShotImage(int shotIndex)
+        {
+            ShotTabView[] views = { shotView_1, shotView_2, shotView_3, shotView_4, shotView_5 };
+            if (shotIndex >= 0 && shotIndex < views.Length)
+            {
+                views[shotIndex].RefreshImage();
+                views[shotIndex].UpdateResultLabel();
+            }
+        }
         
         private void Canvas_main_MouseWheel(object sender, System.Windows.Input.MouseWheelEventArgs e) {
 
