@@ -40,6 +40,7 @@ Host(설비)가 TCP로 Shot 1개씩 순차 요청하여 검사를 수행하며, 
 ### Active
 
 - [ ] 레시피 편집 UI (RecipeEditorWindow)
+- ✓ 레시피 INI 설정값 버그 수정 (FrameWidth/FrameHeight/LightGroupName) — Validated in Phase 14
 - ✓ 이미지 삭제 기능 — Validated in Phase 12: run-grab
 - ✓ 이미지 디렉터리 로드 — Validated in Phase 12: run-grab
 - ✓ Run/Grab 버튼 역할 정리 — Validated in Phase 12: run-grab
@@ -95,4 +96,4 @@ This document evolves at phase transitions and milestone boundaries.
 4. Update Context with current state
 
 ---
-*Last updated: 2026-04-07 after Phase 13 complete — Reset 기능 구현 (RCP-05 partial)*
+*Last updated: 2026-04-07 after Phase 14 complete — 레시피 INI FrameWidth/FrameHeight/LightGroupName 버그 수정*
