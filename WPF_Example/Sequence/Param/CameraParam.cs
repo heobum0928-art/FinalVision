@@ -70,10 +70,7 @@ namespace FinalVisionProject.Sequence {
         private LightHandler pLight;
 
 
-        [System.ComponentModel.Browsable(false)]   //260330 hbk — PropertyGrid 숨김 (레거시 미사용 필드)
-        public int FrameWidth { get; set; }
-        [System.ComponentModel.Browsable(false)]   //260330 hbk
-        public int FrameHeight { get; set; }
+        //260407 hbk — FrameWidth/FrameHeight 레거시 필드 제거 (INI 오염 방지)
 
 
         [Category("Device|Light")]
@@ -238,9 +235,6 @@ namespace FinalVisionProject.Sequence {
                     }
                 }
 
-                // 레거시 필드 대입 제거  //260327 hbk
-                slaveParam.FrameWidth = this.FrameWidth;
-                slaveParam.FrameHeight = this.FrameHeight;
                 return true;
             }
             else if (param is CameraParam) {
@@ -255,9 +249,6 @@ namespace FinalVisionProject.Sequence {
                     }
                 }
 
-                // 레거시 필드 대입 제거  //260327 hbk
-                camParam.FrameWidth = this.FrameWidth;
-                camParam.FrameHeight = this.FrameHeight;
                 return true;
             }
             return false;
