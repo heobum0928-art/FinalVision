@@ -2,14 +2,14 @@
 gsd_state_version: 1.0
 milestone: v2.0
 milestone_name: 레시피 편집 + 이미지 관리 + 운영 안정화
-status: Milestone complete
-stopped_at: Completed 13-01-PLAN.md
-last_updated: "2026-04-07T00:43:29.028Z"
+status: Phase complete — ready for verification
+stopped_at: Completed 14-01-PLAN.md
+last_updated: "2026-04-07T06:48:31.907Z"
 progress:
-  total_phases: 4
-  completed_phases: 4
-  total_plans: 8
-  completed_plans: 8
+  total_phases: 5
+  completed_phases: 5
+  total_plans: 9
+  completed_plans: 9
 ---
 
 # FinalVision — Project State
@@ -19,12 +19,12 @@ progress:
 See: .planning/PROJECT.md (updated 2026-04-02)
 
 **Core value:** 카메라 1대 + 5-Shot 순차 촬상으로 자재 유무를 정확히 판정하고, TCP 통신으로 설비와 연동하여 자동 검사를 수행한다.
-**Current focus:** Phase 13 — recipeeditorwindow
+**Current focus:** Phase 14 — framewidth-frameheight-lightgroupname
 
 ## Current Position
 
-Phase: 13
-Plan: Not started
+Phase: 14 (framewidth-frameheight-lightgroupname) — EXECUTING
+Plan: 1 of 1
 
 ## Performance Metrics
 
@@ -51,6 +51,7 @@ Plan: Not started
 | Phase 12-run-grab P02 | 15 | 1 tasks | 3 files |
 | Phase 12-run-grab P03 | 15 | 1 tasks | 6 files |
 | Phase 13-recipeeditorwindow P01 | 10 | 2 tasks | 3 files |
+| Phase 14-framewidth-frameheight-lightgroupname P01 | 10 | 2 tasks | 3 files |
 
 ## Accumulated Context
 
@@ -71,10 +72,17 @@ Plan: Not started
 - [Phase 12-run-grab]: DateFolderItem ViewModel uses INotifyPropertyChanged for CheckBox IsChecked two-way binding
 - [Phase 13-recipeeditorwindow]: TakeBackup uses InspectionParam CopyTo() confirmed deep copy (ROICircle=struct, ROI=struct, ERoiShape=enum)
 - [Phase 13-recipeeditorwindow]: Reset button uses repair.png in separate ToolBar block; PropertyGrid refresh via Paste pattern (UnselectAll/SelectedIndex)
+- [Phase 14-framewidth-frameheight-lightgroupname]: FrameWidth/FrameHeight 프로퍼티 완전 삭제 — ParamBase.Save() 리플렉션 직렬화 방지
+- [Phase 14-framewidth-frameheight-lightgroupname]: LightGroupName OnLoad 제거 — INI 로드 값 유지, DeviceName만 DefaultCamera 재세팅
+- [Phase 14-framewidth-frameheight-lightgroupname]: CopyTo LightGroupName 주석 해제 — RestoreShot() Reset 시 LightGroupName 복원 활성화
 
 ### Pending Todos
 
 None yet.
+
+### Roadmap Evolution
+
+- Phase 14 added: 레시피 파일 설정값 버그 수정 (FrameWidth/FrameHeight/LightGroupName)
 
 ### Blockers/Concerns
 
@@ -83,6 +91,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-04-07T00:40:17.105Z
-Stopped at: Completed 13-01-PLAN.md
+Last session: 2026-04-07T06:48:31.902Z
+Stopped at: Completed 14-01-PLAN.md
 Resume file: None

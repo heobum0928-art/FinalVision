@@ -170,10 +170,10 @@ Plans:
   1. INI 저장 시 FrameWidth/FrameHeight 항목이 포함되지 않는다
   2. 레시피 로드 후 LightGroupName이 INI 저장값과 일치한다 (DefaultLight로 덮어쓰이지 않음)
   3. Reset 후 LightGroupName이 백업값으로 복원된다
-**Plans:** 1 plan
+**Plans:** 1/1 plans complete
 
 Plans:
-- [ ] 14-01-PLAN.md — FrameWidth/Height 제거 + LightGroupName OnLoad 덮어쓰기 제거 + CopyTo 복원 활성화
+- [x] 14-01-PLAN.md — FrameWidth/Height 제거 + LightGroupName OnLoad 덮어쓰기 제거 + CopyTo 복원 활성화
 
 ---
 
