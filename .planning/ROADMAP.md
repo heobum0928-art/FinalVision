@@ -161,6 +161,20 @@ Plans:
 Plans:
 - [x] 13-01-PLAN.md — Sequence_Inspection 백업/복원 메서드 + InspectionListView Reset 버튼
 
+### Phase 14: 레시피 파일 설정값 버그 수정 (FrameWidth/FrameHeight/LightGroupName)
+
+**Goal:** INI 파일에 불필요한 FrameWidth/FrameHeight가 저장되지 않고, LightGroupName이 레시피별로 올바르게 저장/로드/복원된다
+**Requirements**: FIX-01, FIX-02, FIX-03
+**Depends on:** Phase 13
+**Success Criteria** (what must be TRUE):
+  1. INI 저장 시 FrameWidth/FrameHeight 항목이 포함되지 않는다
+  2. 레시피 로드 후 LightGroupName이 INI 저장값과 일치한다 (DefaultLight로 덮어쓰이지 않음)
+  3. Reset 후 LightGroupName이 백업값으로 복원된다
+**Plans:** 1 plan
+
+Plans:
+- [ ] 14-01-PLAN.md — FrameWidth/Height 제거 + LightGroupName OnLoad 덮어쓰기 제거 + CopyTo 복원 활성화
+
 ---
 
 ## Progress
