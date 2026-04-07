@@ -179,4 +179,4 @@ Plans:
 | 10. 레시피 복사 버그 + 인프라 | v2.0 | 2/2 | Complete    | 2026-04-03 |
 | 11. 이미지 저장 구조 개선 | v2.0 | 2/2 | Complete    | 2026-04-03 |
 | 12. Run/Grab 분리 + 이미지 UI | v2.0 | 3/3 | Complete    | 2026-04-06 |
-| 13. RecipeEditorWindow | v2.0 | 1/1 | Complete   | 2026-04-07 |
+| 13. RecipeEditorWindow | v2.0 | 1/1 | Complete    | 2026-04-07 |
