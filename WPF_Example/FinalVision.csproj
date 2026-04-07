@@ -34,8 +34,10 @@
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProjectGuid>{07E8A027-F646-4DD4-A30B-06A5035371BD}</ProjectGuid>
     <OutputType>WinExe</OutputType>
-    <RootNamespace>FinalVisionProject</RootNamespace>   <!-- 변경: ReringProject → FinalVisionProject -->
-    <AssemblyName>FinalVision</AssemblyName>            <!-- 변경: TFE_OCR → FinalVision -->
+    <RootNamespace>FinalVisionProject</RootNamespace>
+    <!-- 변경: ReringProject → FinalVisionProject -->
+    <AssemblyName>FinalVision</AssemblyName>
+    <!-- 변경: TFE_OCR → FinalVision -->
     <TargetFrameworkVersion>v4.8</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <ProjectTypeGuids>{60dc8134-eba5-43b8-bcc9-bb4bc16c2548};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
@@ -87,7 +89,7 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x64'">
     <DebugSymbols>true</DebugSymbols>
     <OutputPath>..\..\..\..\..\..\..\Data\</OutputPath>
-    <DefineConstants>TRACE;DEBUG;SIMUL_MODE</DefineConstants>
+    <DefineConstants>TRACE;DEBUG</DefineConstants>
     <DebugType>full</DebugType>
     <PlatformTarget>x64</PlatformTarget>
     <ErrorReport>prompt</ErrorReport>
@@ -111,7 +113,6 @@
   </PropertyGroup>
   <ItemGroup>
     <!-- [제거됨] Basler.Pylon: HIK 카메라 전용으로 전환하여 Basler SDK 참조 삭제 -->
-
     <Reference Include="ImageGlass.ImageBox">
       <HintPath>bin\x64\Debug\dll\x64\ImageGlass.ImageBox.dll</HintPath>
     </Reference>

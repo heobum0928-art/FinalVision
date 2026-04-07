@@ -13,7 +13,7 @@ namespace FinalVisionProject.Device {
 
 
         // DEFAULT
-        public const string LIGHT_DEFAULT = "Final_Inspection";   //260330 hbk Corner_Align에서 Final_Inspection으로 변경
+        public const string LIGHT_DEFAULT = "Final_Inspect";   //260330 hbk Corner_Align에서 Final_Inspection으로 변경
 
         /// <summary>
         /// 사용되는 조명 컨트롤러 및 조명 그룹 (제어 단위) 을 설정합니다.

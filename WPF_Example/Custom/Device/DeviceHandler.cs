@@ -11,10 +11,10 @@ namespace FinalVisionProject.Device {
     /// </summary>
     public sealed partial class DeviceHandler {
 
-        public const string INSPECTION_CAMERA = "Final_Inspection";   //260326 hbk — 카메라 등록 이름 (HIK 1대)
+        public const string INSPECTION_CAMERA = "Final_Inspect";   //260407 hbk — 카메라 DeviceUserID 글자수 제한 (기존 Final_Inspection)
 
-        public const int INSPECTION_CAMERA_WIDTH  = 2058;   //260326 hbk
-        public const int INSPECTION_CAMERA_HEIGHT = 2456;   //260326 hbk
+        public const int INSPECTION_CAMERA_WIDTH  = 2448;   //260326 hbk
+        public const int INSPECTION_CAMERA_HEIGHT = 2048;   //260326 hbk
 
         // Common
         public const int MAX_WIDTH  = INSPECTION_CAMERA_WIDTH;    //260326 hbk

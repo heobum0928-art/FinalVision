@@ -218,6 +218,24 @@ namespace FinalVisionProject.UI {
                 dlg.SelectedPath, loaded, seq.ActionCount);
         }
 
+        //260407 hbk — Shot 탭 클릭 시 해당 Action 자동 선택
+        public void SelectActionByShotIndex(int shotIndex) {
+            SequenceBase seq = SystemHandler.Handle.Sequences[ESequence.Inspection];
+            if (seq == null || shotIndex < 0 || shotIndex >= seq.ActionCount) return;
+
+            EAction targetActionID = seq[shotIndex].ID;
+            for (int i = 0; i < treeListBox_sequence.Items.Count; i++) {
+                NodeViewModel node = treeListBox_sequence.Items[i] as NodeViewModel;
+                if (node == null) continue;
+                if (node.NodeType == ENodeType.Action && node.ActionID == targetActionID) {
+                    treeListBox_sequence.SelectedIndex = i;
+                    node.IsSelected = true;
+                    treeListBox_sequence.ScrollIntoView(node);
+                    return;
+                }
+            }
+        }
+
         public void SetSelectionChange(string seqName) {
             NodeViewModel root = treeListBox_sequence.Items[0] as NodeViewModel;
             root.IsExpanded = true;

@@ -87,6 +87,7 @@ namespace FinalVisionProject.UI {
         
         private MemoryStream BackgroundImageStream = null;
         private object mDrawInterlock = new object();
+        private bool _suppressTabSync = false;   //260407 hbk — Shot탭↔Action 상호 선택 무한루프 방지
         private Dictionary<string, SequenceContext> ContextList;
         private System.Windows.Point? lastMousePositionOnTarget;
         private System.Windows.Point? lastCenterPositionOnTarget;
@@ -220,8 +221,9 @@ namespace FinalVisionProject.UI {
         }
 
         public void ChangeTabPage(int index) {
-            this.Dispatcher.BeginInvoke(System.Windows.Threading.DispatcherPriority.Normal, new Action(() => { 
+            this.Dispatcher.BeginInvoke(System.Windows.Threading.DispatcherPriority.Normal, new Action(() => {
                 tabControl_view.SelectedIndex = index;
+                _suppressTabSync = false;   //260407 hbk — 탭 전환 완료 후 플래그 해제
             }));
         }
 
@@ -232,6 +234,7 @@ namespace FinalVisionProject.UI {
             if (param is InspectionParam ip)
             {
                 int tabIdx = ip.ShotIndex + 1;   // Tab 0 = Main View, Tab 1~5 = Shot 1~5   //260330 hbk
+                _suppressTabSync = true;   //260407 hbk — Action-Tab 전환 시 역방향 선택 방지
                 ChangeTabPage(tabIdx);
                 ShotTabView[] views = { shotView_1, shotView_2, shotView_3, shotView_4, shotView_5 };
                 if (ip.ShotIndex < views.Length)
@@ -365,6 +368,13 @@ namespace FinalVisionProject.UI {
                         }
 
                         canvas_main.InvalidateVisual();
+
+                        //260407 hbk — Grab 후 현재 Shot 탭 이미지도 갱신
+                        if (param is InspectionParam grabIp) {
+                            int shotIdx = Array.IndexOf(SHOT_ACTION_NAMES, grabIp.ActionName);
+                            if (shotIdx >= 0) RefreshShotImage(shotIdx);
+                        }
+
                         onComplete?.Invoke();   //260326 hbk // null 안전 호출 — UpdateShotStrip() 뒤, InvalidateVisual() 뒤
                     }));
                 }
@@ -522,6 +532,16 @@ namespace FinalVisionProject.UI {
         {
             if (!this.IsLoaded) return;
             UpdateShotStrip();
+
+            //260407 hbk — Shot 탭 클릭 시 InspectionList에서 해당 Action 자동 선택
+            if (!_suppressTabSync) {
+                int tabIdx = tabControl_view.SelectedIndex;
+                if (tabIdx >= 1 && tabIdx <= 5) {
+                    _suppressTabSync = true;   //260407 hbk — 역방향 루프 방지
+                    mParentWindow?.inspectionList.SelectActionByShotIndex(tabIdx - 1);
+                    _suppressTabSync = false;   //260407 hbk
+                }
+            }
         }
 
         // Edit 모드 변경 시 모든 Shot 탭 IsEditable 동기화   //260330 hbk

@@ -171,6 +171,11 @@ namespace FinalVisionProject.Sequence {
             // 파일 없을 때도 카메라 참조(_Camera) 초기화가 보장됨
             ExecOnLoad(name);
 
+            //260407 hbk — 레시피 로드 완료 후 Reset용 백업
+            if (Sequences.ContainsKey(ESequence.Inspection) && Sequences[ESequence.Inspection] is Sequence_Inspection inspSeq) {
+                inspSeq.TakeBackup();
+            }
+
             return result;
         }
 
@@ -181,6 +186,12 @@ namespace FinalVisionProject.Sequence {
             bool result = LoadFromIni(siteNumber, name);
             OnRecipeChanged?.Invoke(this, new RecipeChangedEventArgs(name));
             ExecOnLoad(name);
+
+            //260407 hbk — 레시피 로드 완료 후 Reset용 백업
+            if (Sequences.ContainsKey(ESequence.Inspection) && Sequences[ESequence.Inspection] is Sequence_Inspection inspSeq) {
+                inspSeq.TakeBackup();
+            }
+
             return result;
         }
 

@@ -124,11 +124,14 @@ namespace FinalVisionProject.Sequence
 
         public override void OnLoad()   //260326 hbk
         {
+            //260407 hbk — INI Load가 ChildList에 레거시 값(Corner_Align 등) 덮어쓰므로 기본값 재세팅
+            _MyParam.LightGroupName = DefaultLight;
+            _MyParam.DeviceName = DefaultCamera;
+
             if (!SystemHandler.Handle.Lights.ApplyLight(_MyParam))
             {
             }
             base.OnLoad();
-            TakeBackup();   //260407 hbk — D-01: 로드 완료 후 즉시 백업
         }
 
         protected override void AddResponse()   //260327 hbk — 검사 완료 후 TCP 결과 패킷 Enqueue
