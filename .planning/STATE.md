@@ -2,9 +2,9 @@
 gsd_state_version: 1.0
 milestone: v2.0
 milestone_name: 레시피 편집 + 이미지 관리 + 운영 안정화
-status: Phase complete — ready for verification
+status: Milestone complete
 stopped_at: Completed 14-01-PLAN.md
-last_updated: "2026-04-07T06:48:31.907Z"
+last_updated: "2026-04-07T06:52:11.715Z"
 progress:
   total_phases: 5
   completed_phases: 5
@@ -23,8 +23,8 @@ See: .planning/PROJECT.md (updated 2026-04-02)
 
 ## Current Position
 
-Phase: 14 (framewidth-frameheight-lightgroupname) — EXECUTING
-Plan: 1 of 1
+Phase: 14
+Plan: Not started
 
 ## Performance Metrics
 
