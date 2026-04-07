@@ -11,7 +11,7 @@
 - [ ] **RCP-02**: RecipeEditorWindow에서 Shot1~5 탭 전환 시 해당 Shot의 ROI/Blob/Delay 파라미터를 PropertyGrid로 편집 가능
 - [ ] **RCP-03**: RecipeEditorWindow에서 Grab 버튼으로 현재 Shot 미리보기 검사 실행 가능
 - [ ] **RCP-04**: RecipeEditorWindow에서 Save 버튼으로 현재 레시피 저장
-- [ ] **RCP-05**: RecipeEditorWindow에서 Reset 버튼으로 파라미터 기본값 초기화
+- [x] **RCP-05**: RecipeEditorWindow에서 Reset 버튼으로 파라미터 기본값 초기화
 - [ ] **RCP-06**: OpenRecipeWindow에서 Edit 버튼 클릭 시 RecipeEditorWindow 팝업 열림
 
 ### 이미지 관리
@@ -55,7 +55,7 @@
 | RCP-02 | Phase 13 | Pending |
 | RCP-03 | Phase 13 | Pending |
 | RCP-04 | Phase 13 | Pending |
-| RCP-05 | Phase 13 | Pending |
+| RCP-05 | Phase 13 | Complete |
 | RCP-06 | Phase 13 | Pending |
 
 **Coverage:**
