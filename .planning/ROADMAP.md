@@ -146,23 +146,20 @@ Plans:
 
 ---
 
-### Phase 13: RecipeEditorWindow
-**Goal**: 작업자가 Shot별 파라미터를 편집 창에서 직접 수정하고 저장할 수 있다
+### Phase 13: RecipeEditorWindow (Reset Only)
+**Goal**: 선택된 Shot 파라미터를 레시피 로드 시점 값으로 되돌리는 Reset 기능 구현 (범위 축소: CONTEXT.md에 의해 RCP-02/03/04/06 이연)
 **Depends on**: Phase 10, Phase 11, Phase 12
-**Requirements**: RCP-02, RCP-03, RCP-04, RCP-05, RCP-06
+**Requirements**: RCP-05 (partial). Deferred: RCP-02, RCP-03, RCP-04, RCP-06
 **Success Criteria** (what must be TRUE):
-  1. OpenRecipeWindow에서 Edit 버튼을 클릭하면 RecipeEditorWindow 팝업이 열린다
-  2. RecipeEditorWindow에서 Shot1~5 탭 전환 시 해당 Shot의 ROI/Blob/Delay 파라미터가 PropertyGrid에 표시되어 편집 가능하다
-  3. Grab 버튼으로 현재 Shot의 카메라 촬상 + 검사 미리보기가 실행된다
-  4. Save 버튼으로 편집된 파라미터가 레시피 파일에 저장된다
-  5. Reset 버튼으로 모든 파라미터가 기본값으로 초기화된다
-**Plans**: 2 plans
+  1. 레시피 로드 완료 시 Shot 파라미터가 메모리에 자동 백업된다
+  2. InspectionListView 툴바에 Reset 버튼이 표시된다
+  3. Shot 선택 후 Reset 클릭 시 해당 Shot 파라미터만 로드 시점 값으로 복원된다
+  4. Reset 후 PropertyGrid가 복원된 값으로 갱신된다
+**Plans**: 1 plan
 **UI hint**: yes
 
 Plans:
-- [ ] 13-01: RecipeEditorWindow 신규 생성 — TabControl(Shot1~5) + PropertyGrid 바인딩 + 백업/복원 로직
-- [ ] 13-02: Grab 미리보기 구현 — GrabAndDisplay async + _cancelled 플래그 (창 닫힘 크래시 방지)
-- [ ] 13-03: Save/Reset 버튼 구현 + OpenRecipeWindow Edit 버튼 진입점 추가
+- [ ] 13-01-PLAN.md — Sequence_Inspection 백업/복원 메서드 + InspectionListView Reset 버튼
 
 ---
 
@@ -182,4 +179,4 @@ Plans:
 | 10. 레시피 복사 버그 + 인프라 | v2.0 | 2/2 | Complete    | 2026-04-03 |
 | 11. 이미지 저장 구조 개선 | v2.0 | 2/2 | Complete    | 2026-04-03 |
 | 12. Run/Grab 분리 + 이미지 UI | v2.0 | 3/3 | Complete    | 2026-04-06 |
-| 13. RecipeEditorWindow | v2.0 | 0/3 | Not started | - |
+| 13. RecipeEditorWindow | v2.0 | 0/1 | Not started | - |
