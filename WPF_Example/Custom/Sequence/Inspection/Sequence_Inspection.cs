@@ -124,8 +124,7 @@ namespace FinalVisionProject.Sequence
 
         public override void OnLoad()   //260326 hbk
         {
-            //260407 hbk — INI Load가 ChildList에 레거시 값(Corner_Align 등) 덮어쓰므로 기본값 재세팅
-            _MyParam.LightGroupName = DefaultLight;
+            //260407 hbk — DeviceName만 기본값 재세팅 (LightGroupName은 INI 로드 값 유지)
             _MyParam.DeviceName = DefaultCamera;
 
             if (!SystemHandler.Handle.Lights.ApplyLight(_MyParam))

@@ -240,7 +240,7 @@ namespace FinalVisionProject.Sequence {
             else if (param is CameraParam) {
                 CameraParam camParam = param as CameraParam;
                 //camParam.DeviceName = this.DeviceName;
-                //camParam.LightGroupName = this.LightGroupName;
+                camParam.LightGroupName = this.LightGroupName;   //260407 hbk — Reset 시 LightGroupName 복원 활성화
                 camParam.LightLevel = this.LightLevel;
 
                 for (int i = 0; i < this.PropertyNameList.Length; i++) {
