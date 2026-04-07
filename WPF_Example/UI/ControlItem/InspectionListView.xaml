@@ -235,6 +235,15 @@
                             </StackPanel>
                         </Button>
                     </ToolBar>
+                    <ToolBar>
+                        <Button x:Name="button_reset" Click="button_reset_Click" Style="{StaticResource disalbedStyle}"
+                                ToolTip="선택된 Shot 파라미터를 레시피 로드 시점으로 초기화">
+                            <StackPanel Orientation="Vertical">
+                                <Image Source="/Resource/repair.png" Stretch="Uniform" Width="42" Height="42"/>
+                                <TextBlock Text="Reset" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                            </StackPanel>
+                        </Button>
+                    </ToolBar>
                 </ToolBarTray>
 
                 <propToolsWpf:PropertyGrid x:Name="ParamEditor" Grid.Column="1" Grid.Row="0" Margin="0" BorderThickness="0" BorderBrush="Gray" 

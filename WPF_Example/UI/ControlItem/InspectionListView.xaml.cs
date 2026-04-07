@@ -302,6 +302,55 @@ namespace FinalVisionProject.UI {
         }
 
 
+        private void button_reset_Click(object sender, RoutedEventArgs e)   //260407 hbk — D-02, D-03: 선택 Shot 파라미터 Reset
+        {
+            NodeViewModel node = treeListBox_sequence.SelectedItem as NodeViewModel;
+            if (node == null || node.NodeType != ENodeType.Action) return;
+            if (node.SequenceID != ESequence.Inspection) return;
+
+            //260407 hbk — shotIndex 결정 (Btn_start_Click 기존 패턴 재사용)
+            SequenceBase inspSeq = SystemHandler.Handle.Sequences[ESequence.Inspection];
+            if (inspSeq == null) return;
+            int shotIndex = -1;
+            for (int i = 0; i < inspSeq.ActionCount; i++)
+            {
+                if (inspSeq[i].ID == node.ActionID) { shotIndex = i; break; }
+            }
+            if (shotIndex < 0) return;
+
+            //260407 hbk — Sequence_Inspection 캐스팅 + RestoreShot 호출
+            Sequence_Inspection inspectionSeq = inspSeq as Sequence_Inspection;
+            if (inspectionSeq == null || !inspectionSeq.HasBackup)
+            {
+                CustomMessageBox.Show("Reset", "백업 데이터가 없습니다. 레시피를 먼저 로드하세요.", MessageBoxImage.Warning);
+                return;
+            }
+
+            //260407 hbk — 확인 다이얼로그 (Paste 패턴 준수)
+            MessageBoxResult res = CustomMessageBox.ShowConfirmation("Reset",
+                string.Format("Shot_{0} 파라미터를 레시피 로드 시점으로 되돌리시겠습니까?", shotIndex + 1),
+                MessageBoxButton.OKCancel);
+            if (res != MessageBoxResult.OK) return;
+
+            bool ok = inspectionSeq.RestoreShot(shotIndex);
+            if (!ok)
+            {
+                CustomMessageBox.Show("Reset", "복원에 실패했습니다.", MessageBoxImage.Error);
+                return;
+            }
+
+            //260407 hbk — PropertyGrid 강제 갱신 (Paste 패턴 재사용)
+            int index = treeListBox_sequence.SelectedIndex;
+            treeListBox_sequence.UnselectAll();
+            treeListBox_sequence.SelectedIndex = index;
+
+            //260407 hbk — ShotTabView 강제 갱신
+            if (SelectedParam is InspectionParam ip)
+                mParentWindow.mainView.SetParam(ESequence.Inspection, ip);
+
+            mParentWindow.statusBar.Model.SetText(string.Format("Reset Shot_{0} 완료", shotIndex + 1));
+        }
+
         private void button_grab_Click(object sender, RoutedEventArgs e) {
             if (SelectedParam == null) return;
             if (!(SelectedParam is ICameraParam)) return;
