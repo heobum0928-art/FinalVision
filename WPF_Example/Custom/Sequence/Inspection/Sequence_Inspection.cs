@@ -74,6 +74,8 @@ namespace FinalVisionProject.Sequence
 
         private readonly string DefaultCamera;
         private readonly string DefaultLight;
+
+        private Dictionary<int, InspectionParam> _backup = new Dictionary<int, InspectionParam>();   //260407 hbk — 로드 시점 Shot 파라미터 백업
         #endregion
 
         #region methods
@@ -126,6 +128,7 @@ namespace FinalVisionProject.Sequence
             {
             }
             base.OnLoad();
+            TakeBackup();   //260407 hbk — D-01: 로드 완료 후 즉시 백업
         }
 
         protected override void AddResponse()   //260327 hbk — 검사 완료 후 TCP 결과 패킷 Enqueue
@@ -141,6 +144,32 @@ namespace FinalVisionProject.Sequence
                                     : EVisionResultType.NG;
             ResponseQueue.Enqueue(packet);
         }
+
+        public void TakeBackup()   //260407 hbk — D-01: LoadRecipe 완료 직후 전체 Shot 백업
+        {
+            //260407 hbk — CopyTo는 deep copy (ROICircle=struct, ROI=struct, ERoiShape=enum, 나머지=primitive/string)
+            _backup.Clear();
+            for (int i = 0; i < ActionCount; i++)
+            {
+                if (this[i].Param is InspectionParam src)
+                {
+                    var snap = new InspectionParam(this[i], src.ShotIndex);
+                    src.CopyTo(snap);
+                    _backup[i] = snap;
+                }
+            }
+        }
+
+        public bool RestoreShot(int shotIndex)   //260407 hbk — D-03: 선택된 Shot만 복원
+        {
+            if (!_backup.ContainsKey(shotIndex)) return false;
+            if (shotIndex < 0 || shotIndex >= ActionCount) return false;
+            if (!(this[shotIndex].Param is InspectionParam target)) return false;
+            _backup[shotIndex].CopyTo(target);
+            return true;
+        }
+
+        public bool HasBackup => _backup.Count > 0;   //260407 hbk — Reset 버튼 가드
 
         public override string ToString()
         {
