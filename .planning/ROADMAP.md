@@ -190,10 +190,11 @@ Plans:
   5. `$TIME:1,YYYY,M,D,h,m,s@` 수신 시 내부 변수에 저장하고 `$TIME:1,OK@` 응답한다 (Windows 시계 미변경)
   6. `$TRACE:1,palletId,materialId@` 수신 시 내부 변수에 저장하고 `$TRACE:1,OK@` 응답한다 (다음 $TRACE까지 값 유지)
   7. 기존 `$LIGHT` 명령은 유지하되 응답 포맷이 프로토콜 규격과 일치한다
-**Plans:** 0 plans
+**Plans:** 2 plans
 
 Plans:
-- [ ] (to be planned)
+- [ ] 15-01-PLAN.md — DRYRUN/TIME/TRACE 패킷 타입 + 처리 로직 + $LIGHT 응답 포맷 통일
+- [ ] 15-02-PLAN.md — ALIVE 패킷 타입 + 하트비트 스레드 (1초 송신 + 3초 타임아웃)
 
 ---
 
@@ -215,4 +216,4 @@ Plans:
 | 12. Run/Grab 분리 + 이미지 UI | v2.0 | 3/3 | Complete    | 2026-04-06 |
 | 13. RecipeEditorWindow | v2.0 | 1/1 | Complete    | 2026-04-07 |
 | 14. FrameWidth/Height/LightGroupName 버그 | v2.0 | 1/1 | Complete | 2026-04-10 |
-| 15. 터미널 모드 v8 프로토콜 확장 | v2.0 | 0/? | Not Started | — |
+| 15. 터미널 모드 v8 프로토콜 확장 | v2.0 | 0/2 | Not Started | — |
