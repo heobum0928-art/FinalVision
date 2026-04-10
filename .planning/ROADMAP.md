@@ -177,6 +177,26 @@ Plans:
 
 ---
 
+### Phase 15: 터미널 모드 v8 프로토콜 확장 (ALIVE/DRYRUN/TIME/TRACE)
+
+**Goal:** TCP 터미널 모드에 v8 시퀀스 신규 명령 4건(ALIVE, DRYRUN, TIME, TRACE)을 추가하고 기존 $LIGHT 응답 포맷을 정리한다
+**Requirements**: TERM-01, TERM-02, TERM-03, TERM-04, TERM-05
+**Depends on:** Phase 14
+**Success Criteria** (what must be TRUE):
+  1. Client→V `$ALIVE:1@` 수신 시 `$ALIVE:1,OK@` 응답한다
+  2. Vision이 1초 주기로 `$ALIVE:1@`를 자체 송신하고 3초 내 응답 없으면 연결 끊김 알람 + 재연결한다
+  3. `$DRYRUN:1,1@` 수신 후 `$TEST` 시 Grab/조명/검사 스킵하고 즉시 `$RESULT:1,OK@` 응답한다
+  4. `$DRYRUN:1,0@` 수신 후 `$TEST` 시 정상 검사 시퀀스가 실행된다
+  5. `$TIME:1,YYYY,M,D,h,m,s@` 수신 시 내부 변수에 저장하고 `$TIME:1,OK@` 응답한다 (Windows 시계 미변경)
+  6. `$TRACE:1,palletId,materialId@` 수신 시 내부 변수에 저장하고 `$TRACE:1,OK@` 응답한다 (다음 $TRACE까지 값 유지)
+  7. 기존 `$LIGHT` 명령은 유지하되 응답 포맷이 프로토콜 규격과 일치한다
+**Plans:** 0 plans
+
+Plans:
+- [ ] (to be planned)
+
+---
+
 ## Progress
 
 | Phase | Milestone | Plans Complete | Status | Completed |
@@ -194,3 +214,5 @@ Plans:
 | 11. 이미지 저장 구조 개선 | v2.0 | 2/2 | Complete    | 2026-04-03 |
 | 12. Run/Grab 분리 + 이미지 UI | v2.0 | 3/3 | Complete    | 2026-04-06 |
 | 13. RecipeEditorWindow | v2.0 | 1/1 | Complete    | 2026-04-07 |
+| 14. FrameWidth/Height/LightGroupName 버그 | v2.0 | 1/1 | Complete | 2026-04-10 |
+| 15. 터미널 모드 v8 프로토콜 확장 | v2.0 | 0/? | Not Started | — |
