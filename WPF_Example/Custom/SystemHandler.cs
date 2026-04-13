@@ -13,6 +13,12 @@ using System.Diagnostics;
 
 namespace FinalVisionProject {
     public sealed partial class SystemHandler {
+        //260413 hbk — v8 터미널 모드 상태 필드
+        private volatile bool _dryRunMode = false;         //260413 hbk — DryRun ON/OFF
+        private DateTime _syncedTime = DateTime.MinValue;  //260413 hbk — TIME 동기화 값 (Windows 시계 미변경)
+        private string _palletId = "";                     //260413 hbk — TRACE Pallet ID (다음 $TRACE까지 유지)
+        private string _materialId = "";                   //260413 hbk — TRACE Material ID (다음 $TRACE까지 유지)
+
         //project 별, sequence 정의
         private void MainRun() {
             //send test response message
@@ -61,7 +67,16 @@ namespace FinalVisionProject {
                             responsePacket = SendTestError(packet.AsTest());
                         }
                         break;
-                  
+                    case VisionRequestType.DryRun:  //260413 hbk
+                        responsePacket = ProcessDryRun(packet.AsDryRun());
+                        break;
+                    case VisionRequestType.Time:  //260413 hbk
+                        responsePacket = ProcessTime(packet.AsTime());
+                        break;
+                    case VisionRequestType.Trace:  //260413 hbk
+                        responsePacket = ProcessTrace(packet.AsTrace());
+                        break;
+
                     case VisionRequestType.Unknown:
                         //occurs error
                         break;
@@ -226,28 +241,60 @@ namespace FinalVisionProject {
 
         //검사 시작 명령 후, 검사 완료까지 대기,
         private bool ProcessTest(TestPacket packet) {
-            //TestResultPacket resultPacket = new TestResultPacket();
-
-            //resultPacket.Target = packet.Sender;
-            //resultPacket.Zone = packet.Zone;
-            //resultPacket.Site = packet.Site;
-
-            //Sequences[]
-
-            //return resultPacket;
+            if (_dryRunMode) {  //260413 hbk — DryRun ON: Sequence 실행 없이 즉시 OK 응답
+                TestResultPacket dryResult = new TestResultPacket();
+                dryResult.Target = packet.Sender;
+                dryResult.Site = packet.Site;
+                dryResult.InspectionType = packet.TestType;
+                dryResult.Result = EVisionResultType.OK;
+                SequenceBase seq = Sequences[packet.Identifier];
+                if (seq != null) {
+                    seq.ResponseQueue.Enqueue(dryResult);  //260413 hbk — MainRun 상단 PopResponse 경로로 송신
+                }
+                Logging.PrintLog((int)ELogType.Trace, "[DRYRUN] TEST skipped — immediate OK. Site:{0} Type:{1}", packet.Site, packet.TestType);
+                return true;
+            }
             return Sequences.Start(packet);
         }
 
         private TestResultPacket SendTestError(TestPacket packet) {
             TestResultPacket resultPacket = new TestResultPacket();
             TestPacket sendPacket = packet.AsTest();
-            
+
             resultPacket.Target = sendPacket.Sender;
             resultPacket.Site = sendPacket.Site;
             resultPacket.InspectionType = sendPacket.TestType;
             resultPacket.Result = EVisionResultType.NG;
 
             return resultPacket;
+        }
+
+        private DryRunResultPacket ProcessDryRun(DryRunPacket packet) {  //260413 hbk
+            _dryRunMode = packet.Enable;
+            DryRunResultPacket result = new DryRunResultPacket();
+            result.Target = packet.Sender;
+            result.Site = packet.Site;
+            Logging.PrintLog((int)ELogType.Trace, "[DRYRUN] Mode={0}", _dryRunMode ? "ON" : "OFF");
+            return result;
+        }
+
+        private TimeResultPacket ProcessTime(TimePacket packet) {  //260413 hbk
+            _syncedTime = packet.SyncedTime;
+            TimeResultPacket result = new TimeResultPacket();
+            result.Target = packet.Sender;
+            result.Site = packet.Site;
+            Logging.PrintLog((int)ELogType.Trace, "[TIME] Synced={0:yyyy-MM-dd HH:mm:ss}", _syncedTime);
+            return result;
+        }
+
+        private TraceResultPacket ProcessTrace(TracePacket packet) {  //260413 hbk
+            _palletId = packet.PalletId;
+            _materialId = packet.MaterialId;
+            TraceResultPacket result = new TraceResultPacket();
+            result.Target = packet.Sender;
+            result.Site = packet.Site;
+            Logging.PrintLog((int)ELogType.Trace, "[TRACE] PalletId={0} MaterialId={1}", _palletId, _materialId);
+            return result;
         }
 
 
