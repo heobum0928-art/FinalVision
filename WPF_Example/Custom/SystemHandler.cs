@@ -312,5 +312,71 @@ namespace FinalVisionProject {
             return result;  //260413 hbk — $ALIVE:1,OK@
         }
 
+        private void AliveProcess() {  //260413 hbk — ALIVE 하트비트 백그라운드 스레드
+            Stopwatch aliveTimer = new Stopwatch();
+            while (!IsTerminated) {
+                if (!Server.IsConnected()) {
+                    Thread.Sleep(500);  //260413 hbk — 연결 없으면 대기
+                    continue;
+                }
+
+                //260413 hbk — V→Client ALIVE 송신 + 최대 ALIVE_RETRY_COUNT회 재시도
+                bool responded = false;
+                for (int attempt = 1; attempt <= ALIVE_RETRY_COUNT && !IsTerminated; attempt++) {
+                    _aliveResponseReceived = false;
+                    SendAlivePacket();
+                    if (attempt == 1) aliveTimer.Restart();
+
+                    //260413 hbk — 3초 내 응답 대기
+                    Stopwatch attemptTimer = Stopwatch.StartNew();
+                    while (attemptTimer.ElapsedMilliseconds < ALIVE_TIMEOUT_MS && !IsTerminated) {
+                        if (_aliveResponseReceived) break;
+                        Thread.Sleep(50);
+                    }
+
+                    if (_aliveResponseReceived) {
+                        responded = true;
+                        break;
+                    }
+
+                    //260413 hbk — 타임아웃: 재시도 로그 후 재송신
+                    Logging.PrintLog((int)ELogType.TcpConnection,
+                        "[ALIVE] Timeout attempt {0}/{1} — resending", attempt, ALIVE_RETRY_COUNT);
+                }
+
+                if (IsTerminated) break;
+
+                if (!responded) {
+                    //260413 hbk — 3회 모두 무응답: 연결 끊김 판정 → 기존 소켓 종료 + 알람
+                    PerformAliveTimeout();
+                }
+
+                //260413 hbk — 다음 송신까지 남은 시간 대기 (첫 송신 기준)
+                int elapsed = (int)aliveTimer.ElapsedMilliseconds;
+                int remaining = ALIVE_SEND_INTERVAL_MS - elapsed;
+                if (remaining > 0 && !IsTerminated) {
+                    Thread.Sleep(remaining);
+                }
+            }
+        }
+
+        private void SendAlivePacket() {  //260413 hbk
+            string msg = "$ALIVE:1@";
+            Server.SendMessage(0, msg);  //260413 hbk — 첫 번째 Client에 송신 (MAX_CONNECTION_COUNT=1)
+            Logging.PrintLog((int)ELogType.TcpConnection, "[TCP][SEND] ALIVE heartbeat");
+        }
+
+        private void PerformAliveTimeout() {  //260413 hbk — 연결 끊김 판정 (ping 3회 재시도 후 호출)
+            Logging.PrintLog((int)ELogType.Error, "[ALIVE] No response after {0} retries ({1}ms each). Disconnecting client.", ALIVE_RETRY_COUNT, ALIVE_TIMEOUT_MS);
+            //260413 hbk — 기존 Client 소켓 강제 종료 → TcpServer가 Accept 대기로 복귀
+            if (Server.GetConnectedClientCount() > 0) {
+                try {
+                    Server.GetClient(0).Disconnect();
+                } catch (Exception ex) {
+                    Logging.PrintLog((int)ELogType.Error, "[ALIVE] Disconnect error: {0}", ex.Message);
+                }
+            }
+        }
+
     }
 }
