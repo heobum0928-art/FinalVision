@@ -2,14 +2,15 @@
 gsd_state_version: 1.0
 milestone: v2.0
 milestone_name: 레시피 편집 + 이미지 관리 + 운영 안정화
-status: Milestone complete
+status: Executing Phase 15
 stopped_at: Completed 14-01-PLAN.md
-last_updated: "2026-04-07T06:52:11.715Z"
+last_updated: "2026-04-13T00:33:08.429Z"
 progress:
-  total_phases: 5
+  total_phases: 6
   completed_phases: 5
-  total_plans: 9
+  total_plans: 11
   completed_plans: 9
+  percent: 82
 ---
 
 # FinalVision — Project State
@@ -19,12 +20,12 @@ progress:
 See: .planning/PROJECT.md (updated 2026-04-02)
 
 **Core value:** 카메라 1대 + 5-Shot 순차 촬상으로 자재 유무를 정확히 판정하고, TCP 통신으로 설비와 연동하여 자동 검사를 수행한다.
-**Current focus:** Phase 14 — framewidth-frameheight-lightgroupname
+**Current focus:** Phase 15 — v8-alive-dryrun-time-trace
 
 ## Current Position
 
-Phase: 14
-Plan: Not started
+Phase: 15 (v8-alive-dryrun-time-trace) — EXECUTING
+Plan: 1 of 2
 
 ## Performance Metrics
 
