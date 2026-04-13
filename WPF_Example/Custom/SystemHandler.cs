@@ -301,20 +301,19 @@ namespace FinalVisionProject {
 
         private TimeResultPacket ProcessTime(TimePacket packet) {  //260413 hbk
             _syncedTime = packet.SyncedTime;
-            //260413 hbk — PLC 시간동기화: Windows 로컬 시계 변경
-            SYSTEMTIME st = new SYSTEMTIME {
-                wYear          = (ushort)_syncedTime.Year,
-                wMonth         = (ushort)_syncedTime.Month,
-                wDay           = (ushort)_syncedTime.Day,
-                wHour          = (ushort)_syncedTime.Hour,
-                wMinute        = (ushort)_syncedTime.Minute,
-                wSecond        = (ushort)_syncedTime.Second,
-                wMilliseconds  = 0,
-                wDayOfWeek     = (ushort)_syncedTime.DayOfWeek,
-            };
-            bool ok = SetLocalTime(ref st);
-            Logging.PrintLog((int)ELogType.Trace, "[TIME] Synced={0:yyyy-MM-dd HH:mm:ss} SetLocalTime={1}",
-                _syncedTime, ok ? "OK" : "FAIL(권한부족?)");
+            //260413 hbk — PLC 시간동기화: Windows 로컬 시계 변경 (미확정 — 주석처리)
+            //SYSTEMTIME st = new SYSTEMTIME {
+            //    wYear          = (ushort)_syncedTime.Year,
+            //    wMonth         = (ushort)_syncedTime.Month,
+            //    wDay           = (ushort)_syncedTime.Day,
+            //    wHour          = (ushort)_syncedTime.Hour,
+            //    wMinute        = (ushort)_syncedTime.Minute,
+            //    wSecond        = (ushort)_syncedTime.Second,
+            //    wMilliseconds  = 0,
+            //    wDayOfWeek     = (ushort)_syncedTime.DayOfWeek,
+            //};
+            //bool ok = SetLocalTime(ref st);
+            Logging.PrintLog((int)ELogType.Trace, "[TIME] Synced={0:yyyy-MM-dd HH:mm:ss}", _syncedTime);
             TimeResultPacket result = new TimeResultPacket();
             result.Target = packet.Sender;
             result.Site = packet.Site;
