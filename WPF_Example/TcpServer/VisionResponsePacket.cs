@@ -13,6 +13,9 @@ namespace FinalVisionProject.Network {
         Light,
         Test,
         GrabStatus,
+        DryRun,   //260413 hbk
+        Time,     //260413 hbk
+        Trace,    //260413 hbk
 
 
         Unknown = 999
@@ -40,6 +43,9 @@ namespace FinalVisionProject.Network {
         public const string CMD_SEND_LIGHT = "LIGHT";
         public const string CMD_SEND_TEST = "RESULT";
         public const string CMD_SEND_GRAB_STATUS = "GRAB_STATUS";
+        public const string CMD_SEND_DRYRUN = "DRYRUN";  //260413 hbk
+        public const string CMD_SEND_TIME = "TIME";       //260413 hbk
+        public const string CMD_SEND_TRACE = "TRACE";     //260413 hbk
 
         public const string RESULT_OK = "OK";
         public const string RESULT_NG = "NG";
@@ -308,6 +314,30 @@ namespace FinalVisionProject.Network {
                     msg += VisionServer.MSG_CONTENTS_SEPERATOR;
                     msg += testPacket.GetResultString();                    //260326 hbk — OK/NG만 응답
                     break;
+                case EVisionResponseType.DryRun:  //260413 hbk
+                    DryRunResultPacket dryRunPacket = packet.AsDryRunResult();
+                    msg += CMD_SEND_DRYRUN;
+                    msg += VisionServer.MSG_CMD_SEPERATOR;
+                    msg += dryRunPacket.Site.ToString();
+                    msg += VisionServer.MSG_CONTENTS_SEPERATOR;
+                    msg += RESULT_OK;
+                    break;
+                case EVisionResponseType.Time:  //260413 hbk
+                    TimeResultPacket timePacket2 = packet.AsTimeResult();
+                    msg += CMD_SEND_TIME;
+                    msg += VisionServer.MSG_CMD_SEPERATOR;
+                    msg += timePacket2.Site.ToString();
+                    msg += VisionServer.MSG_CONTENTS_SEPERATOR;
+                    msg += RESULT_OK;
+                    break;
+                case EVisionResponseType.Trace:  //260413 hbk
+                    TraceResultPacket tracePacket = packet.AsTraceResult();
+                    msg += CMD_SEND_TRACE;
+                    msg += VisionServer.MSG_CMD_SEPERATOR;
+                    msg += tracePacket.Site.ToString();
+                    msg += VisionServer.MSG_CONTENTS_SEPERATOR;
+                    msg += RESULT_OK;
+                    break;
                 case EVisionResponseType.Unknown:
                     return null;
             }
@@ -345,6 +375,19 @@ namespace FinalVisionProject.Network {
         public GrabStatusResultPacket AsGrabStatusResult() {
             if (ResponseType != EVisionResponseType.GrabStatus) return null;
             return this as GrabStatusResultPacket;
+        }
+
+        public DryRunResultPacket AsDryRunResult() {  //260413 hbk
+            if (ResponseType != EVisionResponseType.DryRun) return null;
+            return this as DryRunResultPacket;
+        }
+        public TimeResultPacket AsTimeResult() {  //260413 hbk
+            if (ResponseType != EVisionResponseType.Time) return null;
+            return this as TimeResultPacket;
+        }
+        public TraceResultPacket AsTraceResult() {  //260413 hbk
+            if (ResponseType != EVisionResponseType.Trace) return null;
+            return this as TraceResultPacket;
         }
     }
 
@@ -521,6 +564,18 @@ namespace FinalVisionProject.Network {
             if (resultStr == RESULT_NG) Result = EVisionResultType.NG;
             else if (resultStr == RESULT_OK) Result = EVisionResultType.OK;
         }
+    }
+
+    public class DryRunResultPacket : VisionResponsePacket {  //260413 hbk
+        public DryRunResultPacket() : base(EVisionResponseType.DryRun) { }
+    }
+
+    public class TimeResultPacket : VisionResponsePacket {  //260413 hbk
+        public TimeResultPacket() : base(EVisionResponseType.Time) { }
+    }
+
+    public class TraceResultPacket : VisionResponsePacket {  //260413 hbk
+        public TraceResultPacket() : base(EVisionResponseType.Trace) { }
     }
 
 }

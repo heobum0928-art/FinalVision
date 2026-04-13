@@ -11,6 +11,9 @@ namespace FinalVisionProject.Network {
         SiteStatus,
         Light,
         Test,
+        DryRun,   //260413 hbk
+        Time,     //260413 hbk
+        Trace,    //260413 hbk
 
         Unknown = 999
     }
@@ -23,6 +26,9 @@ namespace FinalVisionProject.Network {
         public const string CMD_RECV_SITE_STATUS = "SITE_STATUS";
         public const string CMD_RECV_LIGHT = "LIGHT";
         public const string CMD_RECV_TEST = "TEST";
+        public const string CMD_RECV_DRYRUN = "DRYRUN";  //260413 hbk
+        public const string CMD_RECV_TIME = "TIME";       //260413 hbk
+        public const string CMD_RECV_TRACE = "TRACE";     //260413 hbk
 
         public VisionRequestType RequestType { get; }
 
@@ -286,6 +292,45 @@ namespace FinalVisionProject.Network {
                     testPacket.TestID = testID;
 
                     break;
+                case CMD_RECV_DRYRUN:  //260413 hbk
+                    packet = new DryRunPacket();
+                    DryRunPacket dryRunPacket = packet.AsDryRun();
+                    dataList = msgList[1].Split(VisionServer.MSG_CONTENTS_SEPERATOR);
+                    if (dataList.Length < 2) return null;
+                    if (Int32.TryParse(dataList[0], out siteNum) == false) return null;
+                    dryRunPacket.Site = siteNum;
+                    if (Int32.TryParse(dataList[1], out int dryRunState) == false) return null;
+                    dryRunPacket.Enable = (dryRunState == 1);
+                    break;
+                case CMD_RECV_TIME:  //260413 hbk
+                    packet = new TimePacket();
+                    TimePacket timePacket = packet.AsTime();
+                    dataList = msgList[1].Split(VisionServer.MSG_CONTENTS_SEPERATOR);
+                    if (dataList.Length < 7) return null;
+                    if (Int32.TryParse(dataList[0], out siteNum) == false) return null;
+                    timePacket.Site = siteNum;
+                    if (Int32.TryParse(dataList[1], out int year) == false) return null;
+                    if (Int32.TryParse(dataList[2], out int month) == false) return null;
+                    if (Int32.TryParse(dataList[3], out int day) == false) return null;
+                    if (Int32.TryParse(dataList[4], out int hour) == false) return null;
+                    if (Int32.TryParse(dataList[5], out int minute) == false) return null;
+                    if (Int32.TryParse(dataList[6], out int second) == false) return null;
+                    try {
+                        timePacket.SyncedTime = new DateTime(year, month, day, hour, minute, second);
+                    } catch (ArgumentOutOfRangeException) {
+                        return null;  //260413 hbk — 유효하지 않은 날짜/시간 값
+                    }
+                    break;
+                case CMD_RECV_TRACE:  //260413 hbk
+                    packet = new TracePacket();
+                    TracePacket tracePacket = packet.AsTrace();
+                    dataList = msgList[1].Split(VisionServer.MSG_CONTENTS_SEPERATOR);
+                    if (dataList.Length < 3) return null;
+                    if (Int32.TryParse(dataList[0], out siteNum) == false) return null;
+                    tracePacket.Site = siteNum;
+                    tracePacket.PalletId = dataList[1];
+                    tracePacket.MaterialId = dataList[2];
+                    break;
             }
 
             return packet;
@@ -319,6 +364,19 @@ namespace FinalVisionProject.Network {
             if (RequestType != VisionRequestType.RecipeGet) return null;
             RecipeGetPacket recipeGetPacket = this as RecipeGetPacket;
             return recipeGetPacket;
+        }
+
+        public DryRunPacket AsDryRun() {  //260413 hbk
+            if (RequestType != VisionRequestType.DryRun) return null;
+            return this as DryRunPacket;
+        }
+        public TimePacket AsTime() {  //260413 hbk
+            if (RequestType != VisionRequestType.Time) return null;
+            return this as TimePacket;
+        }
+        public TracePacket AsTrace() {  //260413 hbk
+            if (RequestType != VisionRequestType.Trace) return null;
+            return this as TracePacket;
         }
 
     }
@@ -373,6 +431,22 @@ namespace FinalVisionProject.Network {
 
         public RecipeGetPacket() : base(VisionRequestType.RecipeGet) {
         }
+    }
+
+    public class DryRunPacket : VisionRequestPacket {  //260413 hbk
+        public bool Enable { get; set; }
+        public DryRunPacket() : base(VisionRequestType.DryRun) { }
+    }
+
+    public class TimePacket : VisionRequestPacket {  //260413 hbk
+        public DateTime SyncedTime { get; set; }
+        public TimePacket() : base(VisionRequestType.Time) { }
+    }
+
+    public class TracePacket : VisionRequestPacket {  //260413 hbk
+        public string PalletId { get; set; }
+        public string MaterialId { get; set; }
+        public TracePacket() : base(VisionRequestType.Trace) { }
     }
 
 }

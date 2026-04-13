@@ -67,6 +67,10 @@ namespace FinalVisionProject.Network {
                     testPacket.Identifier = Find(EResource.Sequence, (ESite)testPacket.Site);
                     testPacket.Identifier2 = Find(EResource.Action, (ESite)testPacket.Site, (ETestType)testPacket.TestType);
                     break;
+                case VisionRequestType.DryRun:   //260413 hbk — 리소스 매핑 불필요
+                case VisionRequestType.Time:     //260413 hbk
+                case VisionRequestType.Trace:    //260413 hbk
+                    break;
                 case VisionRequestType.Unknown:
                     break;
             }
