@@ -22,6 +22,8 @@ namespace FinalVisionProject {
         private const int ALIVE_SEND_INTERVAL_MS = 1000;  //260413 hbk — 1초 주기 송신
         private const int ALIVE_TIMEOUT_MS = 3000;         //260413 hbk — 3초 타임아웃
         private const int ALIVE_RETRY_COUNT = 3;           //260413 hbk — ping 재시도 횟수
+        public event Action AliveHeartbeatReceived;  //260413 hbk — Phase 16 UI flash 트리거 (Phase 15 로직 미수정)
+        public event Action AliveTimeout;            //260413 hbk — Phase 16 UI 빨강 트리거 (Phase 15 로직 미수정)
 
         //project 별, sequence 정의
         private void MainRun() {
@@ -73,6 +75,7 @@ namespace FinalVisionProject {
                         break;
                     case VisionRequestType.Alive:  //260413 hbk — Client→V echo 응답
                         _aliveResponseReceived = true;  //260413 hbk — V→Client ALIVE의 응답으로도 처리
+                        AliveHeartbeatReceived?.Invoke();  //260413 hbk — Phase 16 ALIVE flash event
                         responsePacket = ProcessAlive(packet.AsAlive());
                         break;
                     case VisionRequestType.DryRun:  //260413 hbk
@@ -376,6 +379,7 @@ namespace FinalVisionProject {
                     Logging.PrintLog((int)ELogType.Error, "[ALIVE] Disconnect error: {0}", ex.Message);
                 }
             }
+            AliveTimeout?.Invoke();  //260413 hbk — Phase 16 UI 빨강 latch 트리거
         }
 
     }
