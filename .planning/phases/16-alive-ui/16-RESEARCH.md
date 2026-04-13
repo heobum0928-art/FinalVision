@@ -387,20 +387,23 @@ Grid.Column=4 Grid.Row=0
 
 **이 표가 비어있지 않음:** 위 5건은 사용자/플래너가 실기 또는 최종 설계 시 확인 권장. 특히 A3 는 Phase 15 의 "V→Client 하트비트 Echo" 프로토콜 재확인 필요.
 
-## Open Questions
+## Open Questions (RESOLVED)
 
 1. **Phase 15 Echo 프로토콜의 정확한 방향성**
    - 알려진 것: `AliveProcess` 가 1초마다 `$ALIVE:1@` 를 Client 에 송신, Client 응답을 3초 대기, `_aliveResponseReceived` 로 수신 판정.
    - 불명: 수신 이벤트가 `VisionRequestType.Alive` case (MainRun 74줄)로 들어오는지, 아니면 별도 echo 파싱 경로가 있는지. 코드에서는 MainRun case 만 플래그를 세팅한다 — 즉 V→Client 송신의 응답도 `VisionRequestType.Alive` 로 파싱되어 동일 case 를 탄다고 **가정**.
    - 권장: planner 가 `VisionRequestPacket.Convert` 의 ALIVE 파싱 경로를 재확인 후 flash event 발행 지점 확정.
+   - **RESOLVED:** SystemHandler.cs:74 already contains 'case VisionRequestType.Alive:' with comment 'Client→V echo 응답'. Event invoke point confirmed correct.
 
 2. **`Server.OnAlarm` 구독 해제 시점**
    - 알려진 것: `Server.OnAlarm` 은 `TcpServer` 에서 발행.
    - 불명: `MenuBar` 가 교체되거나 App 이 shutdown 될 때 구독 해제 훅이 없다면 GC 가 `SystemHandler`(Singleton) 루트로부터 `MenuBar` 를 잡고 있어 메모리 누수. 일반적으로 App 종료 시점이므로 치명적이진 않음.
    - 권장: `MenuBar_Unloaded` 에서 구독 해제.
+   - **RESOLVED:** 16-02 Task 2 handles via MenuBar_Unloaded event (Server.OnAlarm -= OnServerAlarm).
 
 3. **Color 상수 정의 위치**
    - CONTEXT.md 가 "정확한 값은 planner 판단" 이라 함. 권장 HEX(`#FF9E9E9E` Gray, `#FF7EE08B` BaseGreen, `#FF00B050` FlashGreen, `#FFE53935` Red) — planner 가 XAML 리소스 / `MenuBar.xaml.cs` 상수 중 선택.
+   - **RESOLVED:** 16-02 Task 1 defines as static readonly Color fields in MenuBar.xaml.cs.
 
 ## Sources
 

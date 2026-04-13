@@ -196,6 +196,23 @@ Plans:
 - [x] 15-01-PLAN.md — DRYRUN/TIME/TRACE 패킷 타입 + 처리 로직 + $LIGHT 응답 포맷 통일
 - [x] 15-02-PLAN.md — ALIVE 패킷 타입 + 하트비트 스레드 (1초 송신 + 3초 타임아웃)
 
+### Phase 16: ALIVE 상태 UI 인디케이터 — 녹색 깜빡임(하트비트 수신)/빨강(타임아웃)/회색(미연결) 표시
+
+**Goal:** Phase 15 가 구현한 ALIVE 하트비트의 연결 상태를 MenuBar 우측 Data & Version Grid 에 원형 LED + "ALIVE" 라벨로 시각화하여 운영자가 3-state(회색=미연결 / 녹색 Base+flash=연결 및 수신 / 빨강=타임아웃 래치)를 한눈에 파악한다. Phase 15 하트비트 로직은 수정하지 않고(L-02), 순수 WPF(Ellipse+Storyboard+ColorAnimation)만 사용(L-03), 모든 UI 터치는 Dispatcher.BeginInvoke 경유(L-01).
+**Requirements**: ALIVE-UI-01, ALIVE-UI-02, ALIVE-UI-03, ALIVE-UI-04, ALIVE-UI-05, ALIVE-UI-06
+**Depends on:** Phase 15
+**Success Criteria** (what must be TRUE):
+  1. Client 미연결 상태에서 MenuBar LED 가 Gray(#FF9E9E9E)로 표시된다
+  2. Client 연결 + ALIVE 응답 수신 시마다 LED 가 FlashGreen(#FF00B050)→BaseGreen(#FF7EE08B) 150ms fade flash 1회 수행한다
+  3. 3회 재시도 타임아웃 시 LED 가 Red(#FFE53935)로 래치되어 flash 에 덮이지 않는다
+  4. Client 재접속(AlarmEventType.OnConnected) 수신 시 즉시 녹색 Base 로 복귀한다
+  5. Phase 15 `AliveProcess`/`PerformAliveTimeout` 본문 0줄 수정, 신규 NuGet 0건 추가
+**Plans:** 2 plans
+
+Plans:
+- [ ] 16-01-PLAN.md — SystemHandler 신규 이벤트(AliveHeartbeatReceived/AliveTimeout) 발행 훅 추가
+- [ ] 16-02-PLAN.md — MenuBar XAML Row 4 ALIVE 인디케이터 + code-behind 이벤트 구독/3-state 폴링/Storyboard flash
+
 ---
 
 ## Progress
