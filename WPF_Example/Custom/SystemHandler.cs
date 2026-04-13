@@ -10,12 +10,22 @@ using System.Threading;
 using FinalVisionProject.Sequence;
 using FinalVisionProject.Site;
 using System.Diagnostics;
+using System.Runtime.InteropServices;  //260413 hbk — SetLocalTime P/Invoke
 
 namespace FinalVisionProject {
     public sealed partial class SystemHandler {
         //260413 hbk — v8 터미널 모드 상태 필드
         private volatile bool _dryRunMode = false;         //260413 hbk — DryRun ON/OFF
-        private DateTime _syncedTime = DateTime.MinValue;  //260413 hbk — TIME 동기화 값 (Windows 시계 미변경)
+        private DateTime _syncedTime = DateTime.MinValue;  //260413 hbk — TIME 동기화 값
+
+        //260413 hbk — SetLocalTime P/Invoke (PLC 시간동기화)
+        [StructLayout(LayoutKind.Sequential)]
+        private struct SYSTEMTIME {
+            public ushort wYear, wMonth, wDayOfWeek, wDay;
+            public ushort wHour, wMinute, wSecond, wMilliseconds;
+        }
+        [DllImport("kernel32.dll", SetLastError = true)]
+        private static extern bool SetLocalTime(ref SYSTEMTIME st);
         private string _palletId = "";                     //260413 hbk — TRACE Pallet ID (다음 $TRACE까지 유지)
         private string _materialId = "";                   //260413 hbk — TRACE Material ID (다음 $TRACE까지 유지)
         private volatile bool _aliveResponseReceived = false;  //260413 hbk — ALIVE 응답 수신 플래그
@@ -291,10 +301,23 @@ namespace FinalVisionProject {
 
         private TimeResultPacket ProcessTime(TimePacket packet) {  //260413 hbk
             _syncedTime = packet.SyncedTime;
+            //260413 hbk — PLC 시간동기화: Windows 로컬 시계 변경
+            SYSTEMTIME st = new SYSTEMTIME {
+                wYear          = (ushort)_syncedTime.Year,
+                wMonth         = (ushort)_syncedTime.Month,
+                wDay           = (ushort)_syncedTime.Day,
+                wHour          = (ushort)_syncedTime.Hour,
+                wMinute        = (ushort)_syncedTime.Minute,
+                wSecond        = (ushort)_syncedTime.Second,
+                wMilliseconds  = 0,
+                wDayOfWeek     = (ushort)_syncedTime.DayOfWeek,
+            };
+            bool ok = SetLocalTime(ref st);
+            Logging.PrintLog((int)ELogType.Trace, "[TIME] Synced={0:yyyy-MM-dd HH:mm:ss} SetLocalTime={1}",
+                _syncedTime, ok ? "OK" : "FAIL(권한부족?)");
             TimeResultPacket result = new TimeResultPacket();
             result.Target = packet.Sender;
             result.Site = packet.Site;
-            Logging.PrintLog((int)ELogType.Trace, "[TIME] Synced={0:yyyy-MM-dd HH:mm:ss}", _syncedTime);
             return result;
         }
 
