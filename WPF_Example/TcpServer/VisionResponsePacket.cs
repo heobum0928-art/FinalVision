@@ -16,6 +16,7 @@ namespace FinalVisionProject.Network {
         DryRun,   //260413 hbk
         Time,     //260413 hbk
         Trace,    //260413 hbk
+        Alive,    //260413 hbk
 
 
         Unknown = 999
@@ -46,6 +47,7 @@ namespace FinalVisionProject.Network {
         public const string CMD_SEND_DRYRUN = "DRYRUN";  //260413 hbk
         public const string CMD_SEND_TIME = "TIME";       //260413 hbk
         public const string CMD_SEND_TRACE = "TRACE";     //260413 hbk
+        public const string CMD_SEND_ALIVE = "ALIVE";      //260413 hbk
 
         public const string RESULT_OK = "OK";
         public const string RESULT_NG = "NG";
@@ -338,6 +340,14 @@ namespace FinalVisionProject.Network {
                     msg += VisionServer.MSG_CONTENTS_SEPERATOR;
                     msg += RESULT_OK;
                     break;
+                case EVisionResponseType.Alive:  //260413 hbk
+                    AliveResultPacket alivePacket2 = packet.AsAliveResult();
+                    msg += CMD_SEND_ALIVE;
+                    msg += VisionServer.MSG_CMD_SEPERATOR;
+                    msg += alivePacket2.Site.ToString();
+                    msg += VisionServer.MSG_CONTENTS_SEPERATOR;
+                    msg += RESULT_OK;
+                    break;
                 case EVisionResponseType.Unknown:
                     return null;
             }
@@ -388,6 +398,10 @@ namespace FinalVisionProject.Network {
         public TraceResultPacket AsTraceResult() {  //260413 hbk
             if (ResponseType != EVisionResponseType.Trace) return null;
             return this as TraceResultPacket;
+        }
+        public AliveResultPacket AsAliveResult() {  //260413 hbk
+            if (ResponseType != EVisionResponseType.Alive) return null;
+            return this as AliveResultPacket;
         }
     }
 
@@ -576,6 +590,10 @@ namespace FinalVisionProject.Network {
 
     public class TraceResultPacket : VisionResponsePacket {  //260413 hbk
         public TraceResultPacket() : base(EVisionResponseType.Trace) { }
+    }
+
+    public class AliveResultPacket : VisionResponsePacket {  //260413 hbk
+        public AliveResultPacket() : base(EVisionResponseType.Alive) { }
     }
 
 }

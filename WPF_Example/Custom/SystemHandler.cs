@@ -18,6 +18,10 @@ namespace FinalVisionProject {
         private DateTime _syncedTime = DateTime.MinValue;  //260413 hbk — TIME 동기화 값 (Windows 시계 미변경)
         private string _palletId = "";                     //260413 hbk — TRACE Pallet ID (다음 $TRACE까지 유지)
         private string _materialId = "";                   //260413 hbk — TRACE Material ID (다음 $TRACE까지 유지)
+        private volatile bool _aliveResponseReceived = false;  //260413 hbk — ALIVE 응답 수신 플래그
+        private const int ALIVE_SEND_INTERVAL_MS = 1000;  //260413 hbk — 1초 주기 송신
+        private const int ALIVE_TIMEOUT_MS = 3000;         //260413 hbk — 3초 타임아웃
+        private const int ALIVE_RETRY_COUNT = 3;           //260413 hbk — ping 재시도 횟수
 
         //project 별, sequence 정의
         private void MainRun() {
@@ -66,6 +70,10 @@ namespace FinalVisionProject {
                             //send fail message
                             responsePacket = SendTestError(packet.AsTest());
                         }
+                        break;
+                    case VisionRequestType.Alive:  //260413 hbk — Client→V echo 응답
+                        _aliveResponseReceived = true;  //260413 hbk — V→Client ALIVE의 응답으로도 처리
+                        responsePacket = ProcessAlive(packet.AsAlive());
                         break;
                     case VisionRequestType.DryRun:  //260413 hbk
                         responsePacket = ProcessDryRun(packet.AsDryRun());
@@ -297,6 +305,12 @@ namespace FinalVisionProject {
             return result;
         }
 
+        private AliveResultPacket ProcessAlive(AlivePacket packet) {  //260413 hbk
+            AliveResultPacket result = new AliveResultPacket();
+            result.Target = packet.Sender;
+            result.Site = packet.Site;
+            return result;  //260413 hbk — $ALIVE:1,OK@
+        }
 
     }
 }
