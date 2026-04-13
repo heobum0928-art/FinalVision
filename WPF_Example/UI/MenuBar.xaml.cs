@@ -10,7 +10,9 @@ using System.Windows.Data;
 using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Media;
+using System.Windows.Media.Animation; //260413 hbk — Storyboard
 using System.Windows.Media.Imaging;
+using FinalVisionProject.Network; //260413 hbk — AlarmEventArgs
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 using System.Windows.Threading;
@@ -21,7 +23,14 @@ namespace FinalVisionProject.UI {
     /// </summary>
     public partial class MenuBar : UserControl {
         MainWindow mParentWindow;
-        
+
+        private SolidColorBrush _aliveBrush;              //260413 hbk — alive_Ellipse Fill SolidColorBrush 캐시
+        private Storyboard _flashStoryboard;              //260413 hbk — AliveFlashStoryboard 리소스 캐시
+        private volatile bool _aliveTimeoutLatched;       //260413 hbk — 빨강 래치 (OnConnected 수신 시 clear)
+        private static readonly Color AliveGray      = Color.FromArgb(0xFF, 0x9E, 0x9E, 0x9E);  //260413 hbk
+        private static readonly Color AliveBaseGreen = Color.FromArgb(0xFF, 0x7E, 0xE0, 0x8B);  //260413 hbk
+        private static readonly Color AliveRed       = Color.FromArgb(0xFF, 0xE5, 0x39, 0x35);  //260413 hbk
+
         public MenuBar() {
             InitializeComponent();
 
@@ -48,12 +57,32 @@ namespace FinalVisionProject.UI {
         private void MenuBar_Loaded(object sender, RoutedEventArgs e) {
             mParentWindow = (MainWindow)Window.GetWindow(this);
             UpdateLoginID(SystemHandler.Handle.Login.LoginID);
+
+            //260413 hbk — Phase 16 ALIVE 인디케이터 초기화
+            _aliveBrush = (SolidColorBrush)alive_Ellipse.Fill;
+            _flashStoryboard = (Storyboard)this.Resources["AliveFlashStoryboard"];
+
+            SystemHandler.Handle.AliveHeartbeatReceived += OnAliveHeartbeat;  //260413 hbk
+            SystemHandler.Handle.AliveTimeout += OnAliveTimeoutEvent;          //260413 hbk
+            if (SystemHandler.Handle.Server != null) {                          //260413 hbk — NRE 방어 (Pitfall #4)
+                SystemHandler.Handle.Server.OnAlarm += OnServerAlarm;           //260413 hbk
+            }
+            this.Unloaded += MenuBar_Unloaded;                                  //260413 hbk — 구독 해제 훅
         }
 
         public void UpdateState() {
             this.label_DateTime.Text = DateTime.Now.ToString();
             label_status.Content = SystemHandler.Handle.Sequences.StateAll;
             label_seqName.Content = SystemHandler.Handle.Sequences.StateSequenceName;
+
+            //260413 hbk — Phase 16 ALIVE 3-state 폴링
+            if (_aliveBrush == null) return;           //260413 hbk — Loaded 이전 가드
+            if (_aliveTimeoutLatched) {                //260413 hbk — 빨강 래치 유지
+                _aliveBrush.Color = AliveRed;          //260413 hbk
+                return;                                //260413 hbk
+            }
+            bool connected = SystemHandler.Handle.Server?.IsConnected() ?? false;  //260413 hbk
+            _aliveBrush.Color = connected ? AliveBaseGreen : AliveGray;            //260413 hbk
         }
 
         public void UpdateLoginID(string id) {
@@ -110,6 +139,41 @@ namespace FinalVisionProject.UI {
 
         private void Label_status_Click(object sender, RoutedEventArgs e) {
             mParentWindow.PopupView(EPageType.ProcessMonitor);
+        }
+
+        //260413 hbk — Phase 16 ALIVE 응답 수신 → flash 1회
+        private void OnAliveHeartbeat() {
+            Dispatcher.BeginInvoke(new Action(() => {
+                if (_aliveTimeoutLatched) return;  //260413 hbk — 빨강 중에는 flash 금지 (Pitfall #2)
+                if (_flashStoryboard == null) return;
+                _flashStoryboard.Begin(this, true);  //260413 hbk — isControllable=true, 재진입 안전
+            }));
+        }
+
+        //260413 hbk — Phase 16 ALIVE 타임아웃 → 빨강 래치
+        private void OnAliveTimeoutEvent() {
+            Dispatcher.BeginInvoke(new Action(() => {
+                _aliveTimeoutLatched = true;                     //260413 hbk
+                if (_flashStoryboard != null) _flashStoryboard.Stop(this);  //260413 hbk
+                if (_aliveBrush != null) _aliveBrush.Color = AliveRed;      //260413 hbk
+            }));
+        }
+
+        //260413 hbk — Phase 16 Client 재접속 감지 → 빨강 래치 해제
+        private void OnServerAlarm(object sender, AlarmEventArgs e) {
+            if (e.AlarmType != AlarmEventArgs.AlarmEventType.OnConnected) return;  //260413 hbk
+            Dispatcher.BeginInvoke(new Action(() => {
+                _aliveTimeoutLatched = false;  //260413 hbk — 다음 UpdateState() 폴링이 녹색 Base 복귀
+            }));
+        }
+
+        //260413 hbk — Phase 16 Unload 시 이벤트 구독 해제 (메모리 누수 방지)
+        private void MenuBar_Unloaded(object sender, RoutedEventArgs e) {
+            SystemHandler.Handle.AliveHeartbeatReceived -= OnAliveHeartbeat;  //260413 hbk
+            SystemHandler.Handle.AliveTimeout -= OnAliveTimeoutEvent;          //260413 hbk
+            if (SystemHandler.Handle.Server != null) {
+                SystemHandler.Handle.Server.OnAlarm -= OnServerAlarm;          //260413 hbk
+            }
         }
     }
 }
