@@ -41,6 +41,7 @@ namespace FinalVisionProject {
         public LocalizationResource Localize { get; set; }
 
         private Thread mSystemThread;
+        private Thread mAliveThread;  //260413 hbk — ALIVE 하트비트 스레드
         private bool IsTerminated = false;
 
         public bool IsInitializeFail { get; private set; } = false;
@@ -99,6 +100,13 @@ namespace FinalVisionProject {
             mSystemThread.Name = "SystemProcess";
             mSystemThread.Start();
 
+            //5. Alive Thread  //260413 hbk
+            mAliveThread = new Thread(AliveProcess);
+            mAliveThread.Priority = ThreadPriority.BelowNormal;
+            mAliveThread.Name = "AliveProcess";
+            mAliveThread.IsBackground = true;
+            mAliveThread.Start();
+
             //login
             Login = LoginManager.Handle;
 
@@ -151,6 +159,7 @@ namespace FinalVisionProject {
 
             IsTerminated = true;
             mSystemThread.Join(1000);
+            if (mAliveThread != null) mAliveThread.Join(1000);  //260413 hbk
 
             Logging.PrintLog((int)ELogType.Trace, "[SYSTEM] Released");
 

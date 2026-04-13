@@ -70,6 +70,7 @@ namespace FinalVisionProject.Network {
                 case VisionRequestType.DryRun:   //260413 hbk — 리소스 매핑 불필요
                 case VisionRequestType.Time:     //260413 hbk
                 case VisionRequestType.Trace:    //260413 hbk
+                case VisionRequestType.Alive:    //260413 hbk — 리소스 매핑 불필요
                     break;
                 case VisionRequestType.Unknown:
                     break;

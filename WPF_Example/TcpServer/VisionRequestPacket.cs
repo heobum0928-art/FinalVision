@@ -14,6 +14,7 @@ namespace FinalVisionProject.Network {
         DryRun,   //260413 hbk
         Time,     //260413 hbk
         Trace,    //260413 hbk
+        Alive,    //260413 hbk
 
         Unknown = 999
     }
@@ -29,6 +30,7 @@ namespace FinalVisionProject.Network {
         public const string CMD_RECV_DRYRUN = "DRYRUN";  //260413 hbk
         public const string CMD_RECV_TIME = "TIME";       //260413 hbk
         public const string CMD_RECV_TRACE = "TRACE";     //260413 hbk
+        public const string CMD_RECV_ALIVE = "ALIVE";      //260413 hbk
 
         public VisionRequestType RequestType { get; }
 
@@ -331,6 +333,14 @@ namespace FinalVisionProject.Network {
                     tracePacket.PalletId = dataList[1];
                     tracePacket.MaterialId = dataList[2];
                     break;
+                case CMD_RECV_ALIVE:  //260413 hbk
+                    packet = new AlivePacket();
+                    AlivePacket alivePacket = packet.AsAlive();
+                    dataList = msgList[1].Split(VisionServer.MSG_CONTENTS_SEPERATOR);
+                    if (dataList.Length < 1) return null;
+                    if (Int32.TryParse(dataList[0], out siteNum) == false) return null;
+                    alivePacket.Site = siteNum;
+                    break;
             }
 
             return packet;
@@ -377,6 +387,10 @@ namespace FinalVisionProject.Network {
         public TracePacket AsTrace() {  //260413 hbk
             if (RequestType != VisionRequestType.Trace) return null;
             return this as TracePacket;
+        }
+        public AlivePacket AsAlive() {  //260413 hbk
+            if (RequestType != VisionRequestType.Alive) return null;
+            return this as AlivePacket;
         }
 
     }
@@ -447,6 +461,10 @@ namespace FinalVisionProject.Network {
         public string PalletId { get; set; }
         public string MaterialId { get; set; }
         public TracePacket() : base(VisionRequestType.Trace) { }
+    }
+
+    public class AlivePacket : VisionRequestPacket {  //260413 hbk
+        public AlivePacket() : base(VisionRequestType.Alive) { }
     }
 
 }
