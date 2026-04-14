@@ -28,10 +28,9 @@ namespace FinalVisionProject {
         private static extern bool SetLocalTime(ref SYSTEMTIME st);
         private string _palletId = "";                     //260413 hbk — TRACE Pallet ID (다음 $TRACE까지 유지)
         private string _materialId = "";                   //260413 hbk — TRACE Material ID (다음 $TRACE까지 유지)
-        private volatile bool _aliveResponseReceived = false;  //260413 hbk — ALIVE 응답 수신 플래그
-        private const int ALIVE_SEND_INTERVAL_MS = 1000;  //260413 hbk — 1초 주기 송신
-        private const int ALIVE_TIMEOUT_MS = 3000;         //260413 hbk — 3초 타임아웃
-        private const int ALIVE_RETRY_COUNT = 3;           //260413 hbk — ping 재시도 횟수
+        private const int ALIVE_SEND_INTERVAL_MS = 1000;   //260413 hbk — 1초 주기 송신
+        private const int ALIVE_DOWN_TIMEOUT_MS = 5000;    //260414 hbk — PLC ALIVE 5초 미수신 시 down 판정
+        private readonly Stopwatch _lastAliveRecvTimer = new Stopwatch();  //260414 hbk — PLC ALIVE 마지막 수신 경과시간
         public event Action AliveHeartbeatReceived;  //260413 hbk — Phase 16 UI flash 트리거 (Phase 15 로직 미수정)
         public event Action AliveTimeout;            //260413 hbk — Phase 16 UI 빨강 트리거 (Phase 15 로직 미수정)
 
@@ -83,8 +82,8 @@ namespace FinalVisionProject {
                             responsePacket = SendTestError(packet.AsTest());
                         }
                         break;
-                    case VisionRequestType.Alive:  //260413 hbk — Client→V echo 응답
-                        _aliveResponseReceived = true;  //260413 hbk — V→Client ALIVE의 응답으로도 처리
+                    case VisionRequestType.Alive:  //260413 hbk — PLC ALIVE 수신
+                        _lastAliveRecvTimer.Restart();  //260414 hbk — 마지막 수신시각 갱신 (down 판정용)
                         AliveHeartbeatReceived?.Invoke();  //260413 hbk — Phase 16 ALIVE flash event
                         responsePacket = ProcessAlive(packet.AsAlive());
                         break;
@@ -337,51 +336,33 @@ namespace FinalVisionProject {
             return result;  //260413 hbk — $ALIVE:1,OK@
         }
 
-        private void AliveProcess() {  //260413 hbk — ALIVE 하트비트 백그라운드 스레드
-            Stopwatch aliveTimer = new Stopwatch();
+        //260414 hbk — ALIVE 하트비트: 1초마다 V→PLC 송신, PLC 패킷 5초 미수신 시 down 판정
+        private void AliveProcess() {
+            bool wasDown = false;
             while (!IsTerminated) {
                 if (!Server.IsConnected()) {
-                    Thread.Sleep(500);  //260413 hbk — 연결 없으면 대기
+                    _lastAliveRecvTimer.Reset();   //260414 hbk — 연결 없으면 타이머 정지 (재연결 후 새로 시작)
+                    wasDown = false;
+                    Thread.Sleep(500);
                     continue;
                 }
 
-                //260413 hbk — V→Client ALIVE 송신 + 최대 ALIVE_RETRY_COUNT회 재시도
-                bool responded = false;
-                for (int attempt = 1; attempt <= ALIVE_RETRY_COUNT && !IsTerminated; attempt++) {
-                    _aliveResponseReceived = false;
-                    SendAlivePacket();
-                    if (attempt == 1) aliveTimer.Restart();
+                SendAlivePacket();   //260414 hbk — 1초마다 V→PLC 송신 (응답 대기 안 함)
 
-                    //260413 hbk — 3초 내 응답 대기
-                    Stopwatch attemptTimer = Stopwatch.StartNew();
-                    while (attemptTimer.ElapsedMilliseconds < ALIVE_TIMEOUT_MS && !IsTerminated) {
-                        if (_aliveResponseReceived) break;
-                        Thread.Sleep(50);
+                //260414 hbk — PLC가 보낸 ALIVE 마지막 수신시각 기준 5초 경과 시 down
+                //타이머가 멈춰 있으면(=수신 이력 없음) 첫 수신을 기다리는 단계라 down 판정 보류
+                if (_lastAliveRecvTimer.IsRunning &&
+                    _lastAliveRecvTimer.ElapsedMilliseconds >= ALIVE_DOWN_TIMEOUT_MS) {
+                    if (!wasDown) {
+                        PerformAliveTimeout();
+                        wasDown = true;
                     }
-
-                    if (_aliveResponseReceived) {
-                        responded = true;
-                        break;
-                    }
-
-                    //260413 hbk — 타임아웃: 재시도 로그 후 재송신
-                    Logging.PrintLog((int)ELogType.TcpConnection,
-                        "[ALIVE] Timeout attempt {0}/{1} — resending", attempt, ALIVE_RETRY_COUNT);
+                }
+                else if (_lastAliveRecvTimer.IsRunning) {
+                    wasDown = false;
                 }
 
-                if (IsTerminated) break;
-
-                if (!responded) {
-                    //260413 hbk — 3회 모두 무응답: 연결 끊김 판정 → 기존 소켓 종료 + 알람
-                    PerformAliveTimeout();
-                }
-
-                //260413 hbk — 다음 송신까지 남은 시간 대기 (첫 송신 기준)
-                int elapsed = (int)aliveTimer.ElapsedMilliseconds;
-                int remaining = ALIVE_SEND_INTERVAL_MS - elapsed;
-                if (remaining > 0 && !IsTerminated) {
-                    Thread.Sleep(remaining);
-                }
+                Thread.Sleep(ALIVE_SEND_INTERVAL_MS);
             }
         }
 
@@ -391,8 +372,8 @@ namespace FinalVisionProject {
             Logging.PrintLog((int)ELogType.TcpConnection, "[TCP][SEND] ALIVE heartbeat");
         }
 
-        private void PerformAliveTimeout() {  //260413 hbk — 연결 끊김 판정 (ping 3회 재시도 후 호출)
-            Logging.PrintLog((int)ELogType.Error, "[ALIVE] No response after {0} retries ({1}ms each). Disconnecting client.", ALIVE_RETRY_COUNT, ALIVE_TIMEOUT_MS);
+        private void PerformAliveTimeout() {  //260414 hbk — PLC ALIVE 5초 미수신 시 호출
+            Logging.PrintLog((int)ELogType.Error, "[ALIVE] No PLC ALIVE for {0}ms. Disconnecting client.", ALIVE_DOWN_TIMEOUT_MS);
             //260413 hbk — 기존 Client 소켓 강제 종료 → TcpServer가 Accept 대기로 복귀
             if (Server.GetConnectedClientCount() > 0) {
                 try {

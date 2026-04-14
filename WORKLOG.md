@@ -2,6 +2,26 @@
 
 ---
 
+## 2026-04-14 (화)
+
+### 완료
+- ALIVE 하트비트 로직 단순화 (`Custom/SystemHandler.cs`)
+  - 기존: V→PLC 송신 후 3초 내 응답 대기, 3회 재시도, 무응답 시 disconnect
+  - 변경: V→PLC는 1초마다 그냥 송신(`$ALIVE:1@`), 응답 대기 안 함
+  - PLC→V 패킷 마지막 수신시각만 추적(`_lastAliveRecvTimer` Stopwatch)
+  - 5초간 PLC ALIVE 미수신 시 down 판정 → 기존 `PerformAliveTimeout()`(disconnect + 빨강 latch) 호출
+  - 근거: PLC 메모리 비트(M82000/M83000) 1초 토글 스펙은 메모리 stale 구분용 → TCP는 패킷 도착 자체가 freshness 증거이므로 토글값을 페이로드에 실을 필요 없음
+- 제거: `_aliveResponseReceived`, `ALIVE_TIMEOUT_MS`, `ALIVE_RETRY_COUNT`
+- 추가: `ALIVE_DOWN_TIMEOUT_MS = 5000`
+- 패킷 포맷(`$ALIVE:1@` / `$ALIVE:Site,OK@`) 변경 없음 → `VisionRequestPacket.cs`/`VisionResponsePacket.cs` 미수정
+- 미빌드/미커밋
+
+### 다음 작업 후보
+- 빌드 검증
+- PLC 측 ALIVE 송신 주기/포맷 실측 후 조정
+
+---
+
 ## 2026-03-26 (목)
 
 ### 완료
