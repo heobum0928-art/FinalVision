@@ -27,6 +27,7 @@ namespace FinalVisionProject.UI {
         private SolidColorBrush _aliveBrush;              //260413 hbk — alive_Ellipse Fill SolidColorBrush 캐시
         private Storyboard _flashStoryboard;              //260413 hbk — AliveFlashStoryboard 리소스 캐시
         private volatile bool _aliveTimeoutLatched;       //260413 hbk — 빨강 래치 (OnConnected 수신 시 clear)
+        private volatile bool _aliveActive;               //260415 hbk — PLC ALIVE 수신 중 여부 (수신 시 set, 타임아웃/재접속 시 clear)
         private static readonly Color AliveGray      = Color.FromArgb(0xFF, 0x9E, 0x9E, 0x9E);  //260413 hbk
         private static readonly Color AliveBaseGreen = Color.FromArgb(0xFF, 0x7E, 0xE0, 0x8B);  //260413 hbk
         private static readonly Color AliveRed       = Color.FromArgb(0xFF, 0xE5, 0x39, 0x35);  //260413 hbk
@@ -67,7 +68,7 @@ namespace FinalVisionProject.UI {
             if (SystemHandler.Handle.Server != null) {                          //260413 hbk — NRE 방어 (Pitfall #4)
                 SystemHandler.Handle.Server.OnAlarm += OnServerAlarm;           //260413 hbk
             }
-            this.Unloaded += MenuBar_Unloaded;                                  //260413 hbk — 구독 해제 훅
+            this.Unloaded += MenuBar_Unloaded;                                  //260413 hbk — 해제
         }
 
         public void UpdateState() {
@@ -75,14 +76,16 @@ namespace FinalVisionProject.UI {
             label_status.Content = SystemHandler.Handle.Sequences.StateAll;
             label_seqName.Content = SystemHandler.Handle.Sequences.StateSequenceName;
 
-            //260413 hbk — Phase 16 ALIVE 3-state 폴링
+            //260415 hbk — Phase 16 ALIVE 3-state 폴링 (PLC ALIVE 수신 중일 때만 녹색)
             if (_aliveBrush == null) return;           //260413 hbk — Loaded 이전 가드
             if (_aliveTimeoutLatched) {                //260413 hbk — 빨강 래치 유지
                 _aliveBrush.Color = AliveRed;          //260413 hbk
                 return;                                //260413 hbk
             }
-            bool connected = SystemHandler.Handle.Server?.IsConnected() ?? false;  //260413 hbk
-            _aliveBrush.Color = connected ? AliveBaseGreen : AliveGray;            //260413 hbk
+            //260415 hbk — TCP 끊겼으면 ALIVE 활성도 즉시 해제 (끊긴 직후 회색 복귀)
+            bool connected = SystemHandler.Handle.Server?.IsConnected() ?? false;
+            if (!connected) _aliveActive = false;
+            _aliveBrush.Color = _aliveActive ? AliveBaseGreen : AliveGray;          //260415 hbk — ALIVE 패킷 수신 중일 때만 녹색
         }
 
         public void UpdateLoginID(string id) {
@@ -141,29 +144,32 @@ namespace FinalVisionProject.UI {
             mParentWindow.PopupView(EPageType.ProcessMonitor);
         }
 
-        //260413 hbk — Phase 16 ALIVE 응답 수신 → flash 1회
+        //260415 hbk — Phase 16 ALIVE 응답 수신 → 녹색 활성 + flash 1회
         private void OnAliveHeartbeat() {
             Dispatcher.BeginInvoke(new Action(() => {
+                _aliveActive = true;               //260415 hbk — PLC ALIVE 수신 → 녹색
                 if (_aliveTimeoutLatched) return;  //260413 hbk — 빨강 중에는 flash 금지 (Pitfall #2)
                 if (_flashStoryboard == null) return;
                 _flashStoryboard.Begin(this, true);  //260413 hbk — isControllable=true, 재진입 안전
             }));
         }
 
-        //260413 hbk — Phase 16 ALIVE 타임아웃 → 빨강 래치
+        //260415 hbk — Phase 16 ALIVE 타임아웃 → 빨강 래치 + 녹색 해제
         private void OnAliveTimeoutEvent() {
             Dispatcher.BeginInvoke(new Action(() => {
+                _aliveActive = false;                            //260415 hbk
                 _aliveTimeoutLatched = true;                     //260413 hbk
                 if (_flashStoryboard != null) _flashStoryboard.Stop(this);  //260413 hbk
                 if (_aliveBrush != null) _aliveBrush.Color = AliveRed;      //260413 hbk
             }));
         }
 
-        //260413 hbk — Phase 16 Client 재접속 감지 → 빨강 래치 해제
+        //260415 hbk — Phase 16 Client 재접속 감지 → 빨강 래치 해제 (다음 ALIVE 패킷 전까지 회색)
         private void OnServerAlarm(object sender, AlarmEventArgs e) {
             if (e.AlarmType != AlarmEventArgs.AlarmEventType.OnConnected) return;  //260413 hbk
             Dispatcher.BeginInvoke(new Action(() => {
-                _aliveTimeoutLatched = false;  //260413 hbk — 다음 UpdateState() 폴링이 녹색 Base 복귀
+                _aliveTimeoutLatched = false;  //260413 hbk
+                _aliveActive = false;          //260415 hbk — 재접속 직후엔 회색, 첫 ALIVE 수신 시 녹색 전환
             }));
         }
 
