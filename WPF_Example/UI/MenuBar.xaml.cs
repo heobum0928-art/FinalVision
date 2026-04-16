@@ -76,15 +76,19 @@ namespace FinalVisionProject.UI {
             label_status.Content = SystemHandler.Handle.Sequences.StateAll;
             label_seqName.Content = SystemHandler.Handle.Sequences.StateSequenceName;
 
-            //260415 hbk — Phase 16 ALIVE 3-state 폴링 (PLC ALIVE 수신 중일 때만 녹색)
+            //260416 hbk — ALIVE 3-state: TCP 연결 우선 판정
             if (_aliveBrush == null) return;           //260413 hbk — Loaded 이전 가드
-            if (_aliveTimeoutLatched) {                //260413 hbk — 빨강 래치 유지
+            bool connected = SystemHandler.Handle.Server?.IsConnected() ?? false;  //260416 hbk
+            if (!connected) {                          //260416 hbk — TCP 미연결 → 회색 (래치 무시)
+                _aliveActive = false;
+                if (_flashStoryboard != null) _flashStoryboard.Stop(this);  //260416 hbk — 애니메이션 HoldEnd 해제
+                _aliveBrush.Color = AliveGray;
+                return;
+            }
+            if (_aliveTimeoutLatched) {                //260413 hbk — TCP 연결 중 ALIVE 미수신 → 빨강
                 _aliveBrush.Color = AliveRed;          //260413 hbk
                 return;                                //260413 hbk
             }
-            //260415 hbk — TCP 끊겼으면 ALIVE 활성도 즉시 해제 (끊긴 직후 회색 복귀)
-            bool connected = SystemHandler.Handle.Server?.IsConnected() ?? false;
-            if (!connected) _aliveActive = false;
             _aliveBrush.Color = _aliveActive ? AliveBaseGreen : AliveGray;          //260415 hbk — ALIVE 패킷 수신 중일 때만 녹색
         }
 

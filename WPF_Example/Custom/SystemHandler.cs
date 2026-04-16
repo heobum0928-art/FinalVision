@@ -33,6 +33,7 @@ namespace FinalVisionProject {
         private readonly Stopwatch _lastAliveRecvTimer = new Stopwatch();  //260414 hbk — PLC ALIVE 마지막 수신 경과시간
         public event Action AliveHeartbeatReceived;  //260413 hbk — Phase 16 UI flash 트리거 (Phase 15 로직 미수정)
         public event Action AliveTimeout;            //260413 hbk — Phase 16 UI 빨강 트리거 (Phase 15 로직 미수정)
+        private volatile bool _startupErrorSent = false;  //260416 hbk — 초기화 에러 TCP 전송 완료 여부
 
         //project 별, sequence 정의
         private void MainRun() {
@@ -343,8 +344,15 @@ namespace FinalVisionProject {
                 if (!Server.IsConnected()) {
                     _lastAliveRecvTimer.Reset();   //260414 hbk — 연결 없으면 타이머 정지 (재연결 후 새로 시작)
                     wasDown = false;
+                    _startupErrorSent = false;     //260416 hbk — 재연결 시 초기화 에러 재전송 허용
                     Thread.Sleep(500);
                     continue;
+                }
+
+                //260416 hbk — TCP 최초 연결 시 초기화 실패 에러 송신
+                if (!_startupErrorSent) {
+                    _startupErrorSent = true;
+                    SendStartupErrors();           //260416 hbk
                 }
 
                 SendAlivePacket();   //260414 hbk — 1초마다 V→PLC 송신 (응답 대기 안 함)
@@ -366,14 +374,45 @@ namespace FinalVisionProject {
             }
         }
 
+        private const int ERROR_SEND_COUNT = 3;              //260416 hbk — ERROR 패킷 반복 송신 횟수
+        private const int ERROR_SEND_INTERVAL_MS = 100;       //260416 hbk — ERROR 패킷 송신 간격(ms)
+
+        //260416 hbk — ERROR 패킷 3회 반복 송신 ($ERROR:Site,ErrorCode@)
+        public void SendErrorPacket(int site, EVisionErrorCode errorCode) {
+            if (!Server.IsConnected()) return;  //260416 hbk — TCP 미연결 시 송신 안 함
+            string msg = string.Format("$ERROR:{0},{1}@", site, (int)errorCode);
+            for (int i = 0; i < ERROR_SEND_COUNT; i++) {  //260416 hbk — 3회 반복
+                Server.SendMessage(0, msg);
+                if (i < ERROR_SEND_COUNT - 1) Thread.Sleep(ERROR_SEND_INTERVAL_MS);  //260416 hbk — 마지막 회차는 대기 안 함
+            }
+            Logging.PrintLog((int)ELogType.Error, "[TCP][SEND] ERROR Site:{0} Code:{1}({2}) x{3}", site, (int)errorCode, errorCode, ERROR_SEND_COUNT);
+        }
+
         private void SendAlivePacket() {  //260413 hbk
             string msg = "$ALIVE:1@";
             Server.SendMessage(0, msg);  //260413 hbk — 첫 번째 Client에 송신 (MAX_CONNECTION_COUNT=1)
             Logging.PrintLog((int)ELogType.TcpConnection, "[TCP][SEND] ALIVE heartbeat");
         }
 
+        //260416 hbk — TCP 연결 후 초기화 실패 에러 전송 (시뮬모드 제외)
+        private void SendStartupErrors() {
+#if SIMUL_MODE
+            return;  //260416 hbk — 시뮬모드에서는 초기화 에러 전송 안 함
+#else
+            if (IsInitializeFail == false) return;  //260416 hbk — 초기화 정상이면 스킵
+            Thread.Sleep(500);  //260416 hbk — TCP 연결 안정화 대기
+            if (!Devices.IsAllOpen()) {
+                SendErrorPacket(1, EVisionErrorCode.CameraDisconnected);  //260416 hbk — 카메라 초기화 실패
+            }
+            if (Lights.Controllers.Any(c => !c.IsOpen)) {
+                SendErrorPacket(1, EVisionErrorCode.LightError);  //260416 hbk — 조명 초기화 실패
+            }
+#endif
+        }
+
         private void PerformAliveTimeout() {  //260414 hbk — PLC ALIVE 5초 미수신 시 호출
             Logging.PrintLog((int)ELogType.Error, "[ALIVE] No PLC ALIVE for {0}ms. Disconnecting client.", ALIVE_DOWN_TIMEOUT_MS);
+            SendErrorPacket(1, EVisionErrorCode.AliveTimeout);  //260416 hbk — ERROR 패킷 송신 (끊기 전)
             //260413 hbk — 기존 Client 소켓 강제 종료 → TcpServer가 Accept 대기로 복귀
             if (Server.GetConnectedClientCount() > 0) {
                 try {

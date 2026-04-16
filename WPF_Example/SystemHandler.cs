@@ -107,6 +107,11 @@ namespace FinalVisionProject {
             mAliveThread.IsBackground = true;
             mAliveThread.Start();
 
+            //6. Light Error → TCP ERROR 패킷 송신  //260416 hbk
+            Lights.OnError += (args) => {
+                SendErrorPacket(1, EVisionErrorCode.LightError);
+            };
+
             //login
             Login = LoginManager.Handle;
 

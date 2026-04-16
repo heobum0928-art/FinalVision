@@ -252,6 +252,9 @@ namespace FinalVisionProject.Sequence
                     if (_GrabbedImage == null)
                     {
                         Logging.PrintLog((int)ELogType.Trace, "[ALGO] {0} Grab 실패 NG", Name);   //260330 hbk
+#if !SIMUL_MODE
+                        SystemHandler.Handle.SendErrorPacket(1, EVisionErrorCode.GrabFail);  //260416 hbk — Grab 실패 ERROR 송신
+#endif
                         _IsOK = false;
                         Step = (int)EStep.SaveImage;   //260326 hbk Grab 실패시 SaveImage로 이동
                         break;
@@ -490,7 +493,7 @@ namespace FinalVisionProject.Sequence
                     }, imgClone);
                 }
 
-                //260403 hbk -- 캡처(어노테이션) 이미지 JPG 저장 (OK→SaveGoodImage, NG→SaveNGImage)
+                //260403 hbk -- 캡처(어노테이션) 이미지 JPG 저장 (OK=>SaveGoodImage, NG=>SaveNGImage)
                 bool saveCapture = isOK ? setting.SaveGoodImage : setting.SaveNGImage;   //260403 hbk
                 if (saveCapture)
                 {

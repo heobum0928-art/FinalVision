@@ -17,7 +17,7 @@ namespace FinalVisionProject.Network {
         Time,     //260413 hbk
         Trace,    //260413 hbk
         Alive,    //260413 hbk
-
+        Error,    //260416 hbk
 
         Unknown = 999
     }
@@ -48,6 +48,7 @@ namespace FinalVisionProject.Network {
         public const string CMD_SEND_TIME = "TIME";       //260413 hbk
         public const string CMD_SEND_TRACE = "TRACE";     //260413 hbk
         public const string CMD_SEND_ALIVE = "ALIVE";      //260413 hbk
+        public const string CMD_SEND_ERROR = "ERROR";      //260416 hbk
 
         public const string RESULT_OK = "OK";
         public const string RESULT_NG = "NG";
@@ -348,6 +349,14 @@ namespace FinalVisionProject.Network {
                     msg += VisionServer.MSG_CONTENTS_SEPERATOR;
                     msg += RESULT_OK;
                     break;
+                case EVisionResponseType.Error:  //260416 hbk
+                    ErrorResultPacket errorPacket = packet.AsErrorResult();
+                    msg += CMD_SEND_ERROR;
+                    msg += VisionServer.MSG_CMD_SEPERATOR;
+                    msg += errorPacket.Site.ToString();
+                    msg += VisionServer.MSG_CONTENTS_SEPERATOR;
+                    msg += ((int)errorPacket.ErrorCode).ToString();
+                    break;
                 case EVisionResponseType.Unknown:
                     return null;
             }
@@ -402,6 +411,10 @@ namespace FinalVisionProject.Network {
         public AliveResultPacket AsAliveResult() {  //260413 hbk
             if (ResponseType != EVisionResponseType.Alive) return null;
             return this as AliveResultPacket;
+        }
+        public ErrorResultPacket AsErrorResult() {  //260416 hbk
+            if (ResponseType != EVisionResponseType.Error) return null;
+            return this as ErrorResultPacket;
         }
     }
 
@@ -594,6 +607,11 @@ namespace FinalVisionProject.Network {
 
     public class AliveResultPacket : VisionResponsePacket {  //260413 hbk
         public AliveResultPacket() : base(EVisionResponseType.Alive) { }
+    }
+
+    public class ErrorResultPacket : VisionResponsePacket {  //260416 hbk
+        public EVisionErrorCode ErrorCode { get; set; }
+        public ErrorResultPacket() : base(EVisionResponseType.Error) { }
     }
 
 }
