@@ -52,4 +52,4 @@ using System.Windows;
 // 지정되도록 할 수 있습니다.
 // [assembly: AssemblyVersion("1.0.*")]
 [assembly: AssemblyVersion("1.0.0.0")]
-[assembly: AssemblyFileVersion("25.1.10.1")]
+[assembly: AssemblyFileVersion("26.4.16.1")]

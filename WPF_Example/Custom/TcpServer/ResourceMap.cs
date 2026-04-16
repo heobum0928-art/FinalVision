@@ -8,8 +8,10 @@ using System.Threading.Tasks;
 
 namespace FinalVisionProject.Network {
     public enum ESite : int {
-
         DEFAULT = 1,
+        SITE_2  = 2,
+        SITE_3  = 3,
+        SITE_4  = 4,
     }
 
     public enum ETestType : int {
@@ -40,6 +42,18 @@ namespace FinalVisionProject.Network {
             Add(EResource.Action, ESite.DEFAULT, ETestType.Bolt_Three_Inspection,    SequenceHandler.ACT_BOLT_THREE);  //260326 hbk
             Add(EResource.Action, ESite.DEFAULT, ETestType.Assy_Rail_One_Inspection, SequenceHandler.ACT_ASSY_ONE);    //260326 hbk
             Add(EResource.Action, ESite.DEFAULT, ETestType.Assy_Rail_Two_Inspection, SequenceHandler.ACT_ASSY_TWO);    //260326 hbk
+
+            // Site 2~4 — 동일 리소스 공유 (4사이트 구조)                                                       //260414 hbk
+            foreach (ESite site in new[] { ESite.SITE_2, ESite.SITE_3, ESite.SITE_4 }) {
+                Add(EResource.Camera,   site, DeviceHandler.INSPECTION_CAMERA);
+                Add(EResource.Light,    site, LightHandler.LIGHT_DEFAULT);
+                Add(EResource.Sequence, site, SequenceHandler.SEQ_INSPECTION);
+                Add(EResource.Action, site, ETestType.Bolt_One_Inspection,      SequenceHandler.ACT_BOLT_ONE);
+                Add(EResource.Action, site, ETestType.Bolt_Two_Inspection,      SequenceHandler.ACT_BOLT_TWO);
+                Add(EResource.Action, site, ETestType.Bolt_Three_Inspection,    SequenceHandler.ACT_BOLT_THREE);
+                Add(EResource.Action, site, ETestType.Assy_Rail_One_Inspection, SequenceHandler.ACT_ASSY_ONE);
+                Add(EResource.Action, site, ETestType.Assy_Rail_Two_Inspection, SequenceHandler.ACT_ASSY_TWO);
+            }
         }
 
         public bool SetIdentifier(ref VisionRequestPacket packet) {

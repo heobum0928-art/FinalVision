@@ -2,15 +2,15 @@
 gsd_state_version: 1.0
 milestone: v2.0
 milestone_name: 레시피 편집 + 이미지 관리 + 운영 안정화
-status: Executing Phase 15
+status: Executing Phase 16
 stopped_at: Completed 14-01-PLAN.md
-last_updated: "2026-04-13T00:33:08.429Z"
+last_updated: "2026-04-13T01:36:23.059Z"
 progress:
-  total_phases: 6
-  completed_phases: 5
-  total_plans: 11
-  completed_plans: 9
-  percent: 82
+  total_phases: 7
+  completed_phases: 6
+  total_plans: 13
+  completed_plans: 12
+  percent: 92
 ---
 
 # FinalVision — Project State
@@ -20,11 +20,11 @@ progress:
 See: .planning/PROJECT.md (updated 2026-04-02)
 
 **Core value:** 카메라 1대 + 5-Shot 순차 촬상으로 자재 유무를 정확히 판정하고, TCP 통신으로 설비와 연동하여 자동 검사를 수행한다.
-**Current focus:** Phase 15 — v8-alive-dryrun-time-trace
+**Current focus:** Phase 16 — alive-ui
 
 ## Current Position
 
-Phase: 15 (v8-alive-dryrun-time-trace) — EXECUTING
+Phase: 16 (alive-ui) — EXECUTING
 Plan: 1 of 2
 
 ## Performance Metrics
@@ -84,6 +84,7 @@ None yet.
 ### Roadmap Evolution
 
 - Phase 14 added: 레시피 파일 설정값 버그 수정 (FrameWidth/FrameHeight/LightGroupName)
+- Phase 16 added: ALIVE 상태 UI 인디케이터 — 녹색 깜빡임(하트비트 수신)/빨강(타임아웃)/회색(미연결) 표시
 
 ### Blockers/Concerns
 

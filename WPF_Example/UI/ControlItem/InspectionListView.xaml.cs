@@ -107,31 +107,58 @@ namespace FinalVisionProject.UI {
         private void Btn_start_Click(object sender, RoutedEventArgs e) {
             if (treeListBox_sequence.SelectedIndex < 0) return;
 
-            //260406 hbk -- 개별 Shot에 SimulImagePath 설정된 경우 선택된 Shot만 RunBlobOnLastGrab
+            //260410 hbk -- SimulImagePath가 설정된 Shot: 카메라 촬상 없이 RunBlobOnLastGrab 검사
             if (treeListBox_sequence.SelectedItem is NodeViewModel selNode
-                && selNode.NodeType == ENodeType.Action
                 && selNode.SequenceID == ESequence.Inspection) {
 
                 SequenceBase inspSeq = SystemHandler.Handle.Sequences[ESequence.Inspection];
                 if (inspSeq != null) {
-                    int actIndex = -1;
-                    for (int i = 0; i < inspSeq.ActionCount; i++) {
-                        if (inspSeq[i].ID == selNode.ActionID) { actIndex = i; break; }
+
+                    //260410 hbk -- Action 선택: 해당 Shot 1개만 검사
+                    if (selNode.NodeType == ENodeType.Action) {
+                        int actIndex = -1;
+                        for (int i = 0; i < inspSeq.ActionCount; i++) {
+                            if (inspSeq[i].ID == selNode.ActionID) { actIndex = i; break; }
+                        }
+                        if (actIndex >= 0 && inspSeq[actIndex] is Action_Inspection act) {
+                            InspectionParam p = act.Param as InspectionParam;
+                            if (p != null && !string.IsNullOrEmpty(p.SimulImagePath)
+                                && File.Exists(p.SimulImagePath)) {
+                                if (!SystemHandler.Handle.Sequences.IsIdle) return;
+                                act.RunBlobOnLastGrab();
+                                mParentWindow.mainView.RefreshShotImage(actIndex);
+                                return;
+                            }
+                        }
                     }
-                    if (actIndex >= 0 && inspSeq[actIndex] is Action_Inspection act) {
-                        InspectionParam p = act.Param as InspectionParam;
-                        if (p != null && !string.IsNullOrEmpty(p.SimulImagePath)
-                            && File.Exists(p.SimulImagePath)) {
-                            if (!SystemHandler.Handle.Sequences.IsIdle) return;   //260406 hbk -- TCP 충돌 방지
-                            act.RunBlobOnLastGrab();   //260406 hbk -- D-04: 선택된 Shot만 검사
-                            mParentWindow.mainView.RefreshShotImage(actIndex);   //260406 hbk -- UI 갱신
+
+                    //260410 hbk -- Sequence 선택: SimulImagePath가 있는 Shot 전부 검사
+                    if (selNode.NodeType == ENodeType.Sequence) {
+                        int ranCount = 0;
+                        for (int i = 0; i < inspSeq.ActionCount; i++) {
+                            if (!(inspSeq[i] is Action_Inspection act)) continue;
+                            InspectionParam p = act.Param as InspectionParam;
+                            if (p == null || string.IsNullOrEmpty(p.SimulImagePath)
+                                || !File.Exists(p.SimulImagePath)) continue;
+                            ranCount++;
+                        }
+                        if (ranCount > 0) {
+                            if (!SystemHandler.Handle.Sequences.IsIdle) return;
+                            for (int i = 0; i < inspSeq.ActionCount; i++) {
+                                if (!(inspSeq[i] is Action_Inspection act)) continue;
+                                InspectionParam p = act.Param as InspectionParam;
+                                if (p == null || string.IsNullOrEmpty(p.SimulImagePath)
+                                    || !File.Exists(p.SimulImagePath)) continue;
+                                act.RunBlobOnLastGrab();
+                            }
+                            mParentWindow.mainView.RefreshAllShotImages();
                             return;
                         }
                     }
                 }
             }
 
-            //260406 hbk -- 기본: 기존 시퀀스 실행 로직 유지 (카메라 촬상 + 검사)
+            //260410 hbk -- 로드된 이미지 없으면 기존 시퀀스 실행 (카메라 촬상 + 검사)
             if (treeListBox_sequence.SelectedItem is NodeViewModel node) {
                 ESequence seqID;
                 EAction actID;

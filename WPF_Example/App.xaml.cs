@@ -20,8 +20,10 @@ namespace FinalVisionProject {
         Mutex mMutex;
 
         public App() {
+            //260409 hbk -- 3종 예외 핸들러 등록 (UI/비UI/Task)
             this.Dispatcher.UnhandledException += this.Dispatcher_UnhandledException;
-
+            AppDomain.CurrentDomain.UnhandledException += this.CurrentDomain_UnhandledException;
+            TaskScheduler.UnobservedTaskException += this.TaskScheduler_UnobservedTaskException;
         }
 
         private void Application_Startup(object sender, StartupEventArgs e) {
@@ -51,15 +53,30 @@ namespace FinalVisionProject {
         }
 
         private void Dispatcher_UnhandledException(object sender, System.Windows.Threading.DispatcherUnhandledExceptionEventArgs e) {
+            //260409 hbk -- UI 스레드 예외: 덤프 저장 후 종료
+            CrashDumpHelper.WriteDump(e.Exception, "DispatcherUnhandledException");
             CustomMessageBox.Show("Unhandled Exception", e.Exception.ToString(), MessageBoxImage.Error, true, false);
             e.Handled = true;
-            
+
             if (SystemHandler.Handle.IsReleased == false) {
                 if (MainWindow != null) {
                     MainWindow.Close();
                 }
-                
+
             }
+        }
+
+        //260409 hbk -- 비UI 스레드 예외 (ThreadPool, Thread 등)
+        private void CurrentDomain_UnhandledException(object sender, UnhandledExceptionEventArgs e) {
+            if (e.ExceptionObject is Exception ex) {
+                CrashDumpHelper.WriteDump(ex, "AppDomain.UnhandledException");
+            }
+        }
+
+        //260409 hbk -- Task 미관찰 예외
+        private void TaskScheduler_UnobservedTaskException(object sender, UnobservedTaskExceptionEventArgs e) {
+            CrashDumpHelper.WriteDump(e.Exception, "TaskScheduler.UnobservedTaskException");
+            e.SetObserved();
         }
     }
 }

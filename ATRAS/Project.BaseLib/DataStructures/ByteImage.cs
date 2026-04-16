@@ -90,7 +90,7 @@ namespace Project.BaseLib.DataStructures
 
     public class GeometricSignatureGenerator
     {
-        // numBins: 히스토그램 bin 수 (예: 8방향 → 8)
+        // numBins: 히스토그램 bin 수 (예: 8방향 =>  8)
         public static void GenerateSignatures(List<FeaturePoint> features, int numBins = 8)
         {
             double binSize = 2 * Math.PI / numBins; // 전체 원 360°를 bin 수로 나눔
@@ -2337,7 +2337,7 @@ namespace Project.BaseLib.DataStructures
             if (data == null || data.Length != Width * Height)
                 return null;
 
-            // 1. byte[] → BitmapSource (Gray8)
+            // 1. byte[] => BitmapSource (Gray8)
             BitmapSource bitmapSource = BitmapSource.Create(
                 Width,
                 Height,
@@ -2347,7 +2347,7 @@ namespace Project.BaseLib.DataStructures
                 data,
                 Width); // stride = width * bytesPerPixel = width * 1
 
-            // 2. BitmapSource → PNG로 인코딩 후 MemoryStream에 저장
+            // 2. BitmapSource => PNG로 인코딩 후 MemoryStream에 저장
             PngBitmapEncoder encoder = new PngBitmapEncoder();
             encoder.Frames.Add(BitmapFrame.Create(bitmapSource));
 
@@ -2356,7 +2356,7 @@ namespace Project.BaseLib.DataStructures
                 encoder.Save(memoryStream);
                 memoryStream.Position = 0;
 
-                // 3. MemoryStream → BitmapImage 생성
+                // 3. MemoryStream => BitmapImage 생성
                 BitmapImage bitmapImage = new BitmapImage();
                 bitmapImage.BeginInit();
                 bitmapImage.CacheOption = BitmapCacheOption.OnLoad;

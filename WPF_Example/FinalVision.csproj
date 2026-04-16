@@ -85,11 +85,12 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <LangVersion>7.2</LangVersion>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x64'">
     <DebugSymbols>true</DebugSymbols>
     <OutputPath>..\..\..\..\..\..\..\Data\</OutputPath>
-    <DefineConstants>TRACE;DEBUG</DefineConstants>
+    <DefineConstants>TRACE;DEBUG;SIMUL_MODE</DefineConstants>
     <DebugType>full</DebugType>
     <PlatformTarget>x64</PlatformTarget>
     <ErrorReport>prompt</ErrorReport>
@@ -293,6 +294,7 @@
     </Compile>
     <Compile Include="UI\ViewModel\CalibrationViewModel.cs" />
     <Compile Include="UI\ViewModel\ModelFinderViewModel.cs" />
+    <Compile Include="Utility\CrashDumpHelper.cs" />
     <Compile Include="Utility\ImageFolderManager.cs" />
     <Compile Include="Utility\RecipeFileHelper.cs" />
     <Compile Include="Sequence\SequenceHandler.cs" />
