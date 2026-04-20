@@ -36,10 +36,10 @@ namespace FinalVisionProject.Setting {
         public int ServerPort { get; set; } = 7701;   //260326 hbk — 프로토콜 기본 포트
 
         //recipe
+        //260420 hbk — RecipeSavePath 고정(읽기 전용) + UI 숨김. 실제 레시피는 {BaseDir}\Recipe\{site}\{name}\main.ini 구조.
         [Category("Path|Recipe")]
-        [DirectoryPath]
-        [AutoUpdateText]
-        public string RecipeSavePath { get; set; } = AppDomain.CurrentDomain.BaseDirectory + @"Recipe";
+        [Browsable(false)]
+        public string RecipeSavePath { get; } = AppDomain.CurrentDomain.BaseDirectory + @"Recipe";
 
         [AutoUpdateText]
         public string CurrentRecipeName { get; set; } = "Default";
@@ -80,17 +80,7 @@ namespace FinalVisionProject.Setting {
 
         public int LogDeleteDay { get; set; } = 30;
 
-        //data path — 260406 hbk MapData 항목 숨김 (Browsable false)
-        [Category("Path|MapData")]
-        [Browsable(false)]
-        [DirectoryPath]
-        [AutoUpdateText]
-        public string MapDataLoadPath { get; set; } = AppDomain.CurrentDomain.BaseDirectory + @"Load";
-        [Browsable(false)]
-        [DirectoryPath]
-        [AutoUpdateText]
-        public string MapDataSavePath { get; set; } = AppDomain.CurrentDomain.BaseDirectory + @"Save";
-
+        //260420 hbk — MapDataLoadPath/MapDataSavePath 제거 (타 프로젝트 잔재, 사용 코드 없음, Load/Save 폴더도 삭제)
 
         //inspection image save                                              //260326 hbk
         [Category("Inspection|Image Save")]                                  //260403 hbk
