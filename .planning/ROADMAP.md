@@ -3,7 +3,8 @@
 ## Milestones
 
 - ✅ **v1.0 기반 구축** - Phases 1-9 (shipped 2026-03-31)
-- 🚧 **v2.0 레시피 편집 + 이미지 관리 + 운영 안정화** - Phases 10-13 (in progress)
+- ✅ **v2.0 레시피 편집 + 이미지 관리 + 운영 안정화** - Phases 10-16 (shipped 2026-04-16)
+- 🚧 **v2.1 운영 복구 명령 확장** - Phase 17+ (in progress)
 
 ## Phases
 
@@ -213,6 +214,21 @@ Plans:
 - [ ] 16-01-PLAN.md — SystemHandler 신규 이벤트(AliveHeartbeatReceived/AliveTimeout) 발행 훅 추가
 - [ ] 16-02-PLAN.md — MenuBar XAML Row 4 ALIVE 인디케이터 + code-behind 이벤트 구독/3-state 폴링/Storyboard flash
 
+### Phase 17: TCP RESET 명령 추가 (시퀀스 꼬임 강제 복구)
+
+**Goal:** 시퀀스 꼬임 / BUSY 고착 / 조명 켜진 채 Error 상태 등 운영 중 비정상 상태를 TCP 명령 한 번으로 강제 복구. `$RESET:site@` 수신 시 시퀀스 중단 + 상태 READY 복귀 + 조명 OFF 묶음 실행.
+**Depends on:** Phase 15
+**Success Criteria** (what must be TRUE):
+  1. Client→V `$RESET:site@` 수신 시 `$RESET:site,OK@` 또는 `$RESET:site,NG@` 응답한다
+  2. BUSY 중에도 RESET 명령 허용된다 (강제 복구 목적)
+  3. RESET 성공 시 모든 시퀀스가 Idle(READY) 상태로 복귀한다
+  4. RESET 성공 시 등록된 모든 LightGroup이 OFF 된다
+  5. site 파라미터는 Request 값을 Response에 그대로 echo 한다
+**Plans:** 1/1 plans complete
+
+Plans:
+- [x] 17-01-SUMMARY.md — RESET 패킷 타입 + StopAll/SetAllOff + ProcessReset 구현 ✅ 2026-04-20
+
 ---
 
 ## Progress
@@ -234,3 +250,5 @@ Plans:
 | 13. RecipeEditorWindow | v2.0 | 1/1 | Complete    | 2026-04-07 |
 | 14. FrameWidth/Height/LightGroupName 버그 | v2.0 | 1/1 | Complete | 2026-04-10 |
 | 15. 터미널 모드 v8 프로토콜 확장 | v2.0 | 2/2 | Complete   | 2026-04-13 |
+| 16. ALIVE 상태 UI 인디케이터 | v2.0 | 2/2 | Complete   | 2026-04-16 |
+| 17. TCP RESET 명령 추가 | v2.1 | 1/1 | Complete   | 2026-04-20 |

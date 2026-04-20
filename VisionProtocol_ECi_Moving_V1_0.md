@@ -170,7 +170,34 @@ $TEST:1,5,null@   → Final_Inspection / Grab5
 
 ---
 
-### 3-5. LIGHT — 조명 제어
+### 3-5. RESET — 시퀀스 강제 리셋 (260420 추가)
+
+```
+[Request]   $RESET:site@
+[Response]  $RESET:site,OK@   → 리셋 완료
+            $RESET:site,NG@   → 리셋 실패 (조명 OFF 중 일부 실패 등)
+```
+
+**동작:** 시퀀스 중단 + 상태 READY 복귀 + 조명 OFF (묶음 실행)
+
+> ⚠️ **제약 없음**
+> - BUSY(검사 중)에도 허용 — 시퀀스 꼬임 강제 복구가 목적
+> - site는 Request/Response 모두에 포함
+
+**예시**
+```
+Request:  $RESET:1@
+Response: $RESET:1,OK@
+```
+
+**사용 시나리오**
+- TEST 요청 후 응답이 오지 않는 멈춤 상태
+- 조명이 켜진 채 시퀀스가 Error 상태로 고착
+- 레시피 변경 전 강제 정리 필요
+
+---
+
+### 3-6. LIGHT — 조명 제어
 
 ```
 [Request]   $LIGHT:site,type,OP@

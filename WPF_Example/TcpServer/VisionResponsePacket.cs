@@ -18,6 +18,7 @@ namespace FinalVisionProject.Network {
         Trace,    //260413 hbk
         Alive,    //260413 hbk
         Error,    //260416 hbk
+        Reset,    //260420 hbk — 시퀀스 강제 리셋 응답
 
         Unknown = 999
     }
@@ -49,6 +50,7 @@ namespace FinalVisionProject.Network {
         public const string CMD_SEND_TRACE = "TRACE";     //260413 hbk
         public const string CMD_SEND_ALIVE = "ALIVE";      //260413 hbk
         public const string CMD_SEND_ERROR = "ERROR";      //260416 hbk
+        public const string CMD_SEND_RESET = "RESET";      //260420 hbk — 리셋 결과 응답 CMD
 
         public const string RESULT_OK = "OK";
         public const string RESULT_NG = "NG";
@@ -357,6 +359,14 @@ namespace FinalVisionProject.Network {
                     msg += VisionServer.MSG_CONTENTS_SEPERATOR;
                     msg += ((int)errorPacket.ErrorCode).ToString();
                     break;
+                case EVisionResponseType.Reset:  //260420 hbk — $RESET:site,OK@ / $RESET:site,NG@
+                    ResetResultPacket resetPacket = packet.AsResetResult();
+                    msg += CMD_SEND_RESET;
+                    msg += VisionServer.MSG_CMD_SEPERATOR;
+                    msg += resetPacket.Site.ToString();
+                    msg += VisionServer.MSG_CONTENTS_SEPERATOR;
+                    msg += resetPacket.GetResultString();
+                    break;
                 case EVisionResponseType.Unknown:
                     return null;
             }
@@ -415,6 +425,10 @@ namespace FinalVisionProject.Network {
         public ErrorResultPacket AsErrorResult() {  //260416 hbk
             if (ResponseType != EVisionResponseType.Error) return null;
             return this as ErrorResultPacket;
+        }
+        public ResetResultPacket AsResetResult() {  //260420 hbk
+            if (ResponseType != EVisionResponseType.Reset) return null;
+            return this as ResetResultPacket;
         }
     }
 
@@ -612,6 +626,18 @@ namespace FinalVisionProject.Network {
     public class ErrorResultPacket : VisionResponsePacket {  //260416 hbk
         public EVisionErrorCode ErrorCode { get; set; }
         public ErrorResultPacket() : base(EVisionResponseType.Error) { }
+    }
+
+    //260420 hbk — RESET 결과 패킷. OK=전체 리셋 성공, NG=시퀀스/조명 중 하나라도 실패
+    public class ResetResultPacket : VisionResponsePacket {
+        public EVisionResultType Result { get; set; }
+
+        public ResetResultPacket() : base(EVisionResponseType.Reset) { }
+
+        public string GetResultString() {
+            if (Result == EVisionResultType.OK) return RESULT_OK;
+            return RESULT_NG;
+        }
     }
 
 }

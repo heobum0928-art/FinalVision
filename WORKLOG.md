@@ -2,6 +2,29 @@
 
 ---
 
+## 2026-04-20 (월)
+
+### 완료
+- **RESET 프로토콜 추가** — 시퀀스 꼬임 강제 복구용 TCP 명령
+  - Request: `$RESET:site@`
+  - Response: `$RESET:site,OK@` / `$RESET:site,NG@`
+  - 동작: **시퀀스 중단 + 상태 READY 복귀 + 조명 OFF** 묶음
+  - BUSY 중에도 허용 (강제 복구가 목적이므로 RECIPE와 달리 상태 제약 없음)
+- 수정 파일
+  - `WPF_Example/TcpServer/VisionRequestPacket.cs` — `VisionRequestType.Reset`, `CMD_RECV_RESET`, 파싱 로직, `ResetPacket` 클래스, `AsReset()` 추가
+  - `WPF_Example/TcpServer/VisionResponsePacket.cs` — `EVisionResponseType.Reset`, `CMD_SEND_RESET`, Convert 로직, `ResetResultPacket` 클래스, `AsResetResult()` 추가
+  - `WPF_Example/Sequence/SequenceHandler.cs` — `StopAll()` 메서드 추가 (Idle 제외 전체 Stop)
+  - `WPF_Example/Device/LightController/LightHandler.cs` — `SetAllOff()` 메서드 추가 (Groups 전체 OFF)
+  - `WPF_Example/Custom/SystemHandler.cs` — MainRun switch에 `Reset` case 추가, `ProcessReset()` 메서드 구현
+  - `VisionProtocol_ECi_Moving_V1_0.md` — 프로토콜 문서에 3-5 RESET 섹션 추가
+- 미빌드/미커밋
+
+### 다음 작업 후보
+- 빌드 검증
+- Handler S/W측 RESET 송신 구현 연동 테스트
+
+---
+
 ## 2026-04-14 (화)
 
 ### 완료

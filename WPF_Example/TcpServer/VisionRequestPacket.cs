@@ -15,6 +15,7 @@ namespace FinalVisionProject.Network {
         Time,     //260413 hbk
         Trace,    //260413 hbk
         Alive,    //260413 hbk
+        Reset,    //260420 hbk — 시퀀스 중단 + READY 복귀 + 조명 OFF
 
         Unknown = 999
     }
@@ -31,6 +32,7 @@ namespace FinalVisionProject.Network {
         public const string CMD_RECV_TIME = "TIME";       //260413 hbk
         public const string CMD_RECV_TRACE = "TRACE";     //260413 hbk
         public const string CMD_RECV_ALIVE = "ALIVE";      //260413 hbk
+        public const string CMD_RECV_RESET = "RESET";      //260420 hbk — 시퀀스 강제 리셋 요청
 
         public VisionRequestType RequestType { get; }
 
@@ -341,6 +343,14 @@ namespace FinalVisionProject.Network {
                     if (Int32.TryParse(dataList[0], out siteNum) == false) return null;
                     alivePacket.Site = siteNum;
                     break;
+                case CMD_RECV_RESET:  //260420 hbk — $RESET:site@ 파싱 (site만 추출)
+                    packet = new ResetPacket();
+                    ResetPacket resetPacket = packet.AsReset();
+                    dataList = msgList[1].Split(VisionServer.MSG_CONTENTS_SEPERATOR);
+                    if (dataList.Length < 1) return null;
+                    if (Int32.TryParse(dataList[0], out siteNum) == false) return null;
+                    resetPacket.Site = siteNum;
+                    break;
             }
 
             return packet;
@@ -391,6 +401,10 @@ namespace FinalVisionProject.Network {
         public AlivePacket AsAlive() {  //260413 hbk
             if (RequestType != VisionRequestType.Alive) return null;
             return this as AlivePacket;
+        }
+        public ResetPacket AsReset() {  //260420 hbk
+            if (RequestType != VisionRequestType.Reset) return null;
+            return this as ResetPacket;
         }
 
     }
@@ -465,6 +479,11 @@ namespace FinalVisionProject.Network {
 
     public class AlivePacket : VisionRequestPacket {  //260413 hbk
         public AlivePacket() : base(VisionRequestType.Alive) { }
+    }
+
+    //260420 hbk — RESET 요청 패킷 ($RESET:site@). 시퀀스가 꼬였을 때 강제 초기화 트리거.
+    public class ResetPacket : VisionRequestPacket {
+        public ResetPacket() : base(VisionRequestType.Reset) { }
     }
 
 }

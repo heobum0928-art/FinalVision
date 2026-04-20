@@ -97,6 +97,9 @@ namespace FinalVisionProject {
                     case VisionRequestType.Trace:  //260413 hbk
                         responsePacket = ProcessTrace(packet.AsTrace());
                         break;
+                    case VisionRequestType.Reset:  //260420 hbk — 시퀀스 꼬임 복구용 강제 리셋
+                        responsePacket = ProcessReset(packet.AsReset());
+                        break;
 
                     case VisionRequestType.Unknown:
                         //occurs error
@@ -335,6 +338,28 @@ namespace FinalVisionProject {
             result.Target = packet.Sender;
             result.Site = packet.Site;
             return result;  //260413 hbk — $ALIVE:1,OK@
+        }
+
+        //260420 hbk — RESET 명령 처리: 시퀀스 중단 + 상태 READY 복귀 + 조명 OFF.
+        //BUSY 중에도 허용(시퀀스 꼬임 강제 복구가 목적). StopAll이 실행 중 시퀀스에 Stop 명령을 주면
+        //SequenceBase가 내부적으로 Idle(=READY)로 복귀시키므로 별도 READY 강제 로직은 불필요.
+        private ResetResultPacket ProcessReset(ResetPacket packet) {
+            ResetResultPacket result = new ResetResultPacket();
+            result.Target = packet.Sender;
+            result.Site = packet.Site;
+
+            try {
+                Sequences.StopAll();    //260420 hbk — 시퀀스 중단 → 내부적으로 Idle 복귀 (= READY)
+                bool lightsOk = Lights.SetAllOff();  //260420 hbk — 등록된 모든 LightGroup OFF
+                result.Result = lightsOk ? EVisionResultType.OK : EVisionResultType.NG;
+                Logging.PrintLog((int)ELogType.Trace, "[RESET] Site:{0} {1} (Sequences stopped, Lights OFF)",
+                    packet.Site, result.Result);
+            }
+            catch (Exception ex) {
+                result.Result = EVisionResultType.NG;
+                Logging.PrintLog((int)ELogType.Error, "[RESET] Site:{0} NG — {1}", packet.Site, ex.Message);
+            }
+            return result;
         }
 
         //260414 hbk — ALIVE 하트비트: 1초마다 V→PLC 송신, PLC 패킷 5초 미수신 시 down 판정

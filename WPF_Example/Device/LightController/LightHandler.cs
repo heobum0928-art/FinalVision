@@ -184,6 +184,16 @@ namespace FinalVisionProject.Device {
             return true;
         }
 
+        //260420 hbk — 등록된 모든 LightGroup 일괄 OFF (RESET 명령에서 사용)
+        //한 그룹이라도 실패하면 false 반환하지만, 나머지 그룹은 끝까지 OFF 시도.
+        public bool SetAllOff() {
+            bool allOk = true;
+            for (int i = 0; i < Groups.Count; i++) {
+                if (SetOnOff(Groups[i].Name, false) == false) allOk = false;
+            }
+            return allOk;
+        }
+
         public bool SetLevel(string groupName, int level) {
             LightGroup group = GetGroup(groupName);
             if (group == null) return false;

@@ -458,6 +458,16 @@ namespace FinalVisionProject.Sequence {
             return Sequences[id].Stop();
         }
 
+        //260420 hbk — 등록된 모든 시퀀스 강제 중단 (RESET 명령에서 사용)
+        //Idle 상태인 시퀀스는 Stop()에서 false 반환하므로 무시하고, 실행 중인 시퀀스만 중단.
+        public void StopAll() {
+            for (int i = 0; i < Sequences.Count; i++) {
+                SequenceBase seq = Sequences.ElementAt(i).Value;
+                if (seq.State == EContextState.Idle) continue;  //260420 hbk — 이미 Idle이면 Stop 불필요
+                seq.Stop();
+            }
+        }
+
         public bool Pause(ESequence id) {
             if (Sequences.ContainsKey(id) == false) return false;
             return Sequences[id].Pause();

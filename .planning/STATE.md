@@ -1,15 +1,15 @@
 ---
 gsd_state_version: 1.0
-milestone: v2.0
-milestone_name: 레시피 편집 + 이미지 관리 + 운영 안정화
-status: Phase 16 Complete
-stopped_at: Completed 16-02-PLAN.md
-last_updated: "2026-04-16"
+milestone: v2.1
+milestone_name: 운영 복구 명령 확장
+status: Phase 17 Complete
+stopped_at: Completed 17-01-SUMMARY.md
+last_updated: "2026-04-20"
 progress:
-  total_phases: 7
-  completed_phases: 7
-  total_plans: 13
-  completed_plans: 13
+  total_phases: 1
+  completed_phases: 1
+  total_plans: 1
+  completed_plans: 1
   percent: 100
 ---
 
