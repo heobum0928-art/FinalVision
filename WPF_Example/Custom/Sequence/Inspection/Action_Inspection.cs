@@ -72,7 +72,7 @@ namespace FinalVisionProject.Sequence
         [System.ComponentModel.Browsable(false)]                           //260331 hbk — PropertyGrid 표시 제외
         public string SimulImagePath { get; set; } = "";                   //260331 hbk — Shot별 개별 로드 이미지 파일 경로
 
-        [System.ComponentModel.Browsable(false)]                           //260331 hbk
+        [System.ComponentModel.Browsable(false)]                         
         public double LastBlobArea { get; set; } = 0;                      //260331 hbk — 최근 검사 Blob 면적 (검출 없으면 0)
 
         // Shot 이미지 버퍼   //260326 hbk // Shot별 원본/오버레이 이미지 보관

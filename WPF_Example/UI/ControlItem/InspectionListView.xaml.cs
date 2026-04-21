@@ -106,83 +106,80 @@ namespace FinalVisionProject.UI {
 
         private void Btn_start_Click(object sender, RoutedEventArgs e) {
             if (treeListBox_sequence.SelectedIndex < 0) return;
+            if (!(treeListBox_sequence.SelectedItem is NodeViewModel node)) return;
 
-            //260410 hbk -- SimulImagePath가 설정된 Shot: 카메라 촬상 없이 RunBlobOnLastGrab 검사
-            if (treeListBox_sequence.SelectedItem is NodeViewModel selNode
-                && selNode.SequenceID == ESequence.Inspection) {
+            //260420 hbk -- SimulImagePath가 있으면 카메라 촬상 없이 로드된 이미지로 검사
+            if (node.SequenceID == ESequence.Inspection && TryRunSimulInspection(node)) return;
 
-                SequenceBase inspSeq = SystemHandler.Handle.Sequences[ESequence.Inspection];
-                if (inspSeq != null) {
+            //260420 hbk -- 시뮬 이미지 없음: 기존 시퀀스 실행 (카메라 촬상 + 검사)
+            RunLiveSequence(node);
+        }
 
-                    //260410 hbk -- Action 선택: 해당 Shot 1개만 검사
-                    if (selNode.NodeType == ENodeType.Action) {
-                        int actIndex = -1;
-                        for (int i = 0; i < inspSeq.ActionCount; i++) {
-                            if (inspSeq[i].ID == selNode.ActionID) { actIndex = i; break; }
-                        }
-                        if (actIndex >= 0 && inspSeq[actIndex] is Action_Inspection act) {
-                            InspectionParam p = act.Param as InspectionParam;
-                            if (p != null && !string.IsNullOrEmpty(p.SimulImagePath)
-                                && File.Exists(p.SimulImagePath)) {
-                                if (!SystemHandler.Handle.Sequences.IsIdle) return;
-                                act.RunBlobOnLastGrab();
-                                mParentWindow.mainView.RefreshShotImage(actIndex);
-                                return;
-                            }
-                        }
-                    }
+        //260420 hbk -- 로드된 이미지로 검사. 처리했으면 true(= 여기서 종료), 대상 없으면 false(= 라이브로 fallthrough)
+        private bool TryRunSimulInspection(NodeViewModel node) {
+            SequenceBase seq = SystemHandler.Handle.Sequences[ESequence.Inspection];
+            if (seq == null) return false;
 
-                    //260410 hbk -- Sequence 선택: SimulImagePath가 있는 Shot 전부 검사
-                    if (selNode.NodeType == ENodeType.Sequence) {
-                        int ranCount = 0;
-                        for (int i = 0; i < inspSeq.ActionCount; i++) {
-                            if (!(inspSeq[i] is Action_Inspection act)) continue;
-                            InspectionParam p = act.Param as InspectionParam;
-                            if (p == null || string.IsNullOrEmpty(p.SimulImagePath)
-                                || !File.Exists(p.SimulImagePath)) continue;
-                            ranCount++;
-                        }
-                        if (ranCount > 0) {
-                            if (!SystemHandler.Handle.Sequences.IsIdle) return;
-                            for (int i = 0; i < inspSeq.ActionCount; i++) {
-                                if (!(inspSeq[i] is Action_Inspection act)) continue;
-                                InspectionParam p = act.Param as InspectionParam;
-                                if (p == null || string.IsNullOrEmpty(p.SimulImagePath)
-                                    || !File.Exists(p.SimulImagePath)) continue;
-                                act.RunBlobOnLastGrab();
-                            }
-                            mParentWindow.mainView.RefreshAllShotImages();
-                            return;
-                        }
-                    }
-                }
+            //260420 hbk -- Action 선택: 해당 Shot 1개만 검사
+            if (node.NodeType == ENodeType.Action) {
+                int idx = FindActionIndex(seq, node.ActionID);
+                if (idx < 0 || !(seq[idx] is Action_Inspection act) || !HasSimulImage(act)) return false;
+
+                if (!SystemHandler.Handle.Sequences.IsIdle) return true;
+                act.RunBlobOnLastGrab();
+                mParentWindow.mainView.RefreshShotImage(idx);
+                return true;
             }
 
-            //260410 hbk -- 로드된 이미지 없으면 기존 시퀀스 실행 (카메라 촬상 + 검사)
-            if (treeListBox_sequence.SelectedItem is NodeViewModel node) {
-                ESequence seqID;
-                EAction actID;
-                if (node.NodeType == ENodeType.Action) {
-                    seqID = node.SequenceID;
-                    actID = node.ActionID;
-                    mParentWindow.StartSequence(seqID, actID);
+            //260420 hbk -- Sequence 선택: SimulImagePath가 있는 Shot 전부 검사
+            if (node.NodeType == ENodeType.Sequence) {
+                bool hasTarget = false;
+                for (int i = 0; i < seq.ActionCount; i++) {
+                    if (seq[i] is Action_Inspection a && HasSimulImage(a)) { hasTarget = true; break; }
+                }
+                if (!hasTarget) return false;
+
+                if (!SystemHandler.Handle.Sequences.IsIdle) return true;
+                for (int i = 0; i < seq.ActionCount; i++) {
+                    if (seq[i] is Action_Inspection a && HasSimulImage(a)) a.RunBlobOnLastGrab();
+                }
+                mParentWindow.mainView.RefreshAllShotImages();
+                return true;
+            }
+
+            return false;
+        }
+
+        //260420 hbk -- 라이브 시퀀스 실행 (카메라 촬상 + 검사). Sequence 선택 시 첫 Action부터 시작
+        private void RunLiveSequence(NodeViewModel node) {
+            if (node.NodeType == ENodeType.Action) {
+                mParentWindow.StartSequence(node.SequenceID, node.ActionID);
+                return;
+            }
+            if (node.NodeType == ENodeType.Sequence) {
+                SequenceBase seq = SystemHandler.Handle.Sequences[node.SequenceID];
+                if (seq != null && seq.ActionCount > 0) {
+                    mParentWindow.StartSequence(node.SequenceID, seq[0].ID);
                     return;
                 }
-                else if(node.NodeType == ENodeType.Sequence) {
-                    seqID = node.SequenceID;
-                    //first action 수행
-                    SequenceBase seq = SystemHandler.Handle.Sequences[seqID];
-                    if(seq != null) {
-                        if (seq.ActionCount > 0) {
-                            actID = seq[0].ID;
-                            mParentWindow.StartSequence(seqID, actID);
-                            return;
-                        }
-                    }
-                }
-                //show error msg
-                CustomMessageBox.Show("Error", "There is no action to run.\nSelect the sequence or action you want to perform.", MessageBoxImage.Error);
             }
+            CustomMessageBox.Show("Error", "There is no action to run.\nSelect the sequence or action you want to perform.", MessageBoxImage.Error);
+        }
+
+        //260420 hbk -- Action 탐색 헬퍼
+        private static int FindActionIndex(SequenceBase seq, EAction actionID) {
+            for (int i = 0; i < seq.ActionCount; i++) {
+                if (seq[i].ID == actionID) return i;
+            }
+            return -1;
+        }
+
+        //260420 hbk -- SimulImagePath가 설정되어 있고 파일이 실제로 존재하는지 확인
+        private static bool HasSimulImage(Action_Inspection act) {
+            InspectionParam p = act.Param as InspectionParam;
+            return p != null
+                && !string.IsNullOrEmpty(p.SimulImagePath)
+                && File.Exists(p.SimulImagePath);
         }
 
         //260406 hbk -- 시간폴더 일괄 로드: Action 이름으로 5-Shot 이미지 자동 매칭
