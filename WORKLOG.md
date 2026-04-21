@@ -2,6 +2,28 @@
 
 ---
 
+## 2026-04-21 (화)
+
+### 완료
+- **Phase 17 빌드 검증** — MSBuild (VS2022 Community) 통과, `FinalVision.exe` 정상 생성
+  - 빌드 중 `WPF_Example/Utility/Logging.cs:288` 오타 `}1` 발견 후 수정
+  - 주의: `dotnet build`는 WPF XAML 생성 실패하므로 사용 금지, 반드시 MSBuild 사용
+- **`CLAUDE.md` 코드 컨벤션 문서화** — 헝가리언 표기/조건식/주석/함수/상수 규칙 + AI 리팩토링 기본 프롬프트
+- **Btn_start_Click 리팩토링 커밋** (이전 작업 정리)
+  - `InspectionListView.xaml.cs`: 중첩 분기를 4개 헬퍼로 분리 (`TryRunSimulInspection` / `RunLiveSequence` / `FindActionIndex` / `HasSimulImage`) — early return + 역할 분리
+  - `Action_Inspection.cs`: 속성 주석 마커 정리
+- **RESET OK 뱃지 UI 구현** (Phase 17 연장)
+  - `Custom/SystemHandler.cs`: `ResetReceived` 이벤트 추가, `ProcessReset()`에서 OK일 때만 Invoke (NG는 에러 로그로 충분)
+  - `UI/MenuBar.xaml`: `ResetBadgeStoryboard` 추가(0→1 즉시 노출, 2초 유지, 0.3초 페이드아웃) + 파란 `reset_Badge` Border를 ALIVE 인디케이터 옆에 배치
+  - `UI/MenuBar.xaml.cs`: Loaded에서 구독/리소스 캐시, `OnResetReceived()` 핸들러로 storyboard 트리거, Unloaded에서 구독 해제
+- **origin/master 푸시** — 5커밋 (`23cbc0b` / `bba2314` / `01c29d0` + 이전 2커밋)
+
+### 다음 작업 후보
+- 실제 운용 시 RESET 뱃지 동작 확인 (Handler 측 `$RESET:4@` 송신)
+- Handler S/W측 RESET 송신 구현 연동 테스트
+
+---
+
 ## 2026-04-20 (월)
 
 ### 완료
