@@ -200,7 +200,7 @@ namespace FinalVisionProject.UI {
             if (inspSeq != null)
             {
                 _subscribedInspSeq = inspSeq; //260402 hbk 해제용 참조 저장
-                inspSeq.OnFinish += OnInspectionFinish; //260402 hbk 람다→named handler (해제 가능)
+                inspSeq.OnFinish += OnInspectionFinish; //260402 hbk 람다=>named handler (해제 가능)
             }
 
             this.DrawScale = pDev.Config.DrawScale;
@@ -257,7 +257,7 @@ namespace FinalVisionProject.UI {
             if (param == null) return;
             Dispatcher.BeginInvoke(System.Windows.Threading.DispatcherPriority.Normal, new Action(() =>
             {
-                // ctx.ResultImage는 stale 가능 → param에서 직접 조회   //260331 hbk
+                // ctx.ResultImage는 stale 가능 => param에서 직접 조회   //260331 hbk
                 Mat img = param.LastAnnotatedImage
                           ?? param.GetAnnotatedImageTemp()
                           ?? param.LastOriginalImage;

@@ -203,7 +203,7 @@ namespace FinalVisionProject.Utility {
         /// </summary>
         public string GetRecipeFilePath(int siteNumber, string name) {
             string recipeSavePath = SystemHandler.Handle.Setting.RecipeSavePath;
-            //260403 hbk — D-10: "Site" + siteNumber → siteNumber.ToString()
+            //260403 hbk — D-10: "Site" + siteNumber => siteNumber.ToString()
             return Path.Combine(recipeSavePath, siteNumber.ToString(), name, FILE_RECIPE + EXT_RECIPE);
         }
 
@@ -212,7 +212,7 @@ namespace FinalVisionProject.Utility {
         /// </summary>
         public int CollectRecipe(int siteNumber) {
             SystemHandler pSys = SystemHandler.Handle;
-            //260403 hbk — D-10: "Site" + siteNumber → siteNumber.ToString()
+            //260403 hbk — D-10: "Site" + siteNumber => siteNumber.ToString()
             string sitePath = Path.Combine(pSys.Setting.RecipeSavePath, siteNumber.ToString());
             if (Directory.Exists(sitePath) == false) {
                 System.Windows.Application.Current.Dispatcher.Invoke(() => List.Clear());   //260330 hbk UI 스레드에서 Clear

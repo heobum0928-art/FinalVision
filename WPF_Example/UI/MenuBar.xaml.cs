@@ -82,13 +82,13 @@ namespace FinalVisionProject.UI {
             //260416 hbk — ALIVE 3-state: TCP 연결 우선 판정
             if (_aliveBrush == null) return;           //260413 hbk — Loaded 이전 가드
             bool connected = SystemHandler.Handle.Server?.IsConnected() ?? false;  //260416 hbk
-            if (!connected) {                          //260416 hbk — TCP 미연결 → 회색 (래치 무시)
+            if (!connected) {                          //260416 hbk — TCP 미연결 => 회색 (래치 무시)
                 _aliveActive = false;
                 if (_flashStoryboard != null) _flashStoryboard.Stop(this);  //260416 hbk — 애니메이션 HoldEnd 해제
                 _aliveBrush.Color = AliveGray;
                 return;
             }
-            if (_aliveTimeoutLatched) {                //260413 hbk — TCP 연결 중 ALIVE 미수신 → 빨강
+            if (_aliveTimeoutLatched) {                //260413 hbk — TCP 연결 중 ALIVE 미수신 => 빨강
                 _aliveBrush.Color = AliveRed;          //260413 hbk
                 return;                                //260413 hbk
             }
@@ -151,17 +151,17 @@ namespace FinalVisionProject.UI {
             mParentWindow.PopupView(EPageType.ProcessMonitor);
         }
 
-        //260415 hbk — Phase 16 ALIVE 응답 수신 → 녹색 활성 + flash 1회
+        //260415 hbk — Phase 16 ALIVE 응답 수신 => 녹색 활성 + flash 1회
         private void OnAliveHeartbeat() {
             Dispatcher.BeginInvoke(new Action(() => {
-                _aliveActive = true;               //260415 hbk — PLC ALIVE 수신 → 녹색
+                _aliveActive = true;               //260415 hbk — PLC ALIVE 수신 => 녹색
                 if (_aliveTimeoutLatched) return;  //260413 hbk — 빨강 중에는 flash 금지 (Pitfall #2)
                 if (_flashStoryboard == null) return;
                 _flashStoryboard.Begin(this, true);  //260413 hbk — isControllable=true, 재진입 안전
             }));
         }
 
-        //260415 hbk — Phase 16 ALIVE 타임아웃 → 빨강 래치 + 녹색 해제
+        //260415 hbk — Phase 16 ALIVE 타임아웃 => 빨강 래치 + 녹색 해제
         private void OnAliveTimeoutEvent() {
             Dispatcher.BeginInvoke(new Action(() => {
                 _aliveActive = false;                            //260415 hbk
@@ -171,7 +171,7 @@ namespace FinalVisionProject.UI {
             }));
         }
 
-        //260421 hbk — RESET OK 수신 → "RESET" 뱃지 2초 표시
+        //260421 hbk — RESET OK 수신 => "RESET" 뱃지 2초 표시
         private void OnResetReceived() {
             Dispatcher.BeginInvoke(new Action(() => {
                 if (_resetBadgeStoryboard == null) return;
@@ -179,7 +179,7 @@ namespace FinalVisionProject.UI {
             }));
         }
 
-        //260415 hbk — Phase 16 Client 재접속 감지 → 빨강 래치 해제 (다음 ALIVE 패킷 전까지 회색)
+        //260415 hbk — Phase 16 Client 재접속 감지 => 빨강 래치 해제 (다음 ALIVE 패킷 전까지 회색)
         private void OnServerAlarm(object sender, AlarmEventArgs e) {
             if (e.AlarmType != AlarmEventArgs.AlarmEventType.OnConnected) return;  //260413 hbk
             Dispatcher.BeginInvoke(new Action(() => {

@@ -7,7 +7,7 @@ using FinalVisionProject.UI;
 using FinalVisionProject.Utility;
 
 //260401 hbk — Action_FAIMeasurement: Shot-FAI 구조 측정 Action (Action_Inspection 대체)
-//             Grab(Shot 공유) → Measure(Phase 8 구현) → SaveImage → End
+//             Grab(Shot 공유) => Measure(Phase 8 구현) => SaveImage => End
 namespace FinalVisionProject.Sequence
 {
     public class Action_FAIMeasurement : ActionBase
@@ -144,7 +144,7 @@ namespace FinalVisionProject.Sequence
 
                 // TODO Phase 8: Halcon 에지 측정 구현
                 // 1. ROI(_FAI.ROI) 영역 추출
-                // 2. HMeasure 생성 → MeasurePairs
+                // 2. HMeasure 생성 => MeasurePairs
                 // 3. 에지 간 거리 계산
                 // 4. _FAI.SetResult(distance) 호출
 
@@ -161,8 +161,8 @@ namespace FinalVisionProject.Sequence
         private void SaveResultImage(bool isOK)   //260401 hbk
         {
             var setting = SystemSetting.Handle;
-            if (isOK && !setting.SaveGoodImage) return;   //260403 hbk -- SaveOkImage → SaveGoodImage
-            if (!isOK && !setting.SaveNGImage) return;    //260403 hbk -- SaveNgImage → SaveNGImage
+            if (isOK && !setting.SaveGoodImage) return;   //260403 hbk -- SaveOkImage => SaveGoodImage
+            if (!isOK && !setting.SaveNGImage) return;    //260403 hbk -- SaveNgImage => SaveNGImage
 
             try
             {

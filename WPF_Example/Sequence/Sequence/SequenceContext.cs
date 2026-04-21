@@ -98,7 +98,7 @@ namespace FinalVisionProject.Sequence {
                 return _State;
             }
             set {
-                _State = value; //260402 hbk State setter 버그 수정 (State→value)
+                _State = value; //260402 hbk State setter 버그 수정 (State=>value)
             }
         }
         

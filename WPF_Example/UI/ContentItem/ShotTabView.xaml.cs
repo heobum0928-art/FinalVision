@@ -93,7 +93,7 @@ namespace FinalVisionProject.UI
             if (seq != null)
             {
                 _subscribedSeq = seq; //260402 hbk 해제용 참조 저장
-                seq.OnFinish += OnInspectionFinish; //260402 hbk 람다→named handler (해제 가능)
+                seq.OnFinish += OnInspectionFinish; //260402 hbk 람다=>named handler (해제 가능)
             }
         }
 
@@ -256,7 +256,7 @@ namespace FinalVisionProject.UI
             RefreshImage();
         }
 
-        //260406 hbk -- IMG-03: ShotTabView 폴더 버튼 제거 → DeviceSelector "Load Image in Directory" 메뉴로 통합
+        //260406 hbk -- IMG-03: ShotTabView 폴더 버튼 제거 => DeviceSelector "Load Image in Directory" 메뉴로 통합
 
         // 결과 레이블 갱신 — OK/NG/---   //260327 hbk Shot탭
         public void UpdateResultLabel()

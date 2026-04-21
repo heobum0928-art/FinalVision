@@ -13,7 +13,7 @@
                             Storyboard.TargetProperty="(Shape.Fill).(SolidColorBrush.Color)"
                             From="#FF00B050" To="#FF7EE08B" Duration="0:0:0.15"/>
         </Storyboard>
-        <!--260421 hbk RESET OK 뱃지 2초 표시 (0→1 즉시 노출, 2초 유지, 0.3초 페이드아웃)-->
+        <!--260421 hbk RESET OK 뱃지 2초 표시 (0=>1 즉시 노출, 2초 유지, 0.3초 페이드아웃)-->
         <Storyboard x:Key="ResetBadgeStoryboard">
             <DoubleAnimationUsingKeyFrames Storyboard.TargetName="reset_Badge"
                                             Storyboard.TargetProperty="Opacity">

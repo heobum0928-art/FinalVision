@@ -31,8 +31,8 @@ namespace FinalVisionProject {
         private const int ALIVE_SEND_INTERVAL_MS = 1000;   //260413 hbk — 1초 주기 송신
         private const int ALIVE_DOWN_TIMEOUT_MS = 5000;    //260414 hbk — PLC ALIVE 5초 미수신 시 down 판정
         private readonly Stopwatch _lastAliveRecvTimer = new Stopwatch();  //260414 hbk — PLC ALIVE 마지막 수신 경과시간
-        public event Action AliveHeartbeatReceived;  //260413 hbk — Phase 16 UI flash 트리거 (Phase 15 로직 미수정)
-        public event Action AliveTimeout;            //260413 hbk — Phase 16 UI 빨강 트리거 (Phase 15 로직 미수정)
+        public event Action AliveHeartbeatReceived;  //260413 hbk — 16 UI flash 트리거 (Phase 15 로직 미수정)
+        public event Action AliveTimeout;            //260413 hbk — UI 빨강 트리거 (Phase 15 로직 미수정)
         public event Action ResetReceived;           //260421 hbk — RESET OK 처리 시 UI 뱃지 트리거
         private volatile bool _startupErrorSent = false;  //260416 hbk — 초기화 에러 TCP 전송 완료 여부
 
@@ -350,7 +350,7 @@ namespace FinalVisionProject {
             result.Site = packet.Site;
 
             try {
-                Sequences.StopAll();    //260420 hbk — 시퀀스 중단 → 내부적으로 Idle 복귀 (= READY)
+                Sequences.StopAll();    //260420 hbk — 시퀀스 중단 => 내부적으로 Idle 복귀 (= READY)
                 bool lightsOk = Lights.SetAllOff();  //260420 hbk — 등록된 모든 LightGroup OFF
                 result.Result = lightsOk ? EVisionResultType.OK : EVisionResultType.NG;
                 Logging.PrintLog((int)ELogType.Trace, "[RESET] Site:{0} {1} (Sequences stopped, Lights OFF)",
@@ -367,7 +367,7 @@ namespace FinalVisionProject {
             return result;
         }
 
-        //260414 hbk — ALIVE 하트비트: 1초마다 V→PLC 송신, PLC 패킷 5초 미수신 시 down 판정
+        //260414 hbk — ALIVE 하트비트: 1초마다 V=>PLC 송신, PLC 패킷 5초 미수신 시 down 판정
         private void AliveProcess() {
             bool wasDown = false;
             while (!IsTerminated) {
@@ -385,7 +385,7 @@ namespace FinalVisionProject {
                     SendStartupErrors();           //260416 hbk
                 }
 
-                SendAlivePacket();   //260414 hbk — 1초마다 V→PLC 송신 (응답 대기 안 함)
+                SendAlivePacket();   //260414 hbk — 1초마다 V=>PLC 송신 (응답 대기 안 함)
 
                 //260414 hbk — PLC가 보낸 ALIVE 마지막 수신시각 기준 5초 경과 시 down
                 //타이머가 멈춰 있으면(=수신 이력 없음) 첫 수신을 기다리는 단계라 down 판정 보류
@@ -443,7 +443,7 @@ namespace FinalVisionProject {
         private void PerformAliveTimeout() {  //260414 hbk — PLC ALIVE 5초 미수신 시 호출
             Logging.PrintLog((int)ELogType.Error, "[ALIVE] No PLC ALIVE for {0}ms. Disconnecting client.", ALIVE_DOWN_TIMEOUT_MS);
             SendErrorPacket(1, EVisionErrorCode.AliveTimeout);  //260416 hbk — ERROR 패킷 송신 (끊기 전)
-            //260413 hbk — 기존 Client 소켓 강제 종료 → TcpServer가 Accept 대기로 복귀
+            //260413 hbk — 기존 Client 소켓 강제 종료 => TcpServer가 Accept 대기로 복귀
             if (Server.GetConnectedClientCount() > 0) {
                 try {
                     Server.GetClient(0).Disconnect();

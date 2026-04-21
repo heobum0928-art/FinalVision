@@ -9,11 +9,11 @@ namespace FinalVisionProject.Sequence
     /// <summary>
     /// Shot-FAI 2계층 구조 레시피 관리자.
     /// INI 섹션 구조:
-    ///   [SHOTS]           → ShotCount
-    ///   [SHOT_0]          → ShotConfig 파라미터 (ParamBase 반사 직렬화) + FAICount
-    ///   [SHOT_0_FAI_0]    → FAIConfig 파라미터 (ParamBase 반사 직렬화)
-    ///   [SHOT_0_FAI_1]    → ...
-    ///   [SHOT_1]          → ...
+    ///   [SHOTS]           => ShotCount
+    ///   [SHOT_0]          => ShotConfig 파라미터 (ParamBase 반사 직렬화) + FAICount
+    ///   [SHOT_0_FAI_0]    => FAIConfig 파라미터 (ParamBase 반사 직렬화)
+    ///   [SHOT_0_FAI_1]    => ...
+    ///   [SHOT_1]          => ...
     /// </summary>
     public class InspectionRecipeManager
     {
@@ -49,7 +49,7 @@ namespace FinalVisionProject.Sequence
                 var shot = Shots[s];
                 string shotSection = $"SHOT_{s}";
 
-                // ShotConfig → ParamBase 반사 직렬화
+                // ShotConfig => ParamBase 반사 직렬화
                 shot.Save(ini, shotSection);
 
                 // FAI 개수 (ParamBase에 없으므로 수동 추가)
