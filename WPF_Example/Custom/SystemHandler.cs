@@ -33,6 +33,7 @@ namespace FinalVisionProject {
         private readonly Stopwatch _lastAliveRecvTimer = new Stopwatch();  //260414 hbk — PLC ALIVE 마지막 수신 경과시간
         public event Action AliveHeartbeatReceived;  //260413 hbk — Phase 16 UI flash 트리거 (Phase 15 로직 미수정)
         public event Action AliveTimeout;            //260413 hbk — Phase 16 UI 빨강 트리거 (Phase 15 로직 미수정)
+        public event Action ResetReceived;           //260421 hbk — RESET OK 처리 시 UI 뱃지 트리거
         private volatile bool _startupErrorSent = false;  //260416 hbk — 초기화 에러 TCP 전송 완료 여부
 
         //project 별, sequence 정의
@@ -359,6 +360,10 @@ namespace FinalVisionProject {
                 result.Result = EVisionResultType.NG;
                 Logging.PrintLog((int)ELogType.Error, "[RESET] Site:{0} NG — {1}", packet.Site, ex.Message);
             }
+
+            //260421 hbk — OK일 때만 UI 뱃지 트리거 (NG는 에러 로그로 충분)
+            if (result.Result == EVisionResultType.OK) ResetReceived?.Invoke();
+
             return result;
         }
 

@@ -26,6 +26,7 @@ namespace FinalVisionProject.UI {
 
         private SolidColorBrush _aliveBrush;              //260413 hbk — alive_Ellipse Fill SolidColorBrush 캐시
         private Storyboard _flashStoryboard;              //260413 hbk — AliveFlashStoryboard 리소스 캐시
+        private Storyboard _resetBadgeStoryboard;         //260421 hbk — ResetBadgeStoryboard 리소스 캐시
         private volatile bool _aliveTimeoutLatched;       //260413 hbk — 빨강 래치 (OnConnected 수신 시 clear)
         private volatile bool _aliveActive;               //260415 hbk — PLC ALIVE 수신 중 여부 (수신 시 set, 타임아웃/재접속 시 clear)
         private static readonly Color AliveGray      = Color.FromArgb(0xFF, 0x9E, 0x9E, 0x9E);  //260413 hbk
@@ -62,9 +63,11 @@ namespace FinalVisionProject.UI {
             //260413 hbk — Phase 16 ALIVE 인디케이터 초기화
             _aliveBrush = (SolidColorBrush)alive_Ellipse.Fill;
             _flashStoryboard = (Storyboard)this.Resources["AliveFlashStoryboard"];
+            _resetBadgeStoryboard = (Storyboard)this.Resources["ResetBadgeStoryboard"];  //260421 hbk
 
             SystemHandler.Handle.AliveHeartbeatReceived += OnAliveHeartbeat;  //260413 hbk
             SystemHandler.Handle.AliveTimeout += OnAliveTimeoutEvent;          //260413 hbk
+            SystemHandler.Handle.ResetReceived += OnResetReceived;             //260421 hbk
             if (SystemHandler.Handle.Server != null) {                          //260413 hbk — NRE 방어 (Pitfall #4)
                 SystemHandler.Handle.Server.OnAlarm += OnServerAlarm;           //260413 hbk
             }
@@ -168,6 +171,14 @@ namespace FinalVisionProject.UI {
             }));
         }
 
+        //260421 hbk — RESET OK 수신 → "RESET" 뱃지 2초 표시
+        private void OnResetReceived() {
+            Dispatcher.BeginInvoke(new Action(() => {
+                if (_resetBadgeStoryboard == null) return;
+                _resetBadgeStoryboard.Begin(this, true);  //260421 hbk — 재진입 시 처음부터 다시
+            }));
+        }
+
         //260415 hbk — Phase 16 Client 재접속 감지 → 빨강 래치 해제 (다음 ALIVE 패킷 전까지 회색)
         private void OnServerAlarm(object sender, AlarmEventArgs e) {
             if (e.AlarmType != AlarmEventArgs.AlarmEventType.OnConnected) return;  //260413 hbk
@@ -181,6 +192,7 @@ namespace FinalVisionProject.UI {
         private void MenuBar_Unloaded(object sender, RoutedEventArgs e) {
             SystemHandler.Handle.AliveHeartbeatReceived -= OnAliveHeartbeat;  //260413 hbk
             SystemHandler.Handle.AliveTimeout -= OnAliveTimeoutEvent;          //260413 hbk
+            SystemHandler.Handle.ResetReceived -= OnResetReceived;             //260421 hbk
             if (SystemHandler.Handle.Server != null) {
                 SystemHandler.Handle.Server.OnAlarm -= OnServerAlarm;          //260413 hbk
             }
